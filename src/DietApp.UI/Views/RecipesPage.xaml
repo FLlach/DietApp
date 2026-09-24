@@ -91,6 +91,25 @@
                                            TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
                                 </Border>
 
+                                <!-- Badges Visuales de Minerales por Porcion -->
+                                <FlexLayout BindableLayout.ItemsSource="{Binding MineralsPerServing}"
+                                            Wrap="Wrap"
+                                            Margin="0, 4, 0, 4">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="dto:MineralAmountDto">
+                                            <Border Margin="0, 2, 6, 2"
+                                                    Padding="6, 3"
+                                                    StrokeShape="RoundRectangle 6"
+                                                    Background="{AppThemeBinding Light=#E8F8F5, Dark=#164E43}">
+                                                <Label Text="{Binding DisplayText}"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light=#117A65, Dark=#48C9B0}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </FlexLayout>
+
                                 <!-- Descripcion breve -->
                                 <Label Text="{Binding Description}"
                                        FontSize="13"

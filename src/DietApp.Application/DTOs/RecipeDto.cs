@@ -31,6 +31,7 @@ public class RecipeDto
         get
         {
             var mineralsParts = MineralsPerServing
+                .Where(m => m.Milligrams > 0.05)
                 .Take(4)
                 .Select(m => $"{m.MineralName}: {m.Milligrams:F0}mg");
 

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using DietApp.Domain.Enums;
 
 namespace DietApp.Domain.ValueObjects;
@@ -7,12 +8,17 @@ namespace DietApp.Domain.ValueObjects;
 /// Por que se tomo esta decision: En Domain-Driven Design, cantidades con unidad de medida
 /// son Objetos de Valor (Value Objects). Son inmutables y dos instancias son iguales si su
 /// tipo de mineral y valor numerico coinciden, garantizando integridad en operaciones aritmeticas.
+/// Incluye soporte para serializacion y deserializacion JSON mediante JsonConstructor y propiedades con init.
 /// </summary>
 public readonly record struct MineralAmount
 {
-    public MineralType Type { get; }
-    public double Milligrams { get; }
+    [JsonPropertyName("Type")]
+    public MineralType Type { get; init; }
 
+    [JsonPropertyName("Milligrams")]
+    public double Milligrams { get; init; }
+
+    [JsonConstructor]
     public MineralAmount(MineralType type, double milligrams)
     {
         if (milligrams < 0)

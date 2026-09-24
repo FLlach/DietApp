@@ -39,7 +39,7 @@ Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 
 * **`Enums/MineralType.cs`**: Catalogo fuertemente tipado de minerales cuantificables (`Phosphorus`, `Potassium`, `Sodium`, `Calcium`, `Magnesium`, `Iron`, `Zinc`).
 * **`Enums/MealType.cs`**: Momentos de ingesta (`Breakfast`, `Lunch`, `Dinner`, `Snack`, `Other`).
-* **`ValueObjects/MineralAmount.cs`**: Objeto de valor inmutable que encapsula el tipo de mineral y su cantidad en miligramos (mg).
+* **`ValueObjects/MineralAmount.cs`**: Objeto de valor inmutable que encapsula el tipo de mineral y su cantidad en miligramos (mg). Cuenta con atributos de serializacion JSON (`[JsonConstructor]`, `[JsonPropertyName]`, accesores `init`) para asegurar reconstruccion fiel desde campos JSON en SQLite.
 * **`Entities/FoodItem.cs`**: Entidad que representa un alimento en el catalogo con su perfil de minerales y calorias por porcion base normalizada de 100 gramos.
 * **`Entities/MealItem.cs`**: Representa la ingesta de un item en una comida con su instantanea calculada de minerales. Incluye metodos de fabricacion `FromFoodItem(food, grams)` y `FromRecipe(recipe, servingsConsumed)` que escalan el aporte nutricional de forma exacta.
 * **`Entities/Meal.cs`**: Raiz de agregado (Aggregate Root) que agrupa los alimentos consumidos y calcula la sumatoria consolidada de minerales con `CalculateTotalMinerals()`.
@@ -54,7 +54,7 @@ Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 ### 3.2. Capa de Aplicacion (`DietApp.Application`)
 Orquesta los casos de uso del sistema:
 
-* **`DTOs/`**: `FoodItemDto.cs`, `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion), `RecipeIngredientDto.cs`, `RecipeStepDto.cs`.
+* **`DTOs/`**: `FoodItemDto.cs`, `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion y coleccion de minerales por porcion), `RecipeIngredientDto.cs` (con resumen de minerales aportados por ingrediente), `RecipeStepDto.cs`.
 * **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol.
 * **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales.
 * **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales. Soporta registro combinado de alimentos y recetas (`RecordMealWithMixedItemsAsync`) y registro rapido de recetas consumidas (`RecordRecipeInMealAsync`).
@@ -88,12 +88,12 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 * **Navegacion (`AppShell.xaml`)**:
   * Pestanas en `TabBar`:
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida.
-    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador, tarjeta con imagen final y subtitulo nutricional por porcion.
+    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador, tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion.
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
     4. **Registrar Comida** (`AddMealPage`): Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones).
     5. **Nuevo Alimento** (`AddFoodPage`): Formulario para ingresar alimentos adicionales al catalogo SQLite.
   * Rutas registradas:
-    * `RecipeDetailPage`: Detalle de receta con imagen final, ingredientes, pasos numerados con imagenes y modulo interactivo para registrar el consumo de porciones directamente en la ingesta diaria del usuario.
+    * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, ingredientes con desglose individual de minerales, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
   * Registra `DietAppDbContext` y conecta los repositorios SQLite en el contenedor IoC.

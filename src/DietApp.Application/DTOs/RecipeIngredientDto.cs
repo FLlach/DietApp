@@ -16,4 +16,15 @@ public class RecipeIngredientDto
     public List<MineralAmountDto> CalculatedMinerals { get; set; } = new();
 
     public string DisplayText => $"{FoodName}: {Grams:F0}g ({CalculatedCalories:F0} kcal)";
+
+    public string MineralsSummary
+    {
+        get
+        {
+            var parts = CalculatedMinerals
+                .Where(m => m.Milligrams > 0)
+                .Select(m => $"{m.MineralName}: {m.Milligrams:F0}mg");
+            return string.Join(", ", parts);
+        }
+    }
 }
