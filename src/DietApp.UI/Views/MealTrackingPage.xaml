@@ -42,42 +42,59 @@
                 </Grid>
             </Border>
 
-            <!-- Banner de Alertas por Limites de Minerales Superados -->
+            <!-- Banner de Alertas y Avisos Preventivos de Minerales -->
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
                     IsVisible="{Binding HasExceededAlerts}"
-                    Stroke="#E74C3C"
+                    Stroke="#E67E22"
                     StrokeThickness="1.5"
-                    Background="{AppThemeBinding Light=#FDEDEC, Dark=#3E1B1B}">
+                    Background="{AppThemeBinding Light=#FEF9E7, Dark=#2E2315}">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{loc:Translate DailyTracking_AlertsTitle}"
                            FontAttributes="Bold"
                            FontSize="15"
-                           TextColor="#C0392B" />
+                           TextColor="{AppThemeBinding Light=#B9770E, Dark=#F39C12}" />
 
                     <Label Text="{loc:Translate DailyTracking_AlertsSubtitle}"
                            FontSize="12"
-                           TextColor="#78281F" />
+                           TextColor="{AppThemeBinding Light=#7D6608, Dark=#FAD7A0}" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding ExceededAlerts}"
                                          Spacing="6">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="dto:MineralAlertExceededDto">
                                 <Border StrokeShape="RoundRectangle 8"
-                                        Padding="10, 6"
-                                        Background="{AppThemeBinding Light=#FADBD8, Dark=#5B2C2C}">
-                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                        <Label Text="!"
+                                        Padding="10, 8"
+                                        Stroke="{Binding CardBorderHex}"
+                                        StrokeThickness="1"
+                                        Background="{Binding CardBackgroundHex}">
+                                    <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                                        <Border Grid.Column="0"
+                                                StrokeShape="RoundRectangle 4"
+                                                Padding="6, 2"
+                                                Background="{Binding CardBorderHex}"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding SeverityBadgeText}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding IconText}"
                                                FontAttributes="Bold"
-                                               FontSize="14"
-                                               TextColor="#C0392B"
+                                               FontSize="13"
+                                               TextColor="{Binding CardTextHex}"
                                                VerticalOptions="Center" />
-                                        <Label Text="{Binding WarningMessage}"
+
+                                        <Label Grid.Column="2"
+                                               Text="{Binding WarningMessage}"
                                                FontAttributes="Bold"
                                                FontSize="12"
-                                               TextColor="#922B21"
+                                               TextColor="{Binding CardTextHex}"
                                                VerticalOptions="Center" />
-                                    </HorizontalStackLayout>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>

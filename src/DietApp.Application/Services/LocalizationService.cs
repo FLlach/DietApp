@@ -300,8 +300,12 @@ public class LocalizationService : ILocalizationService
         ["Settings_MineralAlertsReset"] = "Restablecer Todos los Limites",
         ["Settings_MineralAlertsSavedNotice"] = "Limites de alerta actualizados y activados correctamente.",
         ["Settings_MineralAlertsClearedNotice"] = "Se han desactivado todos los limites de alerta.",
-        ["DailyTracking_AlertsTitle"] = "Advertencia: Limites de Minerales Superados",
-        ["DailyTracking_AlertsSubtitle"] = "Has superado el umbral diario maximo fijado en los siguientes minerales:",
+        ["Settings_WarningThresholdTitle"] = "Umbral Porcentual de Aviso Preventivo",
+        ["Settings_WarningThresholdSubtitle"] = "Define el porcentaje del limite diario (50% a 95%) para emitir una advertencia antes de superarlo:",
+        ["DailyTracking_AlertsTitle"] = "Alertas y Advertencias de Minerales",
+        ["DailyTracking_AlertsSubtitle"] = "Atencion: algunos minerales han superado su limite diario o estan proximos a alcanzarlo:",
+        ["Alert_Severity_Exceeded"] = "LIMITE SUPERADO",
+        ["Alert_Severity_NearLimit"] = "AVISO PREVENTIVO",
         ["Settings_AboutTitle"] = "Acerca de DietApp",
         ["Settings_AboutDescription"] = "Aplicacion especializada en control de minerales y recetas con persistencia SQLite y .NET MAUI."
     };
@@ -456,8 +460,12 @@ public class LocalizationService : ILocalizationService
         ["Settings_MineralAlertsReset"] = "Reset All Limits",
         ["Settings_MineralAlertsSavedNotice"] = "Alert limits updated and activated successfully.",
         ["Settings_MineralAlertsClearedNotice"] = "All alert limits have been deactivated.",
-        ["DailyTracking_AlertsTitle"] = "Warning: Mineral Limits Exceeded",
-        ["DailyTracking_AlertsSubtitle"] = "You have exceeded your target daily maximum for the following minerals:",
+        ["Settings_WarningThresholdTitle"] = "Early Warning Percentage Threshold",
+        ["Settings_WarningThresholdSubtitle"] = "Set the percentage of daily limit (50% to 95%) to trigger a warning before exceeding it:",
+        ["DailyTracking_AlertsTitle"] = "Mineral Alerts and Warnings",
+        ["DailyTracking_AlertsSubtitle"] = "Attention: some minerals have exceeded their daily limit or are approaching it:",
+        ["Alert_Severity_Exceeded"] = "LIMIT EXCEEDED",
+        ["Alert_Severity_NearLimit"] = "EARLY WARNING",
         ["Settings_AboutTitle"] = "About DietApp",
         ["Settings_AboutDescription"] = "Specialized application for mineral tracking and recipes with SQLite and .NET MAUI persistence."
     };

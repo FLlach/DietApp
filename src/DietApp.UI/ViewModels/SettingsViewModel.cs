@@ -30,6 +30,12 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial string AlertsStatusMessage { get; set; } = string.Empty;
 
+    [ObservableProperty]
+    public partial double WarningPercentage { get; set; } = 80.0;
+
+    [ObservableProperty]
+    public partial string WarningPercentageDisplay { get; set; } = "80%";
+
     public ObservableCollection<MineralAlertConfigModel> MineralAlerts { get; } = new();
 
     public SettingsViewModel(
@@ -43,6 +49,11 @@ public partial class SettingsViewModel : ObservableObject
         InitializeMineralAlerts();
 
         _localizationService.LanguageChanged += OnLanguageChanged;
+    }
+
+    partial void OnWarningPercentageChanged(double value)
+    {
+        WarningPercentageDisplay = $"{value:F0}%";
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
@@ -60,6 +71,9 @@ public partial class SettingsViewModel : ObservableObject
 
     private void InitializeMineralAlerts()
     {
+        WarningPercentage = _mineralAlertService.WarningPercentage;
+        WarningPercentageDisplay = $"{WarningPercentage:F0}%";
+
         MineralAlerts.Clear();
         var existingThresholds = _mineralAlertService.GetThresholds();
 
@@ -105,6 +119,8 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     public void SaveAlerts()
     {
+        _mineralAlertService.SetWarningPercentage(WarningPercentage);
+
         var dict = new Dictionary<MineralType, double?>();
         foreach (var alert in MineralAlerts)
         {
@@ -118,6 +134,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     public void ResetAlerts()
     {
+        WarningPercentage = 80.0;
+        WarningPercentageDisplay = "80%";
+        _mineralAlertService.SetWarningPercentage(80.0);
+
         foreach (var alert in MineralAlerts)
         {
             alert.IsEnabled = false;

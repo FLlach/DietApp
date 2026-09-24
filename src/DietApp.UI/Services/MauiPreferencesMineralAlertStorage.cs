@@ -7,13 +7,14 @@ namespace DietApp.UI.Services;
 
 /// <summary>
 /// Como funciona: Implementa IMineralAlertStorage utilizando las preferencias nativas de la plataforma (Preferences)
-/// serializadas en formato JSON liviano.
+/// serializadas en formato JSON liviano y pares clave-valor para umbrales numericos.
 /// Por que se tomo esta decision: Permite almacenar de forma persistente y agil los limites de minerales
-/// configurados por el usuario entre ejecuciones de la app, sin requerir migraciones de esquema en la base relacional.
+/// y el porcentaje de alerta configurados por el usuario entre ejecuciones de la app, sin requerir migraciones de esquema en SQLite.
 /// </summary>
 public class MauiPreferencesMineralAlertStorage : IMineralAlertStorage
 {
     private const string StorageKey = "DietApp_MineralAlertThresholds";
+    private const string WarningPercentageKey = "DietApp_MineralAlertWarningPercentage";
 
     public Dictionary<MineralType, double> GetAlertThresholds()
     {
@@ -63,6 +64,36 @@ public class MauiPreferencesMineralAlertStorage : IMineralAlertStorage
 
             var json = JsonSerializer.Serialize(serializableDict);
             Preferences.Default.Set(StorageKey, json);
+        }
+        catch
+        {
+            // Silencioso ante fallas de hardware para no interrumpir el flujo del usuario
+        }
+    }
+
+    public double GetWarningPercentage()
+    {
+        try
+        {
+            double percentage = Preferences.Default.Get<double>(WarningPercentageKey, 80.0);
+            if (percentage < 10.0 || percentage > 99.0)
+            {
+                return 80.0;
+            }
+            return percentage;
+        }
+        catch
+        {
+            return 80.0;
+        }
+    }
+
+    public void SaveWarningPercentage(double percentage)
+    {
+        try
+        {
+            double clamped = Math.Clamp(percentage, 10.0, 99.0);
+            Preferences.Default.Set(WarningPercentageKey, clamped);
         }
         catch
         {

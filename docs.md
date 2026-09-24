@@ -148,23 +148,34 @@ La aplicacion permite al usuario ordenar tanto el recetario como los ingrediente
 
 ## 6. Sistema de Alertas y Limites Maximos de Minerales
 
-La aplicacion permite al usuario definir limites maximos diarios para controlar la ingesta de compuestos especificos (e.g. restringir sodio en dietas hipertensas o controlar fosforo y potasio en pacientes renales):
+La aplicacion permite al usuario definir limites maximos diarios para controlar la ingesta de compuestos especificos (e.g. restringir sodio en dietas hipertensas o controlar fosforo y potasio en pacientes renales), emitiendo tanto avisos preventivos al aproximarse al limite como alarmas criticas al superarlo:
 
 ### 6.1. Configuracion en Ajustes (`SettingsPage` / `SettingsViewModel`)
-* Lista interactiva de los 7 minerales cuantificables (`MineralAlertConfigModel`).
-* Cada mineral cuenta con un campo numerico para ingresar el limite maximo en miligramos (`ThresholdText`) y un conmutador (`IsEnabled`) para activar o desactivar la alerta de forma independiente.
-* Botones para guardar los limites de forma persistente o restablecerlos a cero.
+* **Umbral Porcentual de Aviso Preventivo**:
+  * Control deslizante (`Slider`) interactivo con rango del 50% al 95% (80% por defecto) y badge visual en tiempo real.
+  * Permite al usuario decidir a que porcentaje de cercania a su limite diario desea recibir una advertencia temprana.
+* **Limites Diarios por Mineral**:
+  * Lista interactiva de los 7 minerales cuantificables (`MineralAlertConfigModel`).
+  * Cada mineral cuenta con un campo numerico para ingresar el limite maximo en miligramos (`ThresholdText`) y un conmutador (`IsEnabled`) para activar o desactivar la alerta de forma independiente.
+* **Persistencia Integral**:
+  * Botones para guardar los limites y el porcentaje de advertencia de forma persistente o restablecerlos a sus valores por defecto.
 
 ### 6.2. Persistencia y Evaluacion en Capa de Aplicacion
-* **`IMineralAlertStorage`**: Contrato desacoplado en `DietApp.Application.Services` para guardar y recuperar la coleccion de umbrales.
-* **`MauiPreferencesMineralAlertStorage`**: Implementacion nativa en `DietApp.UI.Services` que serializa los umbrales en JSON mediante `Microsoft.Maui.Storage.Preferences`.
+* **`IMineralAlertStorage`**: Contrato desacoplado en `DietApp.Application.Services` para guardar y recuperar la coleccion de umbrales y el porcentaje de advertencia.
+* **`MauiPreferencesMineralAlertStorage`**: Implementacion nativa en `DietApp.UI.Services` que serializa los umbrales en JSON y persiste el porcentaje en `Preferences`.
 * **`IMineralAlertService` / `MineralAlertService`**:
-  * Centraliza la logica para comparar los totales consumidos en el dia (`DailyMinerals`) contra los limites activos.
-  * Genera objetos `MineralAlertExceededDto` con la cantidad actual, el maximo permitido, el exceso y el mensaje preventivo localizado.
+  * Centraliza la logica para comparar los totales consumidos en el dia (`DailyMinerals`) contra los limites activos y el porcentaje preventivo.
+  * Clasifica las alertas segun su severidad (`MineralAlertSeverity`):
+    * **`NearLimit` (Aviso preventivo)**: Se activa cuando el consumo diario alcanza o supera el umbral porcentual configurado pero no ha rebasado el 100% del maximo.
+    * **`ExceededLimit` (Limite superado)**: Se activa cuando el consumo diario alcanza o supera el 100% del maximo fijado.
+  * Genera objetos `MineralAlertExceededDto` con cantidad actual, maximo permitido, exceso/margen, porcentaje alcanzado, nivel de severidad y formato visual (colores y etiquetas).
 
 ### 6.3. Disparo Visual de Alertas (`MealTrackingPage` / `MealTrackingViewModel`)
 * Al consultar cualquier fecha en el seguimiento diario, se evaluan los totales acumulados.
-* Si uno o varios minerales superan el umbral maximo configurado por el usuario, se despliega un banner de advertencia destacado en color rojo/coral con el desglose exacto del exceso por mineral.
+* Si uno o varios minerales se encuentran proximos al limite o lo han superado, se despliega el banner de advertencia destacado.
+* Cada alerta se diferencia visualmente segun su nivel de severidad:
+  * **Avisos preventivos (`NearLimit`)**: Estilizados en tonos ambar/dorado con la insignia "AVISO PREVENTIVO" / "EARLY WARNING", indicando el porcentaje consumido y el limite objetivo.
+  * **Limites superados (`ExceededLimit`)**: Estilizados en tonos rojo/coral con la insignia "LIMITE SUPERADO" / "LIMIT EXCEEDED", detallando el exceso en miligramos y el porcentaje total alcanzado.
 
 ---
 
