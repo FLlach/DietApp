@@ -34,22 +34,30 @@ public static class MauiProgram
         // Capa de Infraestructura - Repositorios (Singleton para conservar el estado durante la sesion)
         builder.Services.AddSingleton<IFoodRepository, FoodRepository>();
         builder.Services.AddSingleton<IMealRepository, MealRepository>();
+        builder.Services.AddSingleton<IRecipeRepository, RecipeRepository>();
 
         // Capa de Aplicacion - Casos de Uso y Servicios
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();
         builder.Services.AddTransient<IMealTrackingService, MealTrackingService>();
+        builder.Services.AddTransient<IRecipeService, RecipeService>();
 
         // Capa de Presentacion - ViewModels
         builder.Services.AddTransient<FoodCatalogViewModel>();
         builder.Services.AddTransient<MealTrackingViewModel>();
         builder.Services.AddTransient<AddFoodViewModel>();
         builder.Services.AddTransient<AddMealViewModel>();
+        builder.Services.AddTransient<RecipesViewModel>();
+        builder.Services.AddTransient<RecipeDetailViewModel>();
+        builder.Services.AddTransient<AddRecipeViewModel>();
 
         // Capa de Presentacion - Vistas (Pages)
         builder.Services.AddTransient<FoodCatalogPage>();
         builder.Services.AddTransient<MealTrackingPage>();
         builder.Services.AddTransient<AddFoodPage>();
         builder.Services.AddTransient<AddMealPage>();
+        builder.Services.AddTransient<RecipesPage>();
+        builder.Services.AddTransient<RecipeDetailPage>();
+        builder.Services.AddTransient<AddRecipePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

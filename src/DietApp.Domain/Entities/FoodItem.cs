@@ -5,11 +5,11 @@ namespace DietApp.Domain.Entities;
 
 /// <summary>
 /// Como funciona: Entidad que representa un alimento registrado en el catalogo nutricional.
-/// Almacena su composicion de minerales referenciada a una porcion base (por defecto 100 gramos)
-/// y provee metodos para calcular la cantidad real de minerales para cualquier porcion consumida.
+/// Almacena su composicion de minerales y calorias referenciadas a una porcion base (por defecto 100 gramos)
+/// y provee metodos para calcular la cantidad real de minerales y calorias para cualquier porcion consumida.
 /// Por que se tomo esta decision: En DDD, FoodItem posee identidad unica (Id). Al desacoplar
 /// la definicion base del alimento (por 100g) del consumo real del usuario, se evita duplicar
-/// datos y se garantiza precision en el calculo de totales por porcion.
+/// datos y se garantiza precision en el calculo de totales por porcion en comidas y recetas.
 /// </summary>
 public class FoodItem
 {
@@ -17,6 +17,7 @@ public class FoodItem
     public string Name { get; private set; }
     public string Category { get; private set; }
     public double ReferenceGrams { get; private set; }
+    public double Calories { get; private set; }
     public IReadOnlyList<MineralAmount> Minerals { get; private set; }
 
     public FoodItem(
@@ -24,7 +25,8 @@ public class FoodItem
         string name,
         string category,
         double referenceGrams,
-        IEnumerable<MineralAmount> minerals)
+        IEnumerable<MineralAmount> minerals,
+        double calories = 0.0)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -38,10 +40,18 @@ public class FoodItem
                 "La porcion de referencia en gramos debe ser mayor a cero.");
         }
 
+        if (calories < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(calories),
+                "Las calorias no pueden ser un valor negativo.");
+        }
+
         Id = id == Guid.Empty ? Guid.NewGuid() : id;
         Name = name.Trim();
         Category = string.IsNullOrWhiteSpace(category) ? "General" : category.Trim();
         ReferenceGrams = referenceGrams;
+        Calories = calories;
         Minerals = minerals?.ToList() ?? new List<MineralAmount>();
     }
 
@@ -83,5 +93,21 @@ public class FoodItem
         }
 
         return scaledMinerals;
+    }
+
+    /// <summary>
+    /// Calcula las calorias proyectadas para una porcion arbitraria en gramos.
+    /// </summary>
+    /// <param name="grams">Peso consumido en gramos.</param>
+    public double CalculateCaloriesForPortion(double grams)
+    {
+        if (grams < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(grams),
+                "La cantidad de gramos consumida no puede ser negativa.");
+        }
+
+        return (grams / ReferenceGrams) * Calories;
     }
 }

@@ -9,7 +9,7 @@
     <!--
     Como funciona: Estructura central de navegacion basada en pestanas (TabBar).
     Permite alternar de forma nativa entre el conteo diario, el catalogo con filtro
-    de minerales, el registro de comidas y el alta de nuevos alimentos.
+    de minerales, el modulo de recetas culinarias, el registro de comidas y el alta de alimentos.
     Por que se tomo esta decision: Shell provee navegacion declarativa, fluida y nativa
     optimizada tanto para dispositivos moviles (Android e iOS) como para ventanas en escritorio.
     -->
@@ -20,6 +20,13 @@
                 Title="Conteo Diario"
                 ContentTemplate="{DataTemplate views:MealTrackingPage}"
                 Route="MealTrackingPage" />
+        </Tab>
+
+        <Tab Title="Recetas">
+            <ShellContent
+                Title="Recetas"
+                ContentTemplate="{DataTemplate views:RecipesPage}"
+                Route="RecipesPage" />
         </Tab>
 
         <Tab Title="Catalogo y Filtro">

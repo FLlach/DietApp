@@ -116,3 +116,4 @@ dotnet build -t:Run -f net10.0-windows10.0.19041.0 src/DietApp.UI/DietApp.UI.csp
 2. Seleccionar como proyecto de inicio `DietApp.UI`.
 3. Seleccionar el emulador de Android o un dispositivo fisico conectado en la barra superior.
 4. Presionar `F5` para iniciar la depuracion.
+ 

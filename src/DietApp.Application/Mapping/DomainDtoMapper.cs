@@ -7,7 +7,8 @@ namespace DietApp.Application.Mapping;
 
 /// <summary>
 /// Como funciona: Clase estatica con funciones puras para transformar entidades de dominio a DTOs y viceversa.
-/// Traduce tipos de minerales a nombres legibles en espanol para la presentacion al usuario.
+/// Traduce tipos de minerales a nombres legibles en espanol y genera proyecciones completas para alimentos,
+/// comidas y recetas culinarias.
 /// Por que se tomo esta decision: Centraliza toda la logica de conversion y traduccion en un unico punto
 /// de alta cohesion, evitando duplicacion de mapeos a lo largo de los casos de uso y manteniendo
 /// el dominio libre de cadenas de localizacion de interfaz.
@@ -61,6 +62,7 @@ public static class DomainDtoMapper
             Name = food.Name,
             Category = food.Category,
             ReferenceGrams = food.ReferenceGrams,
+            Calories = food.Calories,
             Minerals = food.Minerals.Select(m => m.ToDto()).ToList()
         };
     }
@@ -90,6 +92,50 @@ public static class DomainDtoMapper
             Note = meal.Note,
             Items = meal.Items.Select(i => i.ToDto()).ToList(),
             TotalMinerals = totalMinerals.Select(m => m.ToDto()).ToList()
+        };
+    }
+
+    public static RecipeIngredientDto ToDto(this RecipeIngredient ingredient)
+    {
+        return new RecipeIngredientDto
+        {
+            Id = ingredient.Id,
+            FoodItemId = ingredient.FoodItemId,
+            FoodName = ingredient.FoodName,
+            Grams = ingredient.Grams,
+            CalculatedCalories = ingredient.CalculatedCalories,
+            CalculatedMinerals = ingredient.CalculatedMinerals.Select(m => m.ToDto()).ToList()
+        };
+    }
+
+    public static RecipeStepDto ToDto(this RecipeStep step)
+    {
+        return new RecipeStepDto
+        {
+            StepNumber = step.StepNumber,
+            Instruction = step.Instruction,
+            ImagePath = step.ImagePath
+        };
+    }
+
+    public static RecipeDto ToDto(this Recipe recipe)
+    {
+        var totalMinerals = recipe.CalculateTotalMinerals();
+        var mineralsPerServing = recipe.CalculateMineralsPerServing();
+
+        return new RecipeDto
+        {
+            Id = recipe.Id,
+            Title = recipe.Title,
+            Description = recipe.Description,
+            Servings = recipe.Servings,
+            FinalImagePath = recipe.FinalImagePath,
+            TotalCalories = recipe.CalculateTotalCalories(),
+            CaloriesPerServing = recipe.CalculateCaloriesPerServing(),
+            TotalMinerals = totalMinerals.Select(m => m.ToDto()).ToList(),
+            MineralsPerServing = mineralsPerServing.Select(m => m.ToDto()).ToList(),
+            Ingredients = recipe.Ingredients.Select(i => i.ToDto()).ToList(),
+            Steps = recipe.Steps.Select(s => s.ToDto()).ToList()
         };
     }
 }

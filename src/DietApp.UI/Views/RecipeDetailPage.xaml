@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             xmlns:dto="clr-namespace:DietApp.Application.DTOs;assembly=DietApp.Application"
+             x:Class="DietApp.UI.Views.RecipeDetailPage"
+             x:DataType="vm:RecipeDetailViewModel"
+             Title="Detalle de la Receta">
+
+    <!--
+    Como funciona: Pantalla de presentacion detallada de la receta culinaria.
+    Exhibe la imagen final de la receta terminada, el subtitulo nutricional por porcion,
+    la lista de ingredientes con sus aportes y la secuencia de pasos numerados con imagenes ilustrativas.
+    Por que se tomo esta decision: Cumple exactamente con la solicitud de brindar una guia visual paso a paso
+    con calculo de compuestos y control de porciones para el usuario en la cocina.
+    -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="14" Spacing="16">
+            <!-- Imagen Final de la Receta Terminada -->
+            <Border StrokeShape="RoundRectangle 14"
+                    Padding="0"
+                    IsVisible="{Binding Recipe.HasFinalImage}">
+                <Image Source="{Binding Recipe.FinalImagePath}"
+                       Aspect="AspectFill"
+                       HeightRequest="220" />
+            </Border>
+
+            <!-- Encabezado y Titulo -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{Binding Recipe.Title}"
+                       FontAttributes="Bold"
+                       FontSize="22" />
+
+                <!-- Subtitulo de Minerales y Calorias por Porcion -->
+                <Border StrokeShape="RoundRectangle 8"
+                        Padding="12, 8"
+                        Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Aporte Nutricional por Porcion:"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="Gray" />
+                        <Label Text="{Binding Recipe.NutritionSubtitle}"
+                               FontAttributes="Bold"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Descripcion -->
+                <Label Text="{Binding Recipe.Description}"
+                       FontSize="14"
+                       Margin="0, 4, 0, 0" />
+            </VerticalStackLayout>
+
+            <!-- Seccion de Ingredientes -->
+            <Label Text="Ingredientes de la Receta"
+                   FontAttributes="Bold"
+                   FontSize="17" />
+
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="14"
+                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Recipe.Ingredients}"
+                                     Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="dto:RecipeIngredientDto">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="•" FontAttributes="Bold" FontSize="14" />
+                                <Label Grid.Column="1" Text="{Binding DisplayText}" FontSize="14" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Seccion de Pasos Numerados de Elaboracion -->
+            <Label Text="Pasos de Elaboracion Numerados"
+                   FontAttributes="Bold"
+                   FontSize="17" />
+
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Recipe.Steps}"
+                                 Spacing="14">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="dto:RecipeStepDto">
+                        <Border StrokeShape="RoundRectangle 12"
+                                Padding="14"
+                                Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                            <VerticalStackLayout Spacing="10">
+                                <!-- Numero y Titulo del Paso -->
+                                <HorizontalStackLayout Spacing="8">
+                                    <Border StrokeShape="RoundRectangle 6"
+                                            Padding="8, 3"
+                                            Background="{AppThemeBinding Light=#2980B9, Dark=#3498DB}">
+                                        <Label Text="{Binding StepTitle}"
+                                               TextColor="White"
+                                               FontAttributes="Bold"
+                                               FontSize="12" />
+                                    </Border>
+                                </HorizontalStackLayout>
+
+                                <!-- Instruccion del Paso -->
+                                <Label Text="{Binding Instruction}"
+                                       FontSize="14"
+                                       LineHeight="1.2" />
+
+                                <!-- Imagen Ilustrativa del Paso si fue agregada -->
+                                <Border StrokeShape="RoundRectangle 8"
+                                        Padding="0"
+                                        IsVisible="{Binding HasImage}"
+                                        HeightRequest="160">
+                                    <Image Source="{Binding ImagePath}"
+                                           Aspect="AspectFill" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

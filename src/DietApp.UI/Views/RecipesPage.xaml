@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             xmlns:dto="clr-namespace:DietApp.Application.DTOs;assembly=DietApp.Application"
+             x:Class="DietApp.UI.Views.RecipesPage"
+             x:Name="ThisRecipesPage"
+             x:DataType="vm:RecipesViewModel"
+             Title="Recetas y Preparaciones">
+
+    <!--
+    Como funciona: Pantalla principal del modulo de recetas. Muestra el catalogo de preparaciones culinarias
+    con buscador por texto, imagen final y el subtitulo automatico de minerales y calorias por porcion.
+    Por que se tomo esta decision: Permite al usuario explorar opciones de comidas planificadas
+    conociendo de inmediato el balance nutricional de cada racion antes de ingresar a los pasos de elaboracion.
+    -->
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Barra Superior con Busqueda y Accion Nueva Receta -->
+        <Border Grid.Row="0"
+                Margin="12, 12, 12, 6"
+                Padding="12"
+                StrokeShape="RoundRectangle 12"
+                Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E24}">
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="Recetario Nutricional"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           VerticalOptions="Center" />
+
+                    <Button Grid.Column="1"
+                            Text="+ Nueva Receta"
+                            Command="{Binding NavigateToAddRecipeCommand}"
+                            FontAttributes="Bold"
+                            FontSize="12" />
+                </Grid>
+
+                <SearchBar Placeholder="Buscar recetas por titulo o descripcion..."
+                           Text="{Binding SearchText}"
+                           SearchCommand="{Binding SearchRecipesCommand}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Listado de Recetas -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Recipes}"
+                        Margin="12, 6, 12, 12">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                     Spacing="12"
+                                     Padding="30">
+                    <Label Text="No hay recetas registradas aun."
+                           HorizontalTextAlignment="Center"
+                           TextColor="Gray"
+                           FontSize="15" />
+                    <Button Text="Crear la primera receta"
+                            Command="{Binding NavigateToAddRecipeCommand}"
+                            HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:RecipeDto">
+                    <Border Margin="0, 0, 0, 12"
+                            Padding="0"
+                            StrokeShape="RoundRectangle 12"
+                            Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                        <VerticalStackLayout Spacing="0">
+                            <!-- Imagen final de la receta si existe -->
+                            <Image Source="{Binding FinalImagePath}"
+                                   Aspect="AspectFill"
+                                   HeightRequest="150"
+                                   IsVisible="{Binding HasFinalImage}" />
+
+                            <VerticalStackLayout Padding="14" Spacing="6">
+                                <!-- Titulo de la Receta -->
+                                <Label Text="{Binding Title}"
+                                       FontAttributes="Bold"
+                                       FontSize="18" />
+
+                                <!-- Subtitulo de Minerales y Calorias por Porcion -->
+                                <Border StrokeShape="RoundRectangle 6"
+                                        Padding="8, 4"
+                                        Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
+                                    <Label Text="{Binding NutritionSubtitle}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
+                                </Border>
+
+                                <!-- Descripcion breve -->
+                                <Label Text="{Binding Description}"
+                                       FontSize="13"
+                                       TextColor="Gray"
+                                       MaxLines="2"
+                                       LineBreakMode="TailTruncation" />
+
+                                <!-- Boton de visualizacion de pasos -->
+                                <Button Text="Ver Pasos e Ingredientes"
+                                        Command="{Binding Source={x:Reference ThisRecipesPage}, Path=BindingContext.SelectRecipeCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Margin="0, 8, 0, 0"
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HeightRequest="40" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
