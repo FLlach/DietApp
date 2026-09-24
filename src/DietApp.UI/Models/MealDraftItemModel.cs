@@ -1,16 +1,40 @@
 namespace DietApp.UI.Models;
 
 /// <summary>
-/// Como funciona: Modelo de presentacion temporal para los alimentos que el usuario va agregando
-/// a la comida antes de confirmarla.
-/// Por que se tomo esta decision: Reemplaza el uso de tuplas no tipadas en XAML, facilitando el enlace
-/// de datos compilado (Compiled Bindings) con x:DataType y eliminando advertencias y errores del compilador XAML.
+/// Como funciona: Modelo de presentacion temporal para alimentos individuales o recetas completas
+/// que el usuario agrega a la comida en composicion antes de confirmarla.
+/// Por que se tomo esta decision: Permite una representacion unificada en la interfaz grafica,
+/// soportando porciones de recetas (en unidades de porcion) y alimentos del catalogo (en gramos),
+/// manteniendo compatibilidad con enlaces compilados (x:DataType) en XAML.
 /// </summary>
 public class MealDraftItemModel
 {
-    public Guid FoodId { get; set; }
-    public string FoodName { get; set; } = string.Empty;
-    public double Grams { get; set; }
+    public Guid ItemId { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public double Quantity { get; set; }
+    public bool IsRecipe { get; set; }
 
-    public string GramsDisplay => $"{Grams:F0} g";
+    public Guid FoodId
+    {
+        get => ItemId;
+        set => ItemId = value;
+    }
+
+    public string FoodName
+    {
+        get => ItemName;
+        set => ItemName = value;
+    }
+
+    public double Grams
+    {
+        get => Quantity;
+        set => Quantity = value;
+    }
+
+    public string QuantityDisplay => IsRecipe
+        ? (Quantity == 1 ? "1 porcion" : $"{Quantity:0.##} porciones")
+        : $"{Quantity:F0} g";
+
+    public string GramsDisplay => QuantityDisplay;
 }

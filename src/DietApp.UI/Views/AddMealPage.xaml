@@ -46,7 +46,7 @@
             </Border>
 
             <!-- Seccion para agregar un alimento -->
-            <Label Text="Agregar Alimento a la Comida"
+            <Label Text="Agregar Alimento del Catalogo"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -76,8 +76,41 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Lista de Alimentos Agregados a la Comida Actual -->
-            <Label Text="Alimentos en esta Comida:"
+            <!-- Seccion para agregar una receta -->
+            <Label Text="O Agregar Receta Culinaria"
+                   FontAttributes="Bold"
+                   FontSize="15" />
+
+            <Border StrokeShape="RoundRectangle 10"
+                    Padding="14"
+                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Seleccionar Receta" FontAttributes="Bold" FontSize="12" />
+                    <Picker ItemsSource="{Binding AvailableRecipes}"
+                            ItemDisplayBinding="{Binding Title}"
+                            SelectedItem="{Binding SelectedRecipe}"
+                            Title="Toca para elegir receta..." />
+
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Porciones consumidas" FontAttributes="Bold" FontSize="12" />
+                            <Entry Placeholder="1"
+                                   Keyboard="Numeric"
+                                   Text="{Binding RecipeServingsText}" />
+                        </VerticalStackLayout>
+
+                        <Button Grid.Column="1"
+                                Text="+ Agregar Receta"
+                                VerticalOptions="End"
+                                BackgroundColor="#27AE60"
+                                TextColor="White"
+                                Command="{Binding AddRecipeToMealCommand}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Lista de Alimentos y Recetas Agregados a la Comida Actual -->
+            <Label Text="Items en esta Comida:"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -88,7 +121,7 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedItems}"
                                          Spacing="6">
                         <BindableLayout.EmptyView>
-                            <Label Text="Aun no has agregado alimentos a esta comida."
+                            <Label Text="Aun no has agregado alimentos ni recetas a esta comida."
                                    TextColor="Gray"
                                    HorizontalTextAlignment="Center"
                                    Padding="10" />

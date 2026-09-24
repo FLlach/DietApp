@@ -3,10 +3,10 @@ using DietApp.Domain.ValueObjects;
 namespace DietApp.Domain.Entities;
 
 /// <summary>
-/// Como funciona: Representa un item o porcion individual de alimento ingerido dentro de una comida.
-/// Contiene una instantanea de los minerales calculados especificamente para los gramos consumidos.
+/// Como funciona: Representa un item o porcion individual de alimento o receta ingerido dentro de una comida.
+/// Contiene una instantanea de los minerales calculados especificamente para los gramos o porciones consumidas.
 /// Por que se tomo esta decision: Almacenar la instantanea calculada previene que modificaciones
-/// posteriores en la definicion del alimento en catalogo alteren retroactivamente el historial
+/// posteriores en la definicion del alimento o receta en catalogo alteren retroactivamente el historial
 /// nutricional de comidas registradas en fechas anteriores.
 /// </summary>
 public class MealItem
@@ -56,5 +56,46 @@ public class MealItem
             foodItem.Name,
             portionInGrams,
             minerals);
+    }
+
+    /// <summary>
+    /// Fabrica un MealItem a partir de una receta culinaria y la cantidad de porciones consumidas.
+    /// Calcula los minerales resultantes escalando el aporte por porcion de la receta.
+    /// </summary>
+    public static MealItem FromRecipe(Recipe recipe, double servingsConsumed)
+    {
+        if (recipe == null)
+        {
+            throw new ArgumentNullException(nameof(recipe));
+        }
+
+        if (servingsConsumed <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(servingsConsumed),
+                "La cantidad de porciones consumidas debe ser mayor a cero.");
+        }
+
+        double totalRecipeGrams = recipe.Ingredients.Sum(i => i.Grams);
+        double consumedGrams = totalRecipeGrams > 0 
+            ? totalRecipeGrams * (servingsConsumed / recipe.Servings)
+            : 100.0 * servingsConsumed;
+
+        var mineralsPerServing = recipe.CalculateMineralsPerServing();
+        var scaledMinerals = new List<MineralAmount>(mineralsPerServing.Count);
+        for (int i = 0; i < mineralsPerServing.Count; i++)
+        {
+            scaledMinerals.Add(mineralsPerServing[i].Scale(servingsConsumed));
+        }
+
+        string servingText = servingsConsumed == 1 ? "1 porcion" : $"{servingsConsumed:0.##} porciones";
+        string foodName = $"{recipe.Title} ({servingText})";
+
+        return new MealItem(
+            Guid.NewGuid(),
+            recipe.Id,
+            foodName,
+            consumedGrams,
+            scaledMinerals);
     }
 }

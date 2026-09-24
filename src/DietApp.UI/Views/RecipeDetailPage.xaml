@@ -10,9 +10,10 @@
     <!--
     Como funciona: Pantalla de presentacion detallada de la receta culinaria.
     Exhibe la imagen final de la receta terminada, el subtitulo nutricional por porcion,
-    la lista de ingredientes con sus aportes y la secuencia de pasos numerados con imagenes ilustrativas.
-    Por que se tomo esta decision: Cumple exactamente con la solicitud de brindar una guia visual paso a paso
-    con calculo de compuestos y control de porciones para el usuario en la cocina.
+    panel para registrar directamente la receta en la ingesta diaria del usuario,
+    la lista de ingredientes y la secuencia de pasos numerados con imagenes ilustrativas.
+    Por que se tomo esta decision: Permite al usuario tanto consultar la guia culinaria
+    como registrar inmediatamente las porciones consumidas en su historial de comidas.
     -->
 
     <ScrollView>
@@ -53,6 +54,58 @@
                        FontSize="14"
                        Margin="0, 4, 0, 0" />
             </VerticalStackLayout>
+
+            <!-- Panel de Accion: Registrar en la Ingesta Diaria -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="14"
+                    Background="{AppThemeBinding Light=#EAFAF1, Dark=#142B1E}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Registrar en la Ingesta Diaria"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light=#196F3D, Dark=#52BE80}" />
+
+                    <Label Text="Agrega esta receta a tu registro de comidas para contabilizar sus minerales y calorias:"
+                           FontSize="12"
+                           TextColor="Gray" />
+
+                    <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="8">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                            <Label Text="Fecha de Ingesta" FontAttributes="Bold" FontSize="11" />
+                            <DatePicker Date="{Binding IntakeDate}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                            <Label Text="Momento de Comida" FontAttributes="Bold" FontSize="11" />
+                            <Picker ItemsSource="{Binding MealTypeOptions}"
+                                    SelectedItem="{Binding SelectedMealTypeName}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                            <Label Text="Porciones Consumidas" FontAttributes="Bold" FontSize="11" />
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                <Entry Grid.Column="0"
+                                       Placeholder="1"
+                                       Keyboard="Numeric"
+                                       Text="{Binding ServingsConsumedText}" />
+
+                                <Button Grid.Column="1"
+                                        Text="Registrar en mi Comida"
+                                        Command="{Binding AddToDailyIntakeCommand}"
+                                        FontAttributes="Bold"
+                                        BackgroundColor="#27AE60"
+                                        TextColor="White" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Mensaje de confirmacion -->
+                    <Label Text="{Binding IntakeMessage}"
+                           FontAttributes="Bold"
+                           FontSize="12"
+                           TextColor="#1E8449" />
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Seccion de Ingredientes -->
             <Label Text="Ingredientes de la Receta"

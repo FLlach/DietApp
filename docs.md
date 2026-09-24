@@ -7,6 +7,7 @@ Permite:
 * Filtrar alimentos de forma avanzada por umbrales maximos y minimos de minerales (de especial utilidad en dietas renales, cardiovasculares o deportivas).
 * Calcular el aporte acumulado de compuestos por cada comida y a nivel diario.
 * **Modulo de Recetas Nutricionales**: Crear y consultar preparaciones culinarias con titulo, imagen final de la receta terminada, subtitulo automatico de minerales y calorias por porcion calculado con base en los ingredientes, e instrucciones en pasos numerados con opcion de adjuntar imagenes en cada etapa.
+* **Registro de Recetas en la Ingesta Diaria**: Capacidad de registrar porciones de recetas directamente en el conteo diario de comidas (tanto desde la pantalla de detalle de la receta como desde el compositor de comidas), escalando proporcionalmente el aporte de minerales y calorias consumidos.
 * **Persistencia Relacional en SQLite**: Almacenamiento local de alto rendimiento con indices B-Tree en columnas de minerales y precarga de 363 alimentos de la base oficial USDA FoodData Central Foundation Foods normalizados a gramos.
 
 ---
@@ -40,7 +41,7 @@ Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 * **`Enums/MealType.cs`**: Momentos de ingesta (`Breakfast`, `Lunch`, `Dinner`, `Snack`, `Other`).
 * **`ValueObjects/MineralAmount.cs`**: Objeto de valor inmutable que encapsula el tipo de mineral y su cantidad en miligramos (mg).
 * **`Entities/FoodItem.cs`**: Entidad que representa un alimento en el catalogo con su perfil de minerales y calorias por porcion base normalizada de 100 gramos.
-* **`Entities/MealItem.cs`**: Representa la ingesta de un alimento en una comida con su gramaje real e instantanea calculada de minerales.
+* **`Entities/MealItem.cs`**: Representa la ingesta de un item en una comida con su instantanea calculada de minerales. Incluye metodos de fabricacion `FromFoodItem(food, grams)` y `FromRecipe(recipe, servingsConsumed)` que escalan el aporte nutricional de forma exacta.
 * **`Entities/Meal.cs`**: Raiz de agregado (Aggregate Root) que agrupa los alimentos consumidos y calcula la sumatoria consolidada de minerales con `CalculateTotalMinerals()`.
 * **`Entities/Recipe.cs`**: Raiz de agregado para recetas culinarias con ingredientes dosificados, pasos numerados, porciones, imagen final y calculo nutricional por porcion.
 * **`Entities/RecipeIngredient.cs`**: Ingrediente dosificado con calculo de calorias y minerales.
@@ -56,7 +57,7 @@ Orquesta los casos de uso del sistema:
 * **`DTOs/`**: `FoodItemDto.cs`, `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion), `RecipeIngredientDto.cs`, `RecipeStepDto.cs`.
 * **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol.
 * **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales.
-* **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales.
+* **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales. Soporta registro combinado de alimentos y recetas (`RecordMealWithMixedItemsAsync`) y registro rapido de recetas consumidas (`RecordRecipeInMealAsync`).
 * **`Services/RecipeService.cs`**: Casos de uso de creacion, consulta y busqueda de recetas culinarias.
 
 ---
@@ -89,10 +90,10 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida.
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador, tarjeta con imagen final y subtitulo nutricional por porcion.
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
-    4. **Registrar Comida** (`AddMealPage`): Registro de comidas con alimentos del catalogo y gramaje consumido.
+    4. **Registrar Comida** (`AddMealPage`): Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones).
     5. **Nuevo Alimento** (`AddFoodPage`): Formulario para ingresar alimentos adicionales al catalogo SQLite.
   * Rutas registradas:
-    * `RecipeDetailPage`: Detalle de receta con imagen final, ingredientes y pasos numerados con imagenes.
+    * `RecipeDetailPage`: Detalle de receta con imagen final, ingredientes, pasos numerados con imagenes y modulo interactivo para registrar el consumo de porciones directamente en la ingesta diaria del usuario.
     * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
   * Registra `DietAppDbContext` y conecta los repositorios SQLite en el contenedor IoC.

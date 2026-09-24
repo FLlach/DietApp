@@ -22,6 +22,6 @@ public partial class AddMealPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadAvailableFoodsAsync();
+        await _viewModel.LoadAvailableFoodsAndRecipesAsync();
     }
 }
