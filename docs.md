@@ -1,9 +1,13 @@
 # Documentacion Tecnica - DietApp
 
 ## 1. Descripcion General
-DietApp es una aplicacion movil y de escritorio construida con **C# y .NET MAUI** orientada al registro, control y seguimiento de la ingesta de alimentos con un enfoque especializado en el contenido de **minerales** (fosforo, potasio, sodio, calcio, magnesio, hierro y zinc). 
+DietApp es una aplicacion movil y de escritorio construida con **C# y .NET MAUI** orientada al registro, control y seguimiento de la ingesta de alimentos con un enfoque especializado en el contenido de **minerales** (fosforo, potasio, sodio, calcio, magnesio, hierro y zinc) y valor calorico (kcal).
 
-Permite filtrar alimentos de forma avanzada por umbrales maximos y minimos de minerales (de especial utilidad en dietas renales, cardiovasculares o deportivas) y calcular el aporte acumulado de compuestos por cada comida y a nivel diario.
+Permite:
+* Filtrar alimentos de forma avanzada por umbrales maximos y minimos de minerales (de especial utilidad en dietas renales, cardiovasculares o deportivas).
+* Calcular el aporte acumulado de compuestos por cada comida y a nivel diario.
+* **Modulo de Recetas Nutricionales**: Crear y consultar preparaciones culinarias con titulo, imagen final de la receta terminada, subtitulo automatico de minerales y calorias por porcion calculado con base en los ingredientes, e instrucciones en pasos numerados con opcion de adjuntar imagenes en cada etapa.
+* **Persistencia Relacional en SQLite**: Almacenamiento local de alto rendimiento con indices B-Tree en columnas de minerales y precarga de 363 alimentos de la base oficial USDA FoodData Central Foundation Foods normalizados a gramos.
 
 ---
 
@@ -15,13 +19,13 @@ DietApp.slnx
 ├── src/
 │   ├── DietApp.Domain/          # Nucleo puro de negocio (sin dependencias externas)
 │   ├── DietApp.Application/     # Casos de uso, DTOs, mapeos e interfaces de servicio
-│   ├── DietApp.Infrastructure/  # Persistencia de datos y catalogo semilla de minerales
+│   ├── DietApp.Infrastructure/  # Persistencia SQLite, modelos relacionales y FoodData Central
 │   └── DietApp.UI/              # Vistas XAML, ViewModels (MVVM) y configuracion MAUI
 ```
 
 ### Reglas de Diseno Aplicadas:
 * **Bajo acoplamiento y alta cohesion**: La capa de dominio no depende de bases de datos ni de frameworks visuales.
-* **Inversion de dependencias**: La aplicacion y la UI se comunican mediante abstracciones e interfaces (`IFoodRepository`, `IMealRepository`, `IFoodCatalogService`, `IMealTrackingService`).
+* **Inversion de dependencias**: La aplicacion y la UI se comunican mediante abstracciones e interfaces (`IFoodRepository`, `IMealRepository`, `IRecipeRepository`, `IFoodCatalogService`, `IMealTrackingService`, `IRecipeService`).
 * **Sin cadenas magicas ni valores arbitrarios**: Se utilizan enumeraciones fuertemente tipadas y objetos de valor inmutables.
 * **Sin emojis**: Todo el codigo, comentarios y documentacion mantienen estilo profesional formal.
 
@@ -32,74 +36,66 @@ DietApp.slnx
 ### 3.1. Capa de Dominio (`DietApp.Domain`)
 Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 
-* **`Enums/MineralType.cs`**:
-  * *Como funciona*: Catalogo fuertemente tipado de minerales cuantificables (`Phosphorus`, `Potassium`, `Sodium`, `Calcium`, `Magnesium`, `Iron`, `Zinc`).
-  * *Por que se tomo esta decision*: Previene errores por cadenas magicas, acelera las comparaciones numericas y unifica el filtrado.
-* **`Enums/MealType.cs`**:
-  * *Como funciona*: Define los momentos de ingesta (`Breakfast`, `Lunch`, `Dinner`, `Snack`, `Other`).
-  * *Por que se tomo esta decision*: Permite clasificar y segmentar los totales de minerales a lo largo del dia.
-* **`ValueObjects/MineralAmount.cs`**:
-  * *Como funciona*: Objeto de valor inmutable que encapsula el tipo de mineral y su cantidad en miligramos (mg).
-  * *Por que se tomo esta decision*: En DDD, cantidades con unidad de medida son objetos de valor; garantizan que no existan valores negativos y proveen operaciones de escalado proporcional.
-* **`Entities/FoodItem.cs`**:
-  * *Como funciona*: Entidad que representa un alimento en el catalogo con su perfil de minerales por porcion de referencia (por ejemplo 100g). Provee el metodo `CalculateMineralsForPortion(grams)`.
-  * *Por que se tomo esta decision*: Aísla la definicion base del alimento para que cualquier porcion consumida mantenga una escala exacta.
-* **`Entities/MealItem.cs`**:
-  * *Como funciona*: Representa la ingesta de un alimento en una comida especifica con su gramaje real. Almacena una instantanea de los minerales calculados.
-  * *Por que se tomo esta decision*: Evita que modificaciones futuras en el catalogo alteren registros historicos de dias pasados.
-* **`Entities/Meal.cs`**:
-  * *Como funciona*: Raiz de agregado (Aggregate Root) que agrupa los alimentos ingeridos en una fecha y calcula la sumatoria consolidada de minerales con `CalculateTotalMinerals()`.
-  * *Por que se tomo esta decision*: Garantiza la consistencia interna y la exactitud del conteo de compuestos.
-* **`Services/DailyMineralAggregatorService.cs`**:
-  * *Como funciona*: Servicio de dominio que consolida la suma total de minerales entre multiples comidas correspondientes a un mismo dia o periodo.
-  * *Por que se tomo esta decision*: Las operaciones que cruzan multiples agregados residen en servicios de dominio para evitar acoplar entidades entre si.
-* **`Repositories/IFoodRepository.cs` e `IMealRepository.cs`**:
-  * *Como funciona*: Contratos de persistencia para el catalogo de alimentos y el historial de comidas.
+* **`Enums/MineralType.cs`**: Catalogo fuertemente tipado de minerales cuantificables (`Phosphorus`, `Potassium`, `Sodium`, `Calcium`, `Magnesium`, `Iron`, `Zinc`).
+* **`Enums/MealType.cs`**: Momentos de ingesta (`Breakfast`, `Lunch`, `Dinner`, `Snack`, `Other`).
+* **`ValueObjects/MineralAmount.cs`**: Objeto de valor inmutable que encapsula el tipo de mineral y su cantidad en miligramos (mg).
+* **`Entities/FoodItem.cs`**: Entidad que representa un alimento en el catalogo con su perfil de minerales y calorias por porcion base normalizada de 100 gramos.
+* **`Entities/MealItem.cs`**: Representa la ingesta de un alimento en una comida con su gramaje real e instantanea calculada de minerales.
+* **`Entities/Meal.cs`**: Raiz de agregado (Aggregate Root) que agrupa los alimentos consumidos y calcula la sumatoria consolidada de minerales con `CalculateTotalMinerals()`.
+* **`Entities/Recipe.cs`**: Raiz de agregado para recetas culinarias con ingredientes dosificados, pasos numerados, porciones, imagen final y calculo nutricional por porcion.
+* **`Entities/RecipeIngredient.cs`**: Ingrediente dosificado con calculo de calorias y minerales.
+* **`Entities/RecipeStep.cs`**: Paso numerado con instruccion e imagen ilustrativa de la etapa.
+* **`Services/DailyMineralAggregatorService.cs`**: Servicio de dominio que consolida la suma total de minerales entre multiples comidas del dia.
+* **`Repositories/`**: Contratos `IFoodRepository.cs`, `IMealRepository.cs` e `IRecipeRepository.cs`.
 
 ---
 
 ### 3.2. Capa de Aplicacion (`DietApp.Application`)
 Orquesta los casos de uso del sistema:
 
-* **`DTOs/`**:
-  * `FoodItemDto.cs`, `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`.
-  * Desacoplan los modelos internos del dominio de los formatos requeridos por la interfaz visual.
-* **`Mapping/DomainDtoMapper.cs`**:
-  * *Como funciona*: Metodos de extension puros para traducir entidades a DTOs y formatear nombres legibles de minerales en espanol.
-  * *Por que se tomo esta decision*: Centraliza la localizacion y el mapeo en un unico punto reutilizable.
-* **`Services/FoodCatalogService.cs`**:
-  * *Como funciona*: Implementa la consulta, busqueda y filtrado de alimentos por rango de concentracion de minerales (ej. alimentos con potasio entre 200mg y 400mg).
-* **`Services/MealTrackingService.cs`**:
-  * *Como funciona*: Permite registrar comidas completas, calcular minerales proporcionales segun los gramos ingeridos y consultar el balance total del dia.
+* **`DTOs/`**: `FoodItemDto.cs`, `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion), `RecipeIngredientDto.cs`, `RecipeStepDto.cs`.
+* **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol.
+* **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales.
+* **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales.
+* **`Services/RecipeService.cs`**: Casos de uso de creacion, consulta y busqueda de recetas culinarias.
 
 ---
 
 ### 3.3. Capa de Infraestructura (`DietApp.Infrastructure`)
-Provee las implementaciones de acceso a datos:
+Implementa el acceso a datos mediante **SQLite**:
 
-* **`SeedData/InitialFoodCatalogSeed.cs`**:
-  * *Como funciona*: Carga un catalogo inicial con alimentos reales y sus valores de minerales (Platano, Espinaca, Salmon, Pechuga de pollo, Lentejas, Queso parmesano, Papa).
-  * *Por que se tomo esta decision*: Permite poner en marcha y probar la aplicacion de inmediato con datos de prueba realistas.
-* **`Repositories/FoodRepository.cs` e `MealRepository.cs`**:
-  * *Como funciona*: Implementaciones concurrentes con control de concurrencia mediante `SemaphoreSlim`.
-  * *Por que se tomo esta decision*: Ofrece ejecucion rapida y consistente en todas las plataformas soportadas sin riesgo de incompatibilidades de drivers nativos durante el desarrollo inicial.
+* **`Data/DietAppDbContext.cs`**: Administrador de la conexion SQLite asincrona (`SQLiteAsyncConnection`), responsable de la creacion de tablas relacionales indexadas y de la inicializacion automatica de datos.
+* **`Data/FoodDataCentralImporter.cs`**: Lector de alto rendimiento basado en `System.Text.Json.JsonDocument` que procesa el dataset oficial de USDA FoodData Central Foundation Foods (`FoodData_Central_foundation_food_json_2026-04-30.json`).
+  * Normaliza la base de nutrientes y minerales a 100 gramos de referencia.
+  * Extrae las porciones caseras (tazas, cucharadas, rebanadas) y las normaliza a su peso exacto en gramos (`gramWeight`).
+  * Inserta 363 alimentos y 383 porciones en una sola transaccion atomica.
+* **`Data/Models/`**:
+  * `FoodEntity.cs`: Tabla relacional con indices en `PhosphorusMg`, `PotassiumMg` y `SodiumMg`.
+  * `FoodPortionEntity.cs`: Tabla de porciones caseras normalizadas a gramos.
+  * `MealEntity.cs` y `MealItemEntity.cs`: Tablas de comidas e items con instantanea JSON.
+  * `RecipeEntity.cs`, `RecipeIngredientEntity.cs` y `RecipeStepEntity.cs`: Tablas relacionales para recetas.
+* **`Repositories/`**:
+  * `SqliteFoodRepository.cs`: Consultas SQL optimizadas por indices B-Tree.
+  * `SqliteMealRepository.cs`: Transacciones de comidas e items consumidos.
+  * `SqliteRecipeRepository.cs`: Persistencia relacional de recetas, ingredientes y pasos.
 
 ---
 
 ### 3.4. Capa de Presentacion (`DietApp.UI`)
-Construida con .NET MAUI siguiendo el patron **MVVM (Model-View-ViewModel)** mediante **CommunityToolkit.Mvvm**:
+Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 
 * **Navegacion (`AppShell.xaml`)**:
-  * Pestanas nativas (`TabBar`) que conectan las cuatro pantallas principales:
-    1. **Conteo Diario** (`MealTrackingPage`): Visualiza los minerales totales del dia y el desglose por comida con opciones para eliminar registros.
-    2. **Catalogo y Filtro** (`FoodCatalogPage`): Permite buscar por texto y filtrar alimentos por concentracion minima y maxima de un mineral especifico.
-    3. **Registrar Comida** (`AddMealPage`): Permite armar una comida seleccionando alimentos y especificando gramos consumidos.
-    4. **Nuevo Alimento** (`AddFoodPage`): Formulario para dar de alta alimentos ingresando sus valores nutricionales de fosforo, potasio, sodio, calcio, magnesio, hierro y zinc.
-* **ViewModels**:
-  * `FoodCatalogViewModel.cs`, `MealTrackingViewModel.cs`, `AddFoodViewModel.cs`, `AddMealViewModel.cs`.
-  * Utilizan propiedades observables parciales compatibles con AOT/WinRT y comandos fuertemente tipados (`[RelayCommand]`).
+  * Pestanas en `TabBar`:
+    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida.
+    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador, tarjeta con imagen final y subtitulo nutricional por porcion.
+    3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
+    4. **Registrar Comida** (`AddMealPage`): Registro de comidas con alimentos del catalogo y gramaje consumido.
+    5. **Nuevo Alimento** (`AddFoodPage`): Formulario para ingresar alimentos adicionales al catalogo SQLite.
+  * Rutas registradas:
+    * `RecipeDetailPage`: Detalle de receta con imagen final, ingredientes y pasos numerados con imagenes.
+    * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
-  * Centraliza el registro de todas las dependencias en el contenedor de servicios de .NET.
+  * Registra `DietAppDbContext` y conecta los repositorios SQLite en el contenedor IoC.
 
 ---
 
@@ -116,4 +112,3 @@ dotnet build -t:Run -f net10.0-windows10.0.19041.0 src/DietApp.UI/DietApp.UI.csp
 2. Seleccionar como proyecto de inicio `DietApp.UI`.
 3. Seleccionar el emulador de Android o un dispositivo fisico conectado en la barra superior.
 4. Presionar `F5` para iniciar la depuracion.
- 

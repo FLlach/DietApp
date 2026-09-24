@@ -1,6 +1,7 @@
 using DietApp.Application.Services;
 using DietApp.Domain.Repositories;
 using DietApp.Domain.Services;
+using DietApp.Infrastructure.Data;
 using DietApp.Infrastructure.Repositories;
 using DietApp.UI.ViewModels;
 using DietApp.UI.Views;
@@ -10,10 +11,10 @@ namespace DietApp.UI;
 
 /// <summary>
 /// Como funciona: Punto de entrada y configuracion de la aplicacion .NET MAUI.
-/// Registra los servicios de dominio, infraestructura, aplicacion, viewmodels y vistas
-/// en el contenedor de inyeccion de dependencias (IoC / DI container).
+/// Inicializa la base de datos relacional SQLite con importacion automatica de los alimentos
+/// de USDA FoodData Central y registra los repositorios SQLite en el contenedor de dependencias.
 /// Por que se tomo esta decision: Permite la inversion de control garantizando bajo acoplamiento
-/// entre capas y facilitando la sustitucion de repositorios o servicios sin modificar la interfaz.
+/// entre capas y sustituyendo los repositorios en memoria por persistencia SQLite nativa.
 /// </summary>
 public static class MauiProgram
 {
@@ -28,13 +29,36 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        // Configuracion de Base de Datos SQLite
+        string databasePath = Path.Combine(FileSystem.AppDataDirectory, "dietapp.db3");
+        var dbContext = new DietAppDbContext(databasePath);
+
+        // Inicializacion asincrona de SQLite con el asset empaquetado de FoodData Central
+        Task.Run(async () =>
+        {
+            await dbContext.InitializeAsync(
+                assetStreamProvider: async () =>
+                {
+                    try
+                    {
+                        return await FileSystem.OpenAppPackageFileAsync("fooddata_central_foundation.json");
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                });
+        });
+
+        builder.Services.AddSingleton(dbContext);
+
         // Capa de Dominio - Servicios de Dominio
         builder.Services.AddSingleton<DailyMineralAggregatorService>();
 
-        // Capa de Infraestructura - Repositorios (Singleton para conservar el estado durante la sesion)
-        builder.Services.AddSingleton<IFoodRepository, FoodRepository>();
-        builder.Services.AddSingleton<IMealRepository, MealRepository>();
-        builder.Services.AddSingleton<IRecipeRepository, RecipeRepository>();
+        // Capa de Infraestructura - Repositorios SQLite
+        builder.Services.AddSingleton<IFoodRepository, SqliteFoodRepository>();
+        builder.Services.AddSingleton<IMealRepository, SqliteMealRepository>();
+        builder.Services.AddSingleton<IRecipeRepository, SqliteRecipeRepository>();
 
         // Capa de Aplicacion - Casos de Uso y Servicios
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();

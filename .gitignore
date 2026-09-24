@@ -28,6 +28,11 @@ bld/
 *.sublime-project
 *.sublime-workspace
 
+## SQLite temporary files
+*.db-shm
+*.db-wal
+*.db-journal
+
 ## OS generated files
 .DS_Store
 Thumbs.db
