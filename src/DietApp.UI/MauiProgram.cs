@@ -66,6 +66,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<ILanguagePreferenceStorage, MauiPreferencesLanguageStorage>();
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 
+        // Alertas y Limites de Minerales
+        builder.Services.AddSingleton<IMineralAlertStorage, MauiPreferencesMineralAlertStorage>();
+        builder.Services.AddSingleton<IMineralAlertService, MineralAlertService>();
+
         // Capa de Aplicacion - Casos de Uso y Servicios
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();
         builder.Services.AddTransient<IMealTrackingService, MealTrackingService>();

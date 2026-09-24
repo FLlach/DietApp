@@ -294,6 +294,14 @@ public class LocalizationService : ILocalizationService
         ["Settings_Spanish"] = "Espanol",
         ["Settings_English"] = "Ingles (English)",
         ["Settings_CurrentLanguageNotice"] = "El idioma se guarda y aplica inmediatamente en toda la aplicacion.",
+        ["Settings_MineralAlertsTitle"] = "Alertas de Limite Maximo de Minerales",
+        ["Settings_MineralAlertsSubtitle"] = "Fija la cantidad maxima diaria (en mg) para recibir advertencias al registrar o revisar tu consumo:",
+        ["Settings_MineralAlertsSave"] = "Guardar Limites de Alerta",
+        ["Settings_MineralAlertsReset"] = "Restablecer Todos los Limites",
+        ["Settings_MineralAlertsSavedNotice"] = "Limites de alerta actualizados y activados correctamente.",
+        ["Settings_MineralAlertsClearedNotice"] = "Se han desactivado todos los limites de alerta.",
+        ["DailyTracking_AlertsTitle"] = "Advertencia: Limites de Minerales Superados",
+        ["DailyTracking_AlertsSubtitle"] = "Has superado el umbral diario maximo fijado en los siguientes minerales:",
         ["Settings_AboutTitle"] = "Acerca de DietApp",
         ["Settings_AboutDescription"] = "Aplicacion especializada en control de minerales y recetas con persistencia SQLite y .NET MAUI."
     };
@@ -442,6 +450,14 @@ public class LocalizationService : ILocalizationService
         ["Settings_Spanish"] = "Spanish",
         ["Settings_English"] = "English",
         ["Settings_CurrentLanguageNotice"] = "The selected language is saved and applied immediately across the entire application.",
+        ["Settings_MineralAlertsTitle"] = "Maximum Mineral Limit Alerts",
+        ["Settings_MineralAlertsSubtitle"] = "Set the maximum daily amount (in mg) to receive warnings when logging or reviewing your intake:",
+        ["Settings_MineralAlertsSave"] = "Save Alert Limits",
+        ["Settings_MineralAlertsReset"] = "Reset All Limits",
+        ["Settings_MineralAlertsSavedNotice"] = "Alert limits updated and activated successfully.",
+        ["Settings_MineralAlertsClearedNotice"] = "All alert limits have been deactivated.",
+        ["DailyTracking_AlertsTitle"] = "Warning: Mineral Limits Exceeded",
+        ["DailyTracking_AlertsSubtitle"] = "You have exceeded your target daily maximum for the following minerals:",
         ["Settings_AboutTitle"] = "About DietApp",
         ["Settings_AboutDescription"] = "Specialized application for mineral tracking and recipes with SQLite and .NET MAUI persistence."
     };

@@ -1,19 +1,22 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DietApp.Application.Services;
+using DietApp.Domain.Enums;
+using DietApp.UI.Models;
 
 namespace DietApp.UI.ViewModels;
 
 /// <summary>
-/// Como funciona: ViewModel para la pantalla de configuracion y seleccion de idioma.
-/// Permite conmutar interactivamente entre Espanol e Ingles, actualizando el servicio de localizacion
-/// e informando el estado resultante a la interfaz de usuario.
-/// Por que se tomo esta decision: Separa la logica de seleccion de idioma de la vista de configuracion,
-/// garantizando que la preferencia se guarde permanentemente y se propague reactivamente a toda la aplicacion.
+/// Como funciona: ViewModel para la pantalla de configuracion general. Administra tanto la seleccion de idioma
+/// como la configuracion de alertas y limites maximos de minerales diarios fijados por el usuario.
+/// Por que se tomo esta decision: En el patron MVVM, centraliza las preferencias de la aplicacion
+/// garantizando que las modificaciones se guarden inmediatamente y se propaguen a las demas pantallas.
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly ILocalizationService _localizationService;
+    private readonly IMineralAlertService _mineralAlertService;
 
     [ObservableProperty]
     public partial bool IsSpanishSelected { get; set; }
@@ -24,15 +27,28 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial string StatusMessage { get; set; } = string.Empty;
 
-    public SettingsViewModel(ILocalizationService localizationService)
+    [ObservableProperty]
+    public partial string AlertsStatusMessage { get; set; } = string.Empty;
+
+    public ObservableCollection<MineralAlertConfigModel> MineralAlerts { get; } = new();
+
+    public SettingsViewModel(
+        ILocalizationService localizationService,
+        IMineralAlertService mineralAlertService)
     {
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
-        UpdateSelectionState();
+        _mineralAlertService = mineralAlertService ?? throw new ArgumentNullException(nameof(mineralAlertService));
 
-        _localizationService.LanguageChanged += (s, e) =>
-        {
-            UpdateSelectionState();
-        };
+        UpdateSelectionState();
+        InitializeMineralAlerts();
+
+        _localizationService.LanguageChanged += OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        UpdateSelectionState();
+        UpdateMineralAlertNames();
     }
 
     private void UpdateSelectionState()
@@ -40,6 +56,34 @@ public partial class SettingsViewModel : ObservableObject
         var lang = _localizationService.CurrentLanguage;
         IsSpanishSelected = lang == "es";
         IsEnglishSelected = lang == "en";
+    }
+
+    private void InitializeMineralAlerts()
+    {
+        MineralAlerts.Clear();
+        var existingThresholds = _mineralAlertService.GetThresholds();
+
+        foreach (MineralType mineral in Enum.GetValues<MineralType>())
+        {
+            bool hasThreshold = existingThresholds.TryGetValue(mineral, out var maxVal) && maxVal > 0;
+
+            MineralAlerts.Add(new MineralAlertConfigModel
+            {
+                Mineral = mineral,
+                MineralName = _localizationService.GetMineralName(mineral),
+                IsEnabled = hasThreshold,
+                ThresholdText = hasThreshold ? maxVal.ToString("F0") : string.Empty,
+                Unit = "mg"
+            });
+        }
+    }
+
+    private void UpdateMineralAlertNames()
+    {
+        foreach (var item in MineralAlerts)
+        {
+            item.MineralName = _localizationService.GetMineralName(item.Mineral);
+        }
     }
 
     [RelayCommand]
@@ -56,5 +100,31 @@ public partial class SettingsViewModel : ObservableObject
         _localizationService.SetLanguage("en");
         UpdateSelectionState();
         StatusMessage = _localizationService.GetString("Settings_CurrentLanguageNotice");
+    }
+
+    [RelayCommand]
+    public void SaveAlerts()
+    {
+        var dict = new Dictionary<MineralType, double?>();
+        foreach (var alert in MineralAlerts)
+        {
+            dict[alert.Mineral] = alert.GetValidThreshold();
+        }
+
+        _mineralAlertService.SaveThresholds(dict);
+        AlertsStatusMessage = _localizationService.GetString("Settings_MineralAlertsSavedNotice");
+    }
+
+    [RelayCommand]
+    public void ResetAlerts()
+    {
+        foreach (var alert in MineralAlerts)
+        {
+            alert.IsEnabled = false;
+            alert.ThresholdText = string.Empty;
+        }
+
+        _mineralAlertService.SaveThresholds(new Dictionary<MineralType, double?>());
+        AlertsStatusMessage = _localizationService.GetString("Settings_MineralAlertsClearedNotice");
     }
 }

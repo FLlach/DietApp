@@ -87,17 +87,17 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 
 * **Navegacion (`AppShell.xaml`)**:
   * Pestanas en `TabBar`:
-    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida formateado por tipo y fecha limpia (sin marcas horarias vacias 00:00).
+    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, banner reactivo de advertencias si se superan los limites maximos fijados por el usuario y detalle por comida formateado por tipo y fecha limpia.
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion.
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
     4. **Registrar Comida** (`AddMealPage`): Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones).
     5. **Nuevo Alimento** (`AddFoodPage`): Formulario para ingresar alimentos adicionales al catalogo SQLite.
-    6. **Ajustes** (`SettingsPage`): Selector interactivo para alternar el idioma de la aplicacion entre Espanol e Ingles.
+    6. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles) y configuracion personalizada de limites maximos diarios de minerales con activacion de alertas.
   * Rutas registradas:
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
-  * Registra `DietAppDbContext`, conecta los repositorios SQLite y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) en el contenedor IoC.
+  * Registra `DietAppDbContext`, conecta los repositorios SQLite y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) y alertas de minerales (`IMineralAlertStorage`, `IMineralAlertService`) en el contenedor IoC.
 
 ---
 
@@ -126,7 +126,7 @@ Todas las vistas de la aplicacion implementan traduccion instantanea:
 6. `AddMealPage`: Selectores y listas de alimentos y recetas.
 7. `AddFoodPage`: Formulario de alimentos y nombres de minerales.
 8. `AddRecipePage`: Formularios, listas de pasos e ingredientes.
-9. `SettingsPage`: Tarjetas para alternar entre Espanol e Ingles con persistencia automatica.
+9. `SettingsPage`: Tarjetas para alternar entre Espanol e Ingles y configurar limites maximos de minerales.
 
 ---
 
@@ -146,7 +146,29 @@ La aplicacion permite al usuario ordenar tanto el recetario como los ingrediente
 
 ---
 
-## 6. Instrucciones de Compilacion y Ejecucion
+## 6. Sistema de Alertas y Limites Maximos de Minerales
+
+La aplicacion permite al usuario definir limites maximos diarios para controlar la ingesta de compuestos especificos (e.g. restringir sodio en dietas hipertensas o controlar fosforo y potasio en pacientes renales):
+
+### 6.1. Configuracion en Ajustes (`SettingsPage` / `SettingsViewModel`)
+* Lista interactiva de los 7 minerales cuantificables (`MineralAlertConfigModel`).
+* Cada mineral cuenta con un campo numerico para ingresar el limite maximo en miligramos (`ThresholdText`) y un conmutador (`IsEnabled`) para activar o desactivar la alerta de forma independiente.
+* Botones para guardar los limites de forma persistente o restablecerlos a cero.
+
+### 6.2. Persistencia y Evaluacion en Capa de Aplicacion
+* **`IMineralAlertStorage`**: Contrato desacoplado en `DietApp.Application.Services` para guardar y recuperar la coleccion de umbrales.
+* **`MauiPreferencesMineralAlertStorage`**: Implementacion nativa en `DietApp.UI.Services` que serializa los umbrales en JSON mediante `Microsoft.Maui.Storage.Preferences`.
+* **`IMineralAlertService` / `MineralAlertService`**:
+  * Centraliza la logica para comparar los totales consumidos en el dia (`DailyMinerals`) contra los limites activos.
+  * Genera objetos `MineralAlertExceededDto` con la cantidad actual, el maximo permitido, el exceso y el mensaje preventivo localizado.
+
+### 6.3. Disparo Visual de Alertas (`MealTrackingPage` / `MealTrackingViewModel`)
+* Al consultar cualquier fecha en el seguimiento diario, se evaluan los totales acumulados.
+* Si uno o varios minerales superan el umbral maximo configurado por el usuario, se despliega un banner de advertencia destacado en color rojo/coral con el desglose exacto del exceso por mineral.
+
+---
+
+## 7. Instrucciones de Compilacion y Ejecucion
 
 ### Ejecucion en Windows (Modo Rapido):
 Para compilar y ejecutar en Windows directamente desde la terminal:

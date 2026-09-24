@@ -42,6 +42,49 @@
                 </Grid>
             </Border>
 
+            <!-- Banner de Alertas por Limites de Minerales Superados -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="14"
+                    IsVisible="{Binding HasExceededAlerts}"
+                    Stroke="#E74C3C"
+                    StrokeThickness="1.5"
+                    Background="{AppThemeBinding Light=#FDEDEC, Dark=#3E1B1B}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{loc:Translate DailyTracking_AlertsTitle}"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="#C0392B" />
+
+                    <Label Text="{loc:Translate DailyTracking_AlertsSubtitle}"
+                           FontSize="12"
+                           TextColor="#78281F" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding ExceededAlerts}"
+                                         Spacing="6">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:MineralAlertExceededDto">
+                                <Border StrokeShape="RoundRectangle 8"
+                                        Padding="10, 6"
+                                        Background="{AppThemeBinding Light=#FADBD8, Dark=#5B2C2C}">
+                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                        <Label Text="!"
+                                               FontAttributes="Bold"
+                                               FontSize="14"
+                                               TextColor="#C0392B"
+                                               VerticalOptions="Center" />
+                                        <Label Text="{Binding WarningMessage}"
+                                               FontAttributes="Bold"
+                                               FontSize="12"
+                                               TextColor="#922B21"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Resumen Total de Minerales del Dia -->
             <Border StrokeShape="RoundRectangle 12"
                     Padding="16"
