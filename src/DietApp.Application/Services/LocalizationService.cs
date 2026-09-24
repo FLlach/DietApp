@@ -182,6 +182,15 @@ public class LocalizationService : ILocalizationService
         ["Recipes_Empty"] = "No hay recetas registradas aun.",
         ["Recipes_EmptyAction"] = "Crear la primera receta",
         ["Recipes_ViewSteps"] = "Ver Pasos e Ingredientes",
+        ["Recipes_SortTitle"] = "Ordenar recetas por aporte mineral:",
+
+        // Ordenamiento por Minerales
+        ["Sort_ByMineral"] = "Ordenar por mineral:",
+        ["Sort_Direction"] = "Direccion:",
+        ["Sort_Default"] = "Por defecto (original)",
+        ["Sort_Descending"] = "Mayor a menor",
+        ["Sort_Ascending"] = "Menor a mayor",
+        ["RecipeDetail_SortIngredients"] = "Ordenar ingredientes por mineral:",
 
         // Pantalla Detalle de Receta
         ["RecipeDetail_Title"] = "Detalle de la Receta",
@@ -321,6 +330,15 @@ public class LocalizationService : ILocalizationService
         ["Recipes_Empty"] = "No recipes recorded yet.",
         ["Recipes_EmptyAction"] = "Create the first recipe",
         ["Recipes_ViewSteps"] = "View Steps & Ingredients",
+        ["Recipes_SortTitle"] = "Sort recipes by mineral amount:",
+
+        // Sorting by Minerals
+        ["Sort_ByMineral"] = "Sort by mineral:",
+        ["Sort_Direction"] = "Direction:",
+        ["Sort_Default"] = "Default (original)",
+        ["Sort_Descending"] = "Highest to lowest",
+        ["Sort_Ascending"] = "Lowest to highest",
+        ["RecipeDetail_SortIngredients"] = "Sort ingredients by mineral:",
 
         // Recipe Detail Screen
         ["RecipeDetail_Title"] = "Recipe Details",

@@ -41,6 +41,39 @@
                 <SearchBar Placeholder="{loc:Translate Recipes_SearchPlaceholder}"
                            Text="{Binding SearchText}"
                            SearchCommand="{Binding SearchRecipesCommand}" />
+
+                <!-- Controles de Ordenamiento por Mineral -->
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0, 4, 0, 0">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="{loc:Translate Sort_ByMineral}"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="Gray" />
+                        <Border StrokeShape="RoundRectangle 8"
+                                Padding="4, 0"
+                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#2C3E50}">
+                            <Picker ItemsSource="{Binding MineralOptions}"
+                                    ItemDisplayBinding="{Binding DisplayName}"
+                                    SelectedItem="{Binding SelectedMineralOption}"
+                                    FontSize="12" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                        <Label Text="{loc:Translate Sort_Direction}"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="Gray" />
+                        <Border StrokeShape="RoundRectangle 8"
+                                Padding="4, 0"
+                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#2C3E50}">
+                            <Picker ItemsSource="{Binding DirectionOptions}"
+                                    ItemDisplayBinding="{Binding DisplayName}"
+                                    SelectedItem="{Binding SelectedDirectionOption}"
+                                    FontSize="12" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
             </VerticalStackLayout>
         </Border>
 

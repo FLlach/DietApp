@@ -1,6 +1,7 @@
 using DietApp.Application.DTOs;
 using DietApp.Application.Mapping;
 using DietApp.Domain.Entities;
+using DietApp.Domain.Enums;
 using DietApp.Domain.Repositories;
 
 namespace DietApp.Application.Services;
@@ -42,6 +43,14 @@ public class RecipeService : IRecipeService
     {
         var recipes = await _recipeRepository.SearchByTitleAsync(query);
         return recipes.Select(recipe => recipe.ToDto()).ToList();
+    }
+
+    public async Task<IReadOnlyList<RecipeDto>> GetRecipesSortedByMineralAsync(MineralType mineral, bool descending = true)
+    {
+        var recipes = await GetAllRecipesAsync();
+        return descending
+            ? recipes.OrderByDescending(r => r.GetMineralAmountPerServing(mineral)).ThenBy(r => r.Title).ToList()
+            : recipes.OrderBy(r => r.GetMineralAmountPerServing(mineral)).ThenBy(r => r.Title).ToList();
     }
 
     public async Task<RecipeDto> CreateRecipeAsync(

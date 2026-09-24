@@ -142,4 +142,21 @@ public class Recipe
 
         return perServing;
     }
+
+    /// <summary>
+    /// Como funciona: Consulta la cantidad en miligramos de un mineral especifico por porcion individual.
+    /// Por que se tomo esta decision: Permite ordenar y comparar recetas por contenido mineral en el dominio.
+    /// </summary>
+    public double GetMineralAmountPerServing(MineralType mineralType)
+    {
+        var minerals = CalculateMineralsPerServing();
+        foreach (var mineral in minerals)
+        {
+            if (mineral.Type == mineralType)
+            {
+                return mineral.Milligrams;
+            }
+        }
+        return 0.0;
+    }
 }

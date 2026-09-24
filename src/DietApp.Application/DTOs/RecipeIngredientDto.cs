@@ -1,3 +1,5 @@
+using DietApp.Domain.Enums;
+
 namespace DietApp.Application.DTOs;
 
 /// <summary>
@@ -26,5 +28,15 @@ public class RecipeIngredientDto
                 .Select(m => $"{m.MineralName}: {m.Milligrams:F0}mg");
             return string.Join(", ", parts);
         }
+    }
+
+    /// <summary>
+    /// Como funciona: Retorna la cantidad en miligramos de un mineral especifico aportado por este ingrediente.
+    /// Por que se tomo esta decision: Facilita el ordenamiento de los ingredientes en la pantalla de detalle.
+    /// </summary>
+    public double GetMineralAmount(MineralType mineralType)
+    {
+        var item = CalculatedMinerals.FirstOrDefault(m => m.Type == mineralType);
+        return item?.Milligrams ?? 0.0;
     }
 }

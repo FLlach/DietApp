@@ -88,13 +88,13 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 * **Navegacion (`AppShell.xaml`)**:
   * Pestanas en `TabBar`:
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida formateado por tipo y fecha limpia (sin marcas horarias vacias 00:00).
-    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador, tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion.
+    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion.
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
     4. **Registrar Comida** (`AddMealPage`): Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones).
     5. **Nuevo Alimento** (`AddFoodPage`): Formulario para ingresar alimentos adicionales al catalogo SQLite.
     6. **Ajustes** (`SettingsPage`): Selector interactivo para alternar el idioma de la aplicacion entre Espanol e Ingles.
   * Rutas registradas:
-    * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, ingredientes con desglose individual de minerales, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
+    * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
   * Registra `DietAppDbContext`, conecta los repositorios SQLite y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) en el contenedor IoC.
@@ -120,8 +120,8 @@ La aplicacion soporta alternancia reactiva y dinamica entre **Espanol** e **Ingl
 Todas las vistas de la aplicacion implementan traduccion instantanea:
 1. `AppShell`: Pestanas de navegacion traducidas al vuelo.
 2. `MealTrackingPage`: Titulos, subtitulos, botones de navegacion de fechas y estados vacios.
-3. `RecipesPage`: Buscador, botones y textos descriptivos.
-4. `RecipeDetailPage`: Titulos, desglose de aportes, formulario de ingesta y pasos.
+3. `RecipesPage`: Buscador, controles de ordenamiento, botones y textos descriptivos.
+4. `RecipeDetailPage`: Titulos, desglose de aportes, controles de ordenamiento de ingredientes, formulario de ingesta y pasos.
 5. `FoodCatalogPage`: Filtros de minerales y tablas de resultados.
 6. `AddMealPage`: Selectores y listas de alimentos y recetas.
 7. `AddFoodPage`: Formulario de alimentos y nombres de minerales.
@@ -130,7 +130,23 @@ Todas las vistas de la aplicacion implementan traduccion instantanea:
 
 ---
 
-## 5. Instrucciones de Compilacion y Ejecucion
+## 5. Ordenamiento Nutricional por Minerales
+
+La aplicacion permite al usuario ordenar tanto el recetario como los ingredientes de cada plato segun cualquier mineral cuantificable:
+
+### 5.1. Ordenamiento de Recetas (`RecipesPage` / `RecipesViewModel`)
+* Permite seleccionar cualquier mineral soportado (`Phosphorus`, `Potassium`, `Sodium`, `Calcium`, `Magnesium`, `Iron`, `Zinc`) o volver al orden por defecto.
+* Soporta alternancia de direccion: **Mayor a menor** (descendente) o **Menor a mayor** (ascendente).
+* El ordenamiento evalua la cantidad en miligramos aportada por porcion (`MineralsPerServing`), combinandose de forma reactiva con el filtro de busqueda por texto.
+
+### 5.2. Ordenamiento de Ingredientes (`RecipeDetailPage` / `RecipeDetailViewModel`)
+* Permite analizar que ingredientes del plato aportan mayor o menor cantidad de un compuesto determinado.
+* El usuario selecciona el mineral de interes y el sentido de ordenamiento, actualizando la lista de ingredientes en tiempo real (`DisplayedIngredients`).
+* Cada ingrediente conserva su desglose completo de gramos, calorias y balance de minerales.
+
+---
+
+## 6. Instrucciones de Compilacion y Ejecucion
 
 ### Ejecucion en Windows (Modo Rapido):
 Para compilar y ejecutar en Windows directamente desde la terminal:

@@ -1,3 +1,5 @@
+using DietApp.Domain.Enums;
+
 namespace DietApp.Application.DTOs;
 
 /// <summary>
@@ -40,5 +42,15 @@ public class RecipeDto
 
             return $"Por porcion ({Servings} {(Servings == 1 ? "porcion" : "porciones")}): {CaloriesPerServing:F0} kcal | {mineralsSummary}";
         }
+    }
+
+    /// <summary>
+    /// Como funciona: Devuelve los miligramos del mineral consultado presentes en una porcion de la receta.
+    /// Por que se tomo esta decision: Permite a las vistas y servicios ordenar eficientemente las recetas.
+    /// </summary>
+    public double GetMineralAmountPerServing(MineralType mineralType)
+    {
+        var item = MineralsPerServing.FirstOrDefault(m => m.Type == mineralType);
+        return item?.Milligrams ?? 0.0;
     }
 }

@@ -4,21 +4,23 @@ using CommunityToolkit.Mvvm.Input;
 using DietApp.Application.DTOs;
 using DietApp.Application.Services;
 using DietApp.Domain.Enums;
+using DietApp.UI.Models;
 
 namespace DietApp.UI.ViewModels;
 
 /// <summary>
 /// Como funciona: ViewModel para la pantalla de detalle completo de una receta culinaria.
-/// Ademas de exponer la receta, los ingredientes y los pasos numerados, permite agregar directamente
-/// la receta consumida (o porciones de ella) a la ingesta diaria de alimentos en cualquier fecha y comida.
-/// Por que se tomo esta decision: Habilita un flujo de usuario directo y sin friccion: quien consulta una receta
-/// puede registrar de inmediato su consumo en el historial diario con un solo toque.
+/// Expone la receta, los pasos numerados, permite agregar las porciones consumidas a la ingesta diaria,
+/// y permite ordenar interactivamente los ingredientes de la receta segun la cantidad de un mineral elegido.
+/// Por que se tomo esta decision: Habilita tanto el registro inmediato de la comida como el analisis
+/// nutricional granular para identificar cuales ingredientes aportan mayor o menor cantidad de un compuesto.
 /// </summary>
 [QueryProperty(nameof(RecipeIdString), "RecipeId")]
 public partial class RecipeDetailViewModel : ObservableObject
 {
     private readonly IRecipeService _recipeService;
     private readonly IMealTrackingService _mealTrackingService;
+    private readonly ILocalizationService _localizationService;
 
     [ObservableProperty]
     public partial string RecipeIdString { get; set; } = string.Empty;
@@ -41,20 +43,92 @@ public partial class RecipeDetailViewModel : ObservableObject
     [ObservableProperty]
     public partial string IntakeMessage { get; set; } = string.Empty;
 
+    [ObservableProperty]
+    public partial MineralSortOption? SelectedIngredientMineralOption { get; set; }
+
+    [ObservableProperty]
+    public partial SortDirectionOption? SelectedIngredientDirectionOption { get; set; }
+
     public ObservableCollection<string> MealTypeOptions { get; } = new();
+    public ObservableCollection<MineralSortOption> IngredientMineralOptions { get; } = new();
+    public ObservableCollection<SortDirectionOption> IngredientDirectionOptions { get; } = new();
+    public ObservableCollection<RecipeIngredientDto> DisplayedIngredients { get; } = new();
 
     public RecipeDetailViewModel(
         IRecipeService recipeService,
-        IMealTrackingService mealTrackingService)
+        IMealTrackingService mealTrackingService,
+        ILocalizationService localizationService)
     {
         _recipeService = recipeService ?? throw new ArgumentNullException(nameof(recipeService));
         _mealTrackingService = mealTrackingService ?? throw new ArgumentNullException(nameof(mealTrackingService));
+        _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
 
-        MealTypeOptions.Add("Desayuno");
-        MealTypeOptions.Add("Almuerzo");
-        MealTypeOptions.Add("Cena");
-        MealTypeOptions.Add("Merienda / Colacion");
-        MealTypeOptions.Add("Otro");
+        InitializeOptions();
+        _localizationService.LanguageChanged += OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        InitializeOptions();
+        ApplyIngredientSort();
+    }
+
+    private void InitializeOptions()
+    {
+        // Momentos de comida localizados
+        MealTypeOptions.Clear();
+        MealTypeOptions.Add(_localizationService.GetMealTypeName(MealType.Breakfast));
+        MealTypeOptions.Add(_localizationService.GetMealTypeName(MealType.Lunch));
+        MealTypeOptions.Add(_localizationService.GetMealTypeName(MealType.Dinner));
+        MealTypeOptions.Add(_localizationService.GetMealTypeName(MealType.Snack));
+        MealTypeOptions.Add(_localizationService.GetMealTypeName(MealType.Other));
+
+        SelectedMealTypeName = MealTypeOptions.Count > 1 ? MealTypeOptions[1] : string.Empty;
+
+        // Opciones de ordenamiento para ingredientes
+        var previousMineral = SelectedIngredientMineralOption?.Mineral;
+        var previousDescending = SelectedIngredientDirectionOption?.IsDescending ?? true;
+
+        IngredientMineralOptions.Clear();
+        IngredientMineralOptions.Add(new MineralSortOption
+        {
+            Mineral = null,
+            DisplayName = _localizationService["Sort_Default"]
+        });
+
+        foreach (MineralType mineral in Enum.GetValues<MineralType>())
+        {
+            IngredientMineralOptions.Add(new MineralSortOption
+            {
+                Mineral = mineral,
+                DisplayName = _localizationService.GetMineralName(mineral)
+            });
+        }
+
+        IngredientDirectionOptions.Clear();
+        IngredientDirectionOptions.Add(new SortDirectionOption
+        {
+            IsDescending = true,
+            DisplayName = _localizationService["Sort_Descending"]
+        });
+        IngredientDirectionOptions.Add(new SortDirectionOption
+        {
+            IsDescending = false,
+            DisplayName = _localizationService["Sort_Ascending"]
+        });
+
+        SelectedIngredientMineralOption = IngredientMineralOptions.FirstOrDefault(o => o.Mineral == previousMineral) ?? IngredientMineralOptions[0];
+        SelectedIngredientDirectionOption = IngredientDirectionOptions.FirstOrDefault(d => d.IsDescending == previousDescending) ?? IngredientDirectionOptions[0];
+    }
+
+    partial void OnSelectedIngredientMineralOptionChanged(MineralSortOption? value)
+    {
+        ApplyIngredientSort();
+    }
+
+    partial void OnSelectedIngredientDirectionOptionChanged(SortDirectionOption? value)
+    {
+        ApplyIngredientSort();
     }
 
     [RelayCommand]
@@ -67,11 +141,37 @@ public partial class RecipeDetailViewModel : ObservableObject
                 IsBusy = true;
                 Recipe = await _recipeService.GetRecipeByIdAsync(id);
                 IntakeMessage = string.Empty;
+                ApplyIngredientSort();
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+    }
+
+    private void ApplyIngredientSort()
+    {
+        if (Recipe == null)
+        {
+            DisplayedIngredients.Clear();
+            return;
+        }
+
+        IEnumerable<RecipeIngredientDto> query = Recipe.Ingredients;
+
+        if (SelectedIngredientMineralOption?.Mineral is MineralType mineral)
+        {
+            bool isDescending = SelectedIngredientDirectionOption?.IsDescending ?? true;
+            query = isDescending
+                ? query.OrderByDescending(i => i.GetMineralAmount(mineral)).ThenBy(i => i.FoodName)
+                : query.OrderBy(i => i.GetMineralAmount(mineral)).ThenBy(i => i.FoodName);
+        }
+
+        DisplayedIngredients.Clear();
+        foreach (var ingredient in query)
+        {
+            DisplayedIngredients.Add(ingredient);
         }
     }
 
@@ -94,14 +194,27 @@ public partial class RecipeDetailViewModel : ObservableObject
         {
             IsBusy = true;
 
-            var mealType = SelectedMealTypeName switch
+            var mealType = MealType.Lunch;
+            if (SelectedMealTypeName == _localizationService.GetMealTypeName(MealType.Breakfast) || SelectedMealTypeName == "Desayuno" || SelectedMealTypeName == "Breakfast")
             {
-                "Desayuno" => MealType.Breakfast,
-                "Almuerzo" => MealType.Lunch,
-                "Cena" => MealType.Dinner,
-                "Merienda / Colacion" => MealType.Snack,
-                _ => MealType.Other
-            };
+                mealType = MealType.Breakfast;
+            }
+            else if (SelectedMealTypeName == _localizationService.GetMealTypeName(MealType.Lunch) || SelectedMealTypeName == "Almuerzo" || SelectedMealTypeName == "Lunch")
+            {
+                mealType = MealType.Lunch;
+            }
+            else if (SelectedMealTypeName == _localizationService.GetMealTypeName(MealType.Dinner) || SelectedMealTypeName == "Cena" || SelectedMealTypeName == "Dinner")
+            {
+                mealType = MealType.Dinner;
+            }
+            else if (SelectedMealTypeName == _localizationService.GetMealTypeName(MealType.Snack) || SelectedMealTypeName == "Merienda / Colacion" || SelectedMealTypeName == "Snack / Collation")
+            {
+                mealType = MealType.Snack;
+            }
+            else
+            {
+                mealType = MealType.Other;
+            }
 
             await _mealTrackingService.RecordRecipeInMealAsync(
                 IntakeDate,

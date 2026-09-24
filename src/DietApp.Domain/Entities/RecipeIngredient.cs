@@ -1,3 +1,4 @@
+using DietApp.Domain.Enums;
 using DietApp.Domain.ValueObjects;
 
 namespace DietApp.Domain.Entities;
@@ -61,5 +62,21 @@ public class RecipeIngredient
             grams,
             calories,
             minerals);
+    }
+
+    /// <summary>
+    /// Como funciona: Consulta la cantidad en miligramos de un mineral especifico aportado por este ingrediente.
+    /// Por que se tomo esta decision: Permite ordenar los ingredientes de una receta segun su contenido mineral.
+    /// </summary>
+    public double GetMineralAmount(MineralType mineralType)
+    {
+        foreach (var mineral in CalculatedMinerals)
+        {
+            if (mineral.Type == mineralType)
+            {
+                return mineral.Milligrams;
+            }
+        }
+        return 0.0;
     }
 }

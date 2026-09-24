@@ -149,22 +149,59 @@
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Recipe.Ingredients}"
-                                     Spacing="8">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="dto:RecipeIngredientDto">
-                            <VerticalStackLayout Spacing="2">
-                                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" VerticalOptions="Center">
-                                    <Label Grid.Column="0" Text="•" FontAttributes="Bold" FontSize="14" />
-                                    <Label Grid.Column="1" Text="{Binding DisplayText}" FontAttributes="Bold" FontSize="14" />
-                                </Grid>
-                                <Label Text="{Binding MineralsSummary}"
-                                       FontSize="11"
-                                       TextColor="Gray"
-                                       Margin="16, 0, 0, 4" />
-                            </VerticalStackLayout>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
+                <VerticalStackLayout Spacing="10">
+                    <!-- Controles para ordenar ingredientes por mineral -->
+                    <Border StrokeShape="RoundRectangle 8"
+                            Padding="10, 8"
+                            Background="{AppThemeBinding Light=#F8F9F9, Dark=#1C2833}">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="{loc:Translate RecipeDetail_SortIngredients}"
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#2C3E50, Dark=#BDC3C7}" />
+
+                            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                <Border Grid.Column="0"
+                                        StrokeShape="RoundRectangle 6"
+                                        Padding="4, 0"
+                                        Background="{AppThemeBinding Light=#FFFFFF, Dark=#2C3E50}">
+                                    <Picker ItemsSource="{Binding IngredientMineralOptions}"
+                                            ItemDisplayBinding="{Binding DisplayName}"
+                                            SelectedItem="{Binding SelectedIngredientMineralOption}"
+                                            FontSize="12" />
+                                </Border>
+
+                                <Border Grid.Column="1"
+                                        StrokeShape="RoundRectangle 6"
+                                        Padding="4, 0"
+                                        Background="{AppThemeBinding Light=#FFFFFF, Dark=#2C3E50}">
+                                    <Picker ItemsSource="{Binding IngredientDirectionOptions}"
+                                            ItemDisplayBinding="{Binding DisplayName}"
+                                            SelectedItem="{Binding SelectedIngredientDirectionOption}"
+                                            FontSize="12" />
+                                </Border>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Lista de Ingredientes Ordenados -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding DisplayedIngredients}"
+                                         Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:RecipeIngredientDto">
+                                <VerticalStackLayout Spacing="2">
+                                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                                        <Label Grid.Column="0" Text="•" FontAttributes="Bold" FontSize="14" />
+                                        <Label Grid.Column="1" Text="{Binding DisplayText}" FontAttributes="Bold" FontSize="14" />
+                                    </Grid>
+                                    <Label Text="{Binding MineralsSummary}"
+                                           FontSize="11"
+                                           TextColor="Gray"
+                                           Margin="16, 0, 0, 4" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
