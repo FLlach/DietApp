@@ -170,4 +170,33 @@ public static class DomainDtoMapper
             Steps = recipe.Steps.Select(s => s.ToDto()).ToList()
         };
     }
+
+    public static SeasoningItemDto ToDto(this SeasoningItem item)
+    {
+        return new SeasoningItemDto
+        {
+            Id = item.Id,
+            FoodItemId = item.FoodItemId,
+            FoodName = item.FoodName,
+            Grams = item.Grams,
+            Calories = item.CalculatedCalories,
+            Minerals = item.CalculatedMinerals.Select(m => m.ToDto()).ToList()
+        };
+    }
+
+    public static SeasoningDto ToDto(this Seasoning seasoning)
+    {
+        var totalMinerals = seasoning.CalculateTotalMinerals();
+
+        return new SeasoningDto
+        {
+            Id = seasoning.Id,
+            Name = seasoning.Name,
+            Description = seasoning.Description,
+            TotalGrams = seasoning.CalculateTotalGrams(),
+            TotalCalories = seasoning.CalculateTotalCalories(),
+            TotalMinerals = totalMinerals.Select(m => m.ToDto()).ToList(),
+            Items = seasoning.Items.Select(i => i.ToDto()).ToList()
+        };
+    }
 }

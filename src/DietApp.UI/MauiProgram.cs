@@ -61,6 +61,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IFoodRepository, SqliteFoodRepository>();
         builder.Services.AddSingleton<IMealRepository, SqliteMealRepository>();
         builder.Services.AddSingleton<IRecipeRepository, SqliteRecipeRepository>();
+        builder.Services.AddSingleton<ISeasoningRepository, SqliteSeasoningRepository>();
 
         // Localizacion e Internacionalizacion
         builder.Services.AddSingleton<ILanguagePreferenceStorage, MauiPreferencesLanguageStorage>();
@@ -74,6 +75,7 @@ public static class MauiProgram
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();
         builder.Services.AddTransient<IMealTrackingService, MealTrackingService>();
         builder.Services.AddTransient<IRecipeService, RecipeService>();
+        builder.Services.AddTransient<ISeasoningService, SeasoningService>();
 
         // Capa de Presentacion - ViewModels
         builder.Services.AddTransient<FoodCatalogViewModel>();
@@ -83,6 +85,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RecipesViewModel>();
         builder.Services.AddTransient<RecipeDetailViewModel>();
         builder.Services.AddTransient<AddRecipeViewModel>();
+        builder.Services.AddTransient<SeasoningsViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
 
         // Capa de Presentacion - Vistas (Pages)
@@ -93,6 +96,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RecipesPage>();
         builder.Services.AddTransient<RecipeDetailPage>();
         builder.Services.AddTransient<AddRecipePage>();
+        builder.Services.AddTransient<SeasoningsPage>();
         builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG

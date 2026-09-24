@@ -20,6 +20,7 @@ public partial class AddRecipeViewModel : ObservableObject
 {
     private readonly IRecipeService _recipeService;
     private readonly IFoodCatalogService _foodCatalogService;
+    private readonly ISeasoningService _seasoningService;
 
     [ObservableProperty]
     public partial string Title { get; set; } = string.Empty;
@@ -37,6 +38,9 @@ public partial class AddRecipeViewModel : ObservableObject
     public partial FoodItemDto? SelectedFood { get; set; }
 
     [ObservableProperty]
+    public partial SeasoningDto? SelectedSeasoning { get; set; }
+
+    [ObservableProperty]
     public partial string IngredientGramsText { get; set; } = "100";
 
     [ObservableProperty]
@@ -52,15 +56,18 @@ public partial class AddRecipeViewModel : ObservableObject
     public partial bool IsBusy { get; set; }
 
     public ObservableCollection<FoodItemDto> AvailableFoods { get; } = new();
+    public ObservableCollection<SeasoningDto> AvailableSeasonings { get; } = new();
     public ObservableCollection<RecipeIngredientDraftModel> Ingredients { get; } = new();
     public ObservableCollection<RecipeStepDraftModel> Steps { get; } = new();
 
     public AddRecipeViewModel(
         IRecipeService recipeService,
-        IFoodCatalogService foodCatalogService)
+        IFoodCatalogService foodCatalogService,
+        ISeasoningService seasoningService)
     {
         _recipeService = recipeService ?? throw new ArgumentNullException(nameof(recipeService));
         _foodCatalogService = foodCatalogService ?? throw new ArgumentNullException(nameof(foodCatalogService));
+        _seasoningService = seasoningService ?? throw new ArgumentNullException(nameof(seasoningService));
     }
 
     [RelayCommand]
@@ -77,11 +84,48 @@ public partial class AddRecipeViewModel : ObservableObject
             {
                 AvailableFoods.Add(food);
             }
+
+            var seasonings = await _seasoningService.GetAllSeasoningsAsync();
+            AvailableSeasonings.Clear();
+            foreach (var seasoning in seasonings)
+            {
+                AvailableSeasonings.Add(seasoning);
+            }
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    public void ApplySeasoning()
+    {
+        if (SelectedSeasoning == null)
+        {
+            StatusMessage = "Selecciona un alino o condimento para incorporar a la receta.";
+            return;
+        }
+
+        if (SelectedSeasoning.Items == null || SelectedSeasoning.Items.Count == 0)
+        {
+            StatusMessage = "El alino seleccionado no contiene ingredientes.";
+            return;
+        }
+
+        int addedCount = 0;
+        foreach (var item in SelectedSeasoning.Items)
+        {
+            Ingredients.Add(new RecipeIngredientDraftModel
+            {
+                FoodId = item.FoodItemId,
+                FoodName = item.FoodName,
+                Grams = item.Grams
+            });
+            addedCount++;
+        }
+
+        StatusMessage = $"Se incorporaron {addedCount} ingredientes del alino '{SelectedSeasoning.Name}' a la receta.";
     }
 
     [RelayCommand]

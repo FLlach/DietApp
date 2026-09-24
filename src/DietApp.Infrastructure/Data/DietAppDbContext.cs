@@ -72,6 +72,8 @@ public class DietAppDbContext
             await _connection.CreateTableAsync<RecipeEntity>();
             await _connection.CreateTableAsync<RecipeIngredientEntity>();
             await _connection.CreateTableAsync<RecipeStepEntity>();
+            await _connection.CreateTableAsync<SeasoningEntity>();
+            await _connection.CreateTableAsync<SeasoningItemEntity>();
 
             // Validar si la tabla de alimentos esta vacia para importar datos
             int foodCount = await _connection.Table<FoodEntity>().CountAsync();
@@ -154,6 +156,25 @@ public class DietAppDbContext
                     foreach (var step in recipe.Steps)
                     {
                         await _connection.InsertAsync(RecipeStepEntity.FromDomain(recipe.Id, step));
+                    }
+                }
+            }
+
+            // Validar si la tabla de alinos esta vacia para precargar alinos de ejemplo
+            int seasoningCount = await _connection.Table<SeasoningEntity>().CountAsync();
+            if (seasoningCount == 0)
+            {
+                var foods = await _connection.Table<FoodEntity>().Take(50).ToListAsync();
+                var domainFoods = foods.Select(f => f.ToDomain()).ToList();
+                var seedSeasonings = InitialSeasoningSeed.GetPreloadedSeasonings(domainFoods);
+
+                foreach (var seasoning in seedSeasonings)
+                {
+                    await _connection.InsertAsync(SeasoningEntity.FromDomain(seasoning));
+
+                    foreach (var item in seasoning.Items)
+                    {
+                        await _connection.InsertAsync(SeasoningItemEntity.FromDomain(seasoning.Id, item));
                     }
                 }
             }

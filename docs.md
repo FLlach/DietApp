@@ -179,7 +179,33 @@ La aplicacion permite al usuario definir limites maximos diarios para controlar 
 
 ---
 
-## 7. Instrucciones de Compilacion y Ejecucion
+## 7. Modulo de Alinos y Condimentos
+
+La aplicacion incluye una seccion especializada para la gestion de alinos, vinagretas, aderezos y mezclas de condimentos (`SeasoningsPage`), los cuales pueden incorporarse con un solo toque en la creacion de recetas para agilizar sustancialmente el proceso culinario:
+
+### 7.1. Gestion de Alinos (`SeasoningsPage` / `SeasoningsViewModel`)
+* **Listado de Alinos**: Muestra las preparaciones guardadas con su peso total en gramos, calorias acumuladas, chips con los ingredientes incluidos y el balance consolidado de minerales.
+* **Creacion Interactiva**:
+  * Panel desplegable para ingresar nombre, descripcion de uso y agregar ingredientes dosificados en gramos a partir del catalogo de alimentos.
+  * Valida y calcula de forma inmediata los minerales y calorias de la mezcla completa.
+  * Permite eliminar ingredientes del borrador antes de guardar.
+* **Eliminacion**: Boton directo para borrar alinos existentes.
+
+### 7.2. Incorporacion en Creacion de Recetas (`AddRecipePage` / `AddRecipeViewModel`)
+* En el asistente de creacion de recetas, dentro de la seccion de ingredientes, se ofrece la opcion **"Incorporar Alino o Condimento Preconfigurado"**.
+* El usuario selecciona cualquier alino guardado (e.g. "Vinagreta Clasica de Limon y Oliva") y presiona el boton **"+ Incorporar Alino a la Receta"**.
+* El sistema expande y anade automaticamente todos los componentes del alino a la lista de ingredientes de la receta con sus gramajes exactos, evitando tener que agregar aceites, sales, limones y especias uno por uno.
+* Los ingredientes incorporados se integran de inmediato al calculo automatico de minerales y calorias por porcion de la receta.
+
+### 7.3. Arquitectura y Persistencia
+* **`Seasoning` y `SeasoningItem`**: Entidades y raiz de agregado en `DietApp.Domain.Entities` que encapsulan el calculo matematico de minerales y calorias de los condimentos.
+* **`ISeasoningRepository` y `SqliteSeasoningRepository`**: Contrato e implementacion SQLite con almacenamiento relacional en las tablas `Seasonings` y `SeasoningItems`.
+* **`ISeasoningService` y `SeasoningService`**: Servicio de aplicacion en `DietApp.Application.Services` que orquesta la creacion, conversion a DTOs y persistencia.
+* **`InitialSeasoningSeed`**: Semillas predefinidas que se precargan automaticamente en la base de datos si la tabla se encuentra vacia.
+
+---
+
+## 8. Instrucciones de Compilacion y Ejecucion
 
 ### Ejecucion en Windows (Modo Rapido):
 Para compilar y ejecutar en Windows directamente desde la terminal:

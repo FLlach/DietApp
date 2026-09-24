@@ -107,6 +107,38 @@
                                 FontSize="12" />
                     </Grid>
 
+                    <!-- Opcion de Incorporar Alino o Condimento Preconfigurado -->
+                    <Border StrokeShape="RoundRectangle 8"
+                            Padding="12"
+                            Background="{AppThemeBinding Light=#FEF9E7, Dark=#262115}"
+                            Stroke="{AppThemeBinding Light=#F9E79F, Dark=#564A23}"
+                            StrokeThickness="1">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{loc:Translate AddRecipe_AddSeasoningTitle}"
+                                   FontAttributes="Bold"
+                                   FontSize="13"
+                                   TextColor="{AppThemeBinding Light=#B9770E, Dark=#F39C12}" />
+
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                <Picker Grid.Column="0"
+                                        ItemsSource="{Binding AvailableSeasonings}"
+                                        ItemDisplayBinding="{Binding SummaryDisplayText}"
+                                        SelectedItem="{Binding SelectedSeasoning}"
+                                        Title="{loc:Translate AddRecipe_SelectSeasoningPlaceholder}"
+                                        FontSize="12" />
+
+                                <Button Grid.Column="1"
+                                        Text="{loc:Translate AddRecipe_ApplySeasoning}"
+                                        Command="{Binding ApplySeasoningCommand}"
+                                        BackgroundColor="#F39C12"
+                                        TextColor="White"
+                                        FontSize="11"
+                                        Padding="10, 4"
+                                        VerticalOptions="Center" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
                     <!-- Lista de ingredientes agregados -->
                     <Label Text="{loc:Translate AddRecipe_IngredientsListTitle}"
                            FontAttributes="Bold"
