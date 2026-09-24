@@ -172,6 +172,8 @@ public class LocalizationService : ILocalizationService
         ["DailyTracking_Food"] = "Alimento",
         ["DailyTracking_Portion"] = "Porcion",
         ["DailyTracking_Delete"] = "Eliminar",
+        ["DailyTracking_FoodsIngested"] = "Alimentos ingeridos:",
+        ["DailyTracking_MineralsProvided"] = "Aporte de minerales en esta comida:",
 
         // Pantalla Recetas
         ["Recipes_Title"] = "Recetario Nutricional",
@@ -309,6 +311,8 @@ public class LocalizationService : ILocalizationService
         ["DailyTracking_Food"] = "Food",
         ["DailyTracking_Portion"] = "Portion",
         ["DailyTracking_Delete"] = "Delete",
+        ["DailyTracking_FoodsIngested"] = "Foods consumed:",
+        ["DailyTracking_MineralsProvided"] = "Minerals provided in this meal:",
 
         // Recipes Screen
         ["Recipes_Title"] = "Nutritional Recipe Book",

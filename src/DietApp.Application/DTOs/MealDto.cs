@@ -19,5 +19,13 @@ public class MealDto
     public List<MealItemDto> Items { get; set; } = new();
     public List<MineralAmountDto> TotalMinerals { get; set; } = new();
 
-    public string TitleDisplay => $"{MealTypeName} - {Date:dd/MM/yyyy HH:mm}";
+    /// <summary>
+    /// Como funciona: Formatea el titulo descriptivo de la comida para el registro diario con su tipo,
+    /// nota (si existe) y fecha (dd/MM/yyyy), omitiendo intencionalmente la hora (HH:mm) para no mostrar 00:00.
+    /// Por que se tomo esta decision: El registro diario trabaja a nivel de fecha sin especificacion horaria,
+    /// por lo que omitir la hora evita ruido visual y valores en cero innecesarios.
+    /// </summary>
+    public string TitleDisplay => string.IsNullOrWhiteSpace(Note)
+        ? $"{MealTypeName} - {Date:dd/MM/yyyy}"
+        : $"{MealTypeName} ({Note}) - {Date:dd/MM/yyyy}";
 }

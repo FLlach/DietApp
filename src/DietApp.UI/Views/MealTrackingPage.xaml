@@ -111,7 +111,7 @@
                                 </Grid>
 
                                 <!-- Alimentos de la comida -->
-                                <Label Text="Alimentos ingeridos:"
+                                <Label Text="{loc:Translate DailyTracking_FoodsIngested}"
                                        FontSize="12"
                                        TextColor="Gray" />
 
@@ -130,7 +130,7 @@
                                 </VerticalStackLayout>
 
                                 <!-- Minerales totales de esta comida -->
-                                <Label Text="Aporte de minerales en esta comida:"
+                                <Label Text="{loc:Translate DailyTracking_MineralsProvided}"
                                        FontSize="12"
                                        TextColor="Gray"
                                        Margin="0, 4, 0, 0" />

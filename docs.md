@@ -87,7 +87,7 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 
 * **Navegacion (`AppShell.xaml`)**:
   * Pestanas en `TabBar`:
-    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida.
+    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales y detalle por comida formateado por tipo y fecha limpia (sin marcas horarias vacias 00:00).
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador, tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion.
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
     4. **Registrar Comida** (`AddMealPage`): Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones).
