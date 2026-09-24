@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             xmlns:dto="clr-namespace:DietApp.Application.DTOs;assembly=DietApp.Application"
+             x:Class="DietApp.UI.Views.MealTrackingPage"
+             x:Name="ThisTrackingPage"
+             x:DataType="vm:MealTrackingViewModel"
+             Title="Conteo Diario y Comidas">
+
+    <!--
+    Como funciona: Pantalla de monitoreo nutricional que consolida los totales diarios
+    de minerales consumidos y desglosa cada comida con sus respectivos alimentos y aportes.
+    Por que se tomo esta decision: Permite al usuario tener control exacto del balance de
+    minerales por comida y por dia, facilitando la toma de decisiones dieteticas.
+    -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="14" Spacing="16">
+            <!-- Barra de Navegacion por Fechas -->
+            <Border StrokeShape="RoundRectangle 10"
+                    Padding="12"
+                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                    <Button Grid.Column="0"
+                            Text="&lt; Dia Anterior"
+                            Command="{Binding GoToPreviousDayCommand}"
+                            FontSize="12" />
+
+                    <Label Grid.Column="1"
+                           Text="{Binding SelectedDate, StringFormat='{0:D}'}"
+                           HorizontalTextAlignment="Center"
+                           VerticalOptions="Center"
+                           FontAttributes="Bold"
+                           FontSize="15" />
+
+                    <Button Grid.Column="2"
+                            Text="Dia Siguiente &gt;"
+                            Command="{Binding GoToNextDayCommand}"
+                            FontSize="12" />
+                </Grid>
+            </Border>
+
+            <!-- Resumen Total de Minerales del Dia -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="16"
+                    Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Total Consumido del Dia"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+
+                    <Label Text="Suma consolidada de todos los compuestos minerales ingeridos hoy:"
+                           FontSize="12"
+                           TextColor="Gray" />
+
+                    <FlexLayout BindableLayout.ItemsSource="{Binding DailyMinerals}"
+                                Wrap="Wrap"
+                                Margin="0, 4, 0, 0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:MineralAmountDto">
+                                <Border Margin="0, 3, 8, 5"
+                                        Padding="10, 6"
+                                        StrokeShape="RoundRectangle 8"
+                                        Background="{AppThemeBinding Light=#D4E6F1, Dark=#2E4053}">
+                                    <Label Text="{Binding DisplayText}"
+                                           FontSize="13"
+                                           FontAttributes="Bold" />
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Lista de Comidas del Dia -->
+            <Label Text="Detalle de Comidas del Dia"
+                   FontAttributes="Bold"
+                   FontSize="17" />
+
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding DayMeals}"
+                                 Spacing="12">
+                <BindableLayout.EmptyView>
+                    <Label Text="No hay comidas registradas para esta fecha."
+                           TextColor="Gray"
+                           HorizontalTextAlignment="Center"
+                           Margin="0, 20, 0, 20" />
+                </BindableLayout.EmptyView>
+
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="dto:MealDto">
+                        <Border StrokeShape="RoundRectangle 12"
+                                Padding="14"
+                                Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding TitleDisplay}"
+                                           FontAttributes="Bold"
+                                           FontSize="16" />
+
+                                    <Button Grid.Column="1"
+                                            Text="Eliminar"
+                                            Command="{Binding Source={x:Reference ThisTrackingPage}, Path=BindingContext.DeleteMealCommand}"
+                                            CommandParameter="{Binding Id}"
+                                            BackgroundColor="#E74C3C"
+                                            TextColor="White"
+                                            FontSize="11"
+                                            Padding="8, 2" />
+                                </Grid>
+
+                                <!-- Alimentos de la comida -->
+                                <Label Text="Alimentos ingeridos:"
+                                       FontSize="12"
+                                       TextColor="Gray" />
+
+                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
+                                                     Spacing="4"
+                                                     Margin="10, 0, 0, 0">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="dto:MealItemDto">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="•" FontAttributes="Bold" />
+                                                <Label Text="{Binding FoodName}" FontAttributes="Bold" FontSize="13" />
+                                                <Label Text="{Binding PortionSummary, StringFormat='({0})'}" FontSize="13" TextColor="Gray" />
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+
+                                <!-- Minerales totales de esta comida -->
+                                <Label Text="Aporte de minerales en esta comida:"
+                                       FontSize="12"
+                                       TextColor="Gray"
+                                       Margin="0, 4, 0, 0" />
+
+                                <FlexLayout BindableLayout.ItemsSource="{Binding TotalMinerals}"
+                                            Wrap="Wrap">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="dto:MineralAmountDto">
+                                            <Border Margin="0, 2, 6, 4"
+                                                    Padding="6, 2"
+                                                    StrokeShape="RoundRectangle 6"
+                                                    Background="{AppThemeBinding Light=#EAEDED, Dark=#34495E}">
+                                                <Label Text="{Binding DisplayText}"
+                                                       FontSize="11" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </FlexLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

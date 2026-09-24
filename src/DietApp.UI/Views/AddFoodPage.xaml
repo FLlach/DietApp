@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             x:Class="DietApp.UI.Views.AddFoodPage"
+             x:DataType="vm:AddFoodViewModel"
+             Title="Registrar Alimento">
+
+    <!--
+    Como funciona: Formulario de ingreso de nuevos alimentos con su correspondiente
+    desglose de minerales (fosforo, potasio, sodio, etc.) por porcion base.
+    Por que se tomo esta decision: Permite al usuario enriquecer el catalogo con alimentos
+    especificos de su dieta, habilitando que la aplicacion calcule aportes minerales personalizados.
+    -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="14">
+            <Label Text="Nuevo Alimento con Perfil Mineral"
+                   FontAttributes="Bold"
+                   FontSize="18" />
+
+            <Label Text="Ingresa los datos del alimento y la cantidad de minerales presentes por porcion de referencia (por ejemplo 100g):"
+                   FontSize="13"
+                   TextColor="Gray" />
+
+            <!-- Datos Generales -->
+            <Border StrokeShape="RoundRectangle 10"
+                    Padding="14"
+                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Nombre del Alimento" FontAttributes="Bold" FontSize="13" />
+                    <Entry Placeholder="Ej: Palta Hass, Avena tradicional"
+                           Text="{Binding Name}" />
+
+                    <Label Text="Categoria" FontAttributes="Bold" FontSize="13" />
+                    <Entry Placeholder="Ej: Frutas, Cereales, Pescados"
+                           Text="{Binding Category}" />
+
+                    <Label Text="Porcion base (Gramos)" FontAttributes="Bold" FontSize="13" />
+                    <Entry Placeholder="100"
+                           Keyboard="Numeric"
+                           Text="{Binding ReferenceGramsText}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Datos de Minerales -->
+            <Label Text="Contenido de Minerales en la Porcion Base (mg)"
+                   FontAttributes="Bold"
+                   FontSize="15" />
+
+            <Border StrokeShape="RoundRectangle 10"
+                    Padding="14"
+                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto" ColumnSpacing="12" RowSpacing="10">
+                    <!-- Fosforo -->
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                        <Label Text="Fosforo (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding PhosphorusText}" />
+                    </VerticalStackLayout>
+
+                    <!-- Potasio -->
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                        <Label Text="Potasio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding PotassiumText}" />
+                    </VerticalStackLayout>
+
+                    <!-- Sodio -->
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                        <Label Text="Sodio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding SodiumText}" />
+                    </VerticalStackLayout>
+
+                    <!-- Calcio -->
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                        <Label Text="Calcio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding CalciumText}" />
+                    </VerticalStackLayout>
+
+                    <!-- Magnesio -->
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                        <Label Text="Magnesio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding MagnesiumText}" />
+                    </VerticalStackLayout>
+
+                    <!-- Hierro -->
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                        <Label Text="Hierro (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding IronText}" />
+                    </VerticalStackLayout>
+
+                    <!-- Zinc -->
+                    <VerticalStackLayout Grid.Row="3" Grid.Column="0">
+                        <Label Text="Zinc (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding ZincText}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Mensaje de estado -->
+            <Label Text="{Binding FeedbackMessage}"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   TextColor="#27AE60" />
+
+            <!-- Boton Guardar -->
+            <Button Text="Guardar Alimento en Catalogo"
+                    Command="{Binding SaveFoodCommand}"
+                    FontAttributes="Bold"
+                    HeightRequest="48" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

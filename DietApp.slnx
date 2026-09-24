@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DietApp.Application/DietApp.Application.csproj" />
+    <Project Path="src/DietApp.Domain/DietApp.Domain.csproj" />
+    <Project Path="src/DietApp.Infrastructure/DietApp.Infrastructure.csproj" />
+    <Project Path="src/DietApp.UI/DietApp.UI.csproj" />
+  </Folder>
+</Solution>
