@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
              xmlns:models="clr-namespace:DietApp.UI.Models"
+             xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.AddMealPage"
              x:DataType="vm:AddMealViewModel"
              x:Name="ThisPage"
-             Title="Registrar Comida">
+             Title="{loc:Translate AddMeal_Title}">
 
     <!--
     Como funciona: Interfaz para armar y registrar una comida con uno o mas alimentos,
@@ -17,7 +18,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="14">
-            <Label Text="Registrar Nueva Comida"
+            <Label Text="{loc:Translate AddMeal_Title}"
                    FontAttributes="Bold"
                    FontSize="18" />
 
@@ -27,26 +28,26 @@
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="8">
                     <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                        <Label Text="Fecha" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate AddMeal_Date}" FontAttributes="Bold" FontSize="12" />
                         <DatePicker Date="{Binding MealDate}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                        <Label Text="Momento" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate AddMeal_Moment}" FontAttributes="Bold" FontSize="12" />
                         <Picker ItemsSource="{Binding MealTypeOptions}"
                                 SelectedItem="{Binding SelectedMealTypeName}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                        <Label Text="Nota u Observacion (opcional)" FontAttributes="Bold" FontSize="12" />
-                        <Entry Placeholder="Ej: Almuerzo liviano post entrenamiento"
+                        <Label Text="{loc:Translate AddMeal_Note}" FontAttributes="Bold" FontSize="12" />
+                        <Entry Placeholder="{loc:Translate AddMeal_NotePlaceholder}"
                                Text="{Binding Note}" />
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
             <!-- Seccion para agregar un alimento -->
-            <Label Text="Agregar Alimento del Catalogo"
+            <Label Text="{loc:Translate AddMeal_AddFoodTitle}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -54,7 +55,7 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Seleccionar Alimento del Catalogo" FontAttributes="Bold" FontSize="12" />
+                    <Label Text="{loc:Translate AddMeal_SelectFood}" FontAttributes="Bold" FontSize="12" />
                     <Picker ItemsSource="{Binding AvailableFoods}"
                             ItemDisplayBinding="{Binding Name}"
                             SelectedItem="{Binding SelectedFood}"
@@ -62,14 +63,14 @@
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Gramos consumidos" FontAttributes="Bold" FontSize="12" />
+                            <Label Text="{loc:Translate AddMeal_GramsConsumed}" FontAttributes="Bold" FontSize="12" />
                             <Entry Placeholder="100"
                                    Keyboard="Numeric"
                                    Text="{Binding PortionGramsText}" />
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
-                                Text="+ Agregar Alimento"
+                                Text="{loc:Translate AddMeal_AddFoodButton}"
                                 VerticalOptions="End"
                                 Command="{Binding AddFoodToMealCommand}" />
                     </Grid>
@@ -77,7 +78,7 @@
             </Border>
 
             <!-- Seccion para agregar una receta -->
-            <Label Text="O Agregar Receta Culinaria"
+            <Label Text="{loc:Translate AddMeal_AddRecipeTitle}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -85,7 +86,7 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Seleccionar Receta" FontAttributes="Bold" FontSize="12" />
+                    <Label Text="{loc:Translate AddMeal_SelectRecipe}" FontAttributes="Bold" FontSize="12" />
                     <Picker ItemsSource="{Binding AvailableRecipes}"
                             ItemDisplayBinding="{Binding Title}"
                             SelectedItem="{Binding SelectedRecipe}"
@@ -93,14 +94,14 @@
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Porciones consumidas" FontAttributes="Bold" FontSize="12" />
+                            <Label Text="{loc:Translate AddMeal_ServingsConsumed}" FontAttributes="Bold" FontSize="12" />
                             <Entry Placeholder="1"
                                    Keyboard="Numeric"
                                    Text="{Binding RecipeServingsText}" />
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
-                                Text="+ Agregar Receta"
+                                Text="{loc:Translate AddMeal_AddRecipeButton}"
                                 VerticalOptions="End"
                                 BackgroundColor="#27AE60"
                                 TextColor="White"
@@ -110,7 +111,7 @@
             </Border>
 
             <!-- Lista de Alimentos y Recetas Agregados a la Comida Actual -->
-            <Label Text="Items en esta Comida:"
+            <Label Text="{loc:Translate AddMeal_ItemsInMeal}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -121,7 +122,7 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedItems}"
                                          Spacing="6">
                         <BindableLayout.EmptyView>
-                            <Label Text="Aun no has agregado alimentos ni recetas a esta comida."
+                            <Label Text="{loc:Translate AddMeal_EmptyItems}"
                                    TextColor="Gray"
                                    HorizontalTextAlignment="Center"
                                    Padding="10" />
@@ -154,7 +155,7 @@
                    TextColor="#2980B9" />
 
             <!-- Boton Guardar Comida -->
-            <Button Text="Guardar Comida y Calcular Minerales"
+            <Button Text="{loc:Translate AddMeal_SaveButton}"
                     Command="{Binding SaveMealCommand}"
                     FontAttributes="Bold"
                     HeightRequest="48" />

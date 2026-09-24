@@ -4,50 +4,59 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:DietApp.UI.Views"
+    xmlns:loc="clr-namespace:DietApp.UI.Localization"
     Title="DietApp">
 
     <!--
     Como funciona: Estructura central de navegacion basada en pestanas (TabBar).
     Permite alternar de forma nativa entre el conteo diario, el catalogo con filtro
-    de minerales, el modulo de recetas culinarias, el registro de comidas y el alta de alimentos.
+    de minerales, el modulo de recetas culinarias, el registro de comidas, el alta de alimentos
+    y los ajustes de idioma y configuracion.
     Por que se tomo esta decision: Shell provee navegacion declarativa, fluida y nativa
     optimizada tanto para dispositivos moviles (Android e iOS) como para ventanas en escritorio.
     -->
 
     <TabBar>
-        <Tab Title="Conteo Diario">
+        <Tab x:Name="TabDailyTracking" Title="{loc:Translate Tab_DailyTracking}">
             <ShellContent
-                Title="Conteo Diario"
+                Title="{loc:Translate Tab_DailyTracking}"
                 ContentTemplate="{DataTemplate views:MealTrackingPage}"
                 Route="MealTrackingPage" />
         </Tab>
 
-        <Tab Title="Recetas">
+        <Tab x:Name="TabRecipes" Title="{loc:Translate Tab_Recipes}">
             <ShellContent
-                Title="Recetas"
+                Title="{loc:Translate Tab_Recipes}"
                 ContentTemplate="{DataTemplate views:RecipesPage}"
                 Route="RecipesPage" />
         </Tab>
 
-        <Tab Title="Catalogo y Filtro">
+        <Tab x:Name="TabCatalog" Title="{loc:Translate Tab_Catalog}">
             <ShellContent
-                Title="Catalogo y Filtro"
+                Title="{loc:Translate Tab_Catalog}"
                 ContentTemplate="{DataTemplate views:FoodCatalogPage}"
                 Route="FoodCatalogPage" />
         </Tab>
 
-        <Tab Title="Registrar Comida">
+        <Tab x:Name="TabAddMeal" Title="{loc:Translate Tab_AddMeal}">
             <ShellContent
-                Title="Registrar Comida"
+                Title="{loc:Translate Tab_AddMeal}"
                 ContentTemplate="{DataTemplate views:AddMealPage}"
                 Route="AddMealPage" />
         </Tab>
 
-        <Tab Title="Nuevo Alimento">
+        <Tab x:Name="TabAddFood" Title="{loc:Translate Tab_AddFood}">
             <ShellContent
-                Title="Nuevo Alimento"
+                Title="{loc:Translate Tab_AddFood}"
                 ContentTemplate="{DataTemplate views:AddFoodPage}"
                 Route="AddFoodPage" />
+        </Tab>
+
+        <Tab x:Name="TabSettings" Title="{loc:Translate Tab_Settings}">
+            <ShellContent
+                Title="{loc:Translate Tab_Settings}"
+                ContentTemplate="{DataTemplate views:SettingsPage}"
+                Route="SettingsPage" />
         </Tab>
     </TabBar>
 

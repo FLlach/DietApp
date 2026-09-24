@@ -17,6 +17,23 @@ public static class DomainDtoMapper
 {
     public static string ToFriendlyName(this MineralType type)
     {
+        bool isEnglish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.Equals("en", StringComparison.OrdinalIgnoreCase);
+
+        if (isEnglish)
+        {
+            return type switch
+            {
+                MineralType.Phosphorus => "Phosphorus",
+                MineralType.Potassium => "Potassium",
+                MineralType.Sodium => "Sodium",
+                MineralType.Calcium => "Calcium",
+                MineralType.Magnesium => "Magnesium",
+                MineralType.Iron => "Iron",
+                MineralType.Zinc => "Zinc",
+                _ => type.ToString()
+            };
+        }
+
         return type switch
         {
             MineralType.Phosphorus => "Fosforo",
@@ -32,6 +49,21 @@ public static class DomainDtoMapper
 
     public static string ToFriendlyName(this MealType type)
     {
+        bool isEnglish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.Equals("en", StringComparison.OrdinalIgnoreCase);
+
+        if (isEnglish)
+        {
+            return type switch
+            {
+                MealType.Breakfast => "Breakfast",
+                MealType.Lunch => "Lunch",
+                MealType.Dinner => "Dinner",
+                MealType.Snack => "Snack / Collation",
+                MealType.Other => "Other",
+                _ => type.ToString()
+            };
+        }
+
         return type switch
         {
             MealType.Breakfast => "Desayuno",

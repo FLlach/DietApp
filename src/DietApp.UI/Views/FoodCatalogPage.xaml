@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
              xmlns:dto="clr-namespace:DietApp.Application.DTOs;assembly=DietApp.Application"
+             xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.FoodCatalogPage"
              x:DataType="vm:FoodCatalogViewModel"
-             Title="Catalogo y Filtro de Minerales">
+             Title="{loc:Translate FoodCatalog_Title}">
 
     <!--
     Como funciona: Vista que permite consultar alimentos y aplicar filtros avanzados
@@ -22,12 +23,12 @@
                 StrokeShape="RoundRectangle 12"
                 Background="{AppThemeBinding Light=#F8F9FA, Dark=#1E1E24}">
             <VerticalStackLayout Spacing="10">
-                <Label Text="Filtro por Concentracion de Minerales"
+                <Label Text="{loc:Translate FoodCatalog_FilterTitle}"
                        FontAttributes="Bold"
                        FontSize="16" />
 
                 <!-- Buscador de texto -->
-                <SearchBar Placeholder="Buscar por nombre o categoria..."
+                <SearchBar Placeholder="{loc:Translate FoodCatalog_SearchName}"
                            Text="{Binding SearchText}"
                            SearchCommand="{Binding ApplyFilterCommand}" />
 
@@ -57,12 +58,12 @@
                 </Grid>
 
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
-                    <Button Text="Limpiar"
+                    <Button Text="{loc:Translate FoodCatalog_ResetFilters}"
                             Command="{Binding ClearFilterCommand}"
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light=#495057, Dark=#DEE2E6}" />
 
-                    <Button Text="Filtrar Alimentos"
+                    <Button Text="{loc:Translate FoodCatalog_ApplyFilters}"
                             Command="{Binding ApplyFilterCommand}"
                             FontAttributes="Bold" />
                 </HorizontalStackLayout>
@@ -78,7 +79,7 @@
                                      VerticalOptions="Center"
                                      Spacing="12"
                                      Padding="30">
-                    <Label Text="No se encontraron alimentos con los criterios indicados."
+                    <Label Text="{loc:Translate FoodCatalog_Empty}"
                            HorizontalTextAlignment="Center"
                            TextColor="Gray"
                            FontSize="15" />

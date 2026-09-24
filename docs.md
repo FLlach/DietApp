@@ -92,15 +92,45 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales.
     4. **Registrar Comida** (`AddMealPage`): Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones).
     5. **Nuevo Alimento** (`AddFoodPage`): Formulario para ingresar alimentos adicionales al catalogo SQLite.
+    6. **Ajustes** (`SettingsPage`): Selector interactivo para alternar el idioma de la aplicacion entre Espanol e Ingles.
   * Rutas registradas:
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, ingredientes con desglose individual de minerales, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
-  * Registra `DietAppDbContext` y conecta los repositorios SQLite en el contenedor IoC.
+  * Registra `DietAppDbContext`, conecta los repositorios SQLite y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) en el contenedor IoC.
 
 ---
 
-## 4. Instrucciones de Compilacion y Ejecucion
+## 4. Sistema de Internacionalizacion y Cambio de Idioma
+
+La aplicacion soporta alternancia reactiva y dinamica entre **Espanol** e **Ingles**:
+
+### 4.1. Arquitectura de Localizacion
+* **Abstraccion de Preferencias (`ILanguagePreferenceStorage`)**: Ubicada en `DietApp.Application.Services` para mantener la capa de aplicacion libre de dependencias de plataforma (respetando DDD).
+* **Implementacion en UI (`MauiPreferencesLanguageStorage`)**: Ubicada en `DietApp.UI.Services`, utiliza `Microsoft.Maui.Storage.Preferences` para persistir la seleccion del usuario entre inicios de sesion.
+* **Servicio de Localizacion (`ILocalizationService` / `LocalizationService`)**:
+  * Gestiona diccionarios completos de terminos para Espanol e Ingles.
+  * Modifica `CultureInfo.CurrentCulture`, `CultureInfo.CurrentUICulture`, `CultureInfo.DefaultThreadCurrentCulture` y `CultureInfo.DefaultThreadCurrentUICulture`.
+  * Traduce de forma reactiva los nombres de minerales (`MineralType`) y momentos de comida (`MealType`).
+  * Emite el evento `LanguageChanged` y `PropertyChanged` con nombre de propiedad nulo para forzar la reevaluacion de todos los bindings compilados.
+* **Puente XAML (`LocalizationResourceManager`)**: Singleton que expone el indexador `this[string key]` y suscribe al servicio de localizacion para notificar a la infraestructura de MAUI.
+* **Markup Extension (`TranslateExtension`)**: Permite en XAML escribir `{loc:Translate KeyName}` con enlace reactivo a `LocalizationResourceManager.Instance`.
+
+### 4.2. Vistas Localizadas
+Todas las vistas de la aplicacion implementan traduccion instantanea:
+1. `AppShell`: Pestanas de navegacion traducidas al vuelo.
+2. `MealTrackingPage`: Titulos, subtitulos, botones de navegacion de fechas y estados vacios.
+3. `RecipesPage`: Buscador, botones y textos descriptivos.
+4. `RecipeDetailPage`: Titulos, desglose de aportes, formulario de ingesta y pasos.
+5. `FoodCatalogPage`: Filtros de minerales y tablas de resultados.
+6. `AddMealPage`: Selectores y listas de alimentos y recetas.
+7. `AddFoodPage`: Formulario de alimentos y nombres de minerales.
+8. `AddRecipePage`: Formularios, listas de pasos e ingredientes.
+9. `SettingsPage`: Tarjetas para alternar entre Espanol e Ingles con persistencia automatica.
+
+---
+
+## 5. Instrucciones de Compilacion y Ejecucion
 
 ### Ejecucion en Windows (Modo Rapido):
 Para compilar y ejecutar en Windows directamente desde la terminal:

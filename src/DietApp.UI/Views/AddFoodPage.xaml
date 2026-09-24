@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.AddFoodPage"
              x:DataType="vm:AddFoodViewModel"
-             Title="Registrar Alimento">
+             Title="{loc:Translate AddFood_Title}">
 
     <!--
     Como funciona: Formulario de ingreso de nuevos alimentos con su correspondiente
@@ -15,11 +16,11 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="14">
-            <Label Text="Nuevo Alimento con Perfil Mineral"
+            <Label Text="{loc:Translate AddFood_Header}"
                    FontAttributes="Bold"
                    FontSize="18" />
 
-            <Label Text="Ingresa los datos del alimento y la cantidad de minerales presentes por porcion de referencia (por ejemplo 100g):"
+            <Label Text="{loc:Translate AddFood_Subtitle}"
                    FontSize="13"
                    TextColor="Gray" />
 
@@ -28,15 +29,15 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Nombre del Alimento" FontAttributes="Bold" FontSize="13" />
-                    <Entry Placeholder="Ej: Palta Hass, Avena tradicional"
+                    <Label Text="{loc:Translate AddFood_Name}" FontAttributes="Bold" FontSize="13" />
+                    <Entry Placeholder="{loc:Translate AddFood_NamePlaceholder}"
                            Text="{Binding Name}" />
 
-                    <Label Text="Categoria" FontAttributes="Bold" FontSize="13" />
-                    <Entry Placeholder="Ej: Frutas, Cereales, Pescados"
+                    <Label Text="{loc:Translate AddFood_Category}" FontAttributes="Bold" FontSize="13" />
+                    <Entry Placeholder="{loc:Translate AddFood_CategoryPlaceholder}"
                            Text="{Binding Category}" />
 
-                    <Label Text="Porcion base (Gramos)" FontAttributes="Bold" FontSize="13" />
+                    <Label Text="{loc:Translate AddFood_PortionGrams}" FontAttributes="Bold" FontSize="13" />
                     <Entry Placeholder="100"
                            Keyboard="Numeric"
                            Text="{Binding ReferenceGramsText}" />
@@ -44,7 +45,7 @@
             </Border>
 
             <!-- Datos de Minerales -->
-            <Label Text="Contenido de Minerales en la Porcion Base (mg)"
+            <Label Text="{loc:Translate AddFood_MineralsTitle}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -54,43 +55,43 @@
                 <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto" ColumnSpacing="12" RowSpacing="10">
                     <!-- Fosforo -->
                     <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                        <Label Text="Fosforo (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Phosphorus}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding PhosphorusText}" />
                     </VerticalStackLayout>
 
                     <!-- Potasio -->
                     <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                        <Label Text="Potasio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Potassium}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding PotassiumText}" />
                     </VerticalStackLayout>
 
                     <!-- Sodio -->
                     <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                        <Label Text="Sodio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Sodium}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding SodiumText}" />
                     </VerticalStackLayout>
 
                     <!-- Calcio -->
                     <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                        <Label Text="Calcio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Calcium}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding CalciumText}" />
                     </VerticalStackLayout>
 
                     <!-- Magnesio -->
                     <VerticalStackLayout Grid.Row="2" Grid.Column="0">
-                        <Label Text="Magnesio (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Magnesium}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding MagnesiumText}" />
                     </VerticalStackLayout>
 
                     <!-- Hierro -->
                     <VerticalStackLayout Grid.Row="2" Grid.Column="1">
-                        <Label Text="Hierro (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Iron}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding IronText}" />
                     </VerticalStackLayout>
 
                     <!-- Zinc -->
                     <VerticalStackLayout Grid.Row="3" Grid.Column="0">
-                        <Label Text="Zinc (mg)" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="{loc:Translate Mineral_Zinc}" FontAttributes="Bold" FontSize="12" />
                         <Entry Placeholder="0" Keyboard="Numeric" Text="{Binding ZincText}" />
                     </VerticalStackLayout>
                 </Grid>
@@ -103,7 +104,7 @@
                    TextColor="#27AE60" />
 
             <!-- Boton Guardar -->
-            <Button Text="Guardar Alimento en Catalogo"
+            <Button Text="{loc:Translate AddFood_SaveButton}"
                     Command="{Binding SaveFoodCommand}"
                     FontAttributes="Bold"
                     HeightRequest="48" />

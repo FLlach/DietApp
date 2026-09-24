@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
              xmlns:dto="clr-namespace:DietApp.Application.DTOs;assembly=DietApp.Application"
+             xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.RecipeDetailPage"
              x:DataType="vm:RecipeDetailViewModel"
-             Title="Detalle de la Receta">
+             Title="{loc:Translate RecipeDetail_Title}">
 
     <!--
     Como funciona: Pantalla de presentacion detallada de la receta culinaria.
@@ -38,7 +39,7 @@
                         Padding="12, 8"
                         Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Aporte Nutricional por Porcion:"
+                        <Label Text="{loc:Translate RecipeDetail_NutritionPerServing}"
                                FontSize="12"
                                FontAttributes="Bold"
                                TextColor="Gray" />
@@ -60,12 +61,12 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Minerales Aportados por Porcion"
+                    <Label Text="{loc:Translate RecipeDetail_MineralsPerServingTitle}"
                            FontAttributes="Bold"
                            FontSize="15"
                            TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
 
-                    <Label Text="Balance mineral calculado automaticamente segun los ingredientes de la receta:"
+                    <Label Text="{loc:Translate RecipeDetail_MineralsPerServingSubtitle}"
                            FontSize="12"
                            TextColor="Gray" />
 
@@ -93,29 +94,29 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#EAFAF1, Dark=#142B1E}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Registrar en la Ingesta Diaria"
+                    <Label Text="{loc:Translate RecipeDetail_IntakePanelTitle}"
                            FontAttributes="Bold"
                            FontSize="16"
                            TextColor="{AppThemeBinding Light=#196F3D, Dark=#52BE80}" />
 
-                    <Label Text="Agrega esta receta a tu registro de comidas para contabilizar sus minerales y calorias:"
+                    <Label Text="{loc:Translate RecipeDetail_IntakePanelSubtitle}"
                            FontSize="12"
                            TextColor="Gray" />
 
                     <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="8">
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                            <Label Text="Fecha de Ingesta" FontAttributes="Bold" FontSize="11" />
+                            <Label Text="{loc:Translate RecipeDetail_IntakeDate}" FontAttributes="Bold" FontSize="11" />
                             <DatePicker Date="{Binding IntakeDate}" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                            <Label Text="Momento de Comida" FontAttributes="Bold" FontSize="11" />
+                            <Label Text="{loc:Translate RecipeDetail_MealMoment}" FontAttributes="Bold" FontSize="11" />
                             <Picker ItemsSource="{Binding MealTypeOptions}"
                                     SelectedItem="{Binding SelectedMealTypeName}" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                            <Label Text="Porciones Consumidas" FontAttributes="Bold" FontSize="11" />
+                            <Label Text="{loc:Translate RecipeDetail_ServingsConsumed}" FontAttributes="Bold" FontSize="11" />
                             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                                 <Entry Grid.Column="0"
                                        Placeholder="1"
@@ -123,7 +124,7 @@
                                        Text="{Binding ServingsConsumedText}" />
 
                                 <Button Grid.Column="1"
-                                        Text="Registrar en mi Comida"
+                                        Text="{loc:Translate RecipeDetail_LogAction}"
                                         Command="{Binding AddToDailyIntakeCommand}"
                                         FontAttributes="Bold"
                                         BackgroundColor="#27AE60"
@@ -141,7 +142,7 @@
             </Border>
 
             <!-- Seccion de Ingredientes -->
-            <Label Text="Ingredientes de la Receta"
+            <Label Text="{loc:Translate RecipeDetail_IngredientsTitle}"
                    FontAttributes="Bold"
                    FontSize="17" />
 
@@ -168,7 +169,7 @@
             </Border>
 
             <!-- Seccion de Pasos Numerados de Elaboracion -->
-            <Label Text="Pasos de Elaboracion Numerados"
+            <Label Text="{loc:Translate RecipeDetail_StepsTitle}"
                    FontAttributes="Bold"
                    FontSize="17" />
 

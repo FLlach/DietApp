@@ -3,6 +3,8 @@ using DietApp.Domain.Repositories;
 using DietApp.Domain.Services;
 using DietApp.Infrastructure.Data;
 using DietApp.Infrastructure.Repositories;
+using DietApp.UI.Localization;
+using DietApp.UI.Services;
 using DietApp.UI.ViewModels;
 using DietApp.UI.Views;
 using Microsoft.Extensions.Logging;
@@ -60,6 +62,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<IMealRepository, SqliteMealRepository>();
         builder.Services.AddSingleton<IRecipeRepository, SqliteRecipeRepository>();
 
+        // Localizacion e Internacionalizacion
+        builder.Services.AddSingleton<ILanguagePreferenceStorage, MauiPreferencesLanguageStorage>();
+        builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
+
         // Capa de Aplicacion - Casos de Uso y Servicios
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();
         builder.Services.AddTransient<IMealTrackingService, MealTrackingService>();
@@ -73,6 +79,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RecipesViewModel>();
         builder.Services.AddTransient<RecipeDetailViewModel>();
         builder.Services.AddTransient<AddRecipeViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
 
         // Capa de Presentacion - Vistas (Pages)
         builder.Services.AddTransient<FoodCatalogPage>();
@@ -82,11 +89,17 @@ public static class MauiProgram
         builder.Services.AddTransient<RecipesPage>();
         builder.Services.AddTransient<RecipeDetailPage>();
         builder.Services.AddTransient<AddRecipePage>();
+        builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var app = builder.Build();
+
+        var localizationService = app.Services.GetRequiredService<ILocalizationService>();
+        LocalizationResourceManager.Instance.Initialize(localizationService);
+
+        return app;
     }
 }

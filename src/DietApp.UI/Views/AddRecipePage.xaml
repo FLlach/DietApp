@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
              xmlns:models="clr-namespace:DietApp.UI.Models"
+             xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.AddRecipePage"
              x:Name="ThisAddRecipePage"
              x:DataType="vm:AddRecipeViewModel"
-             Title="Crear Nueva Receta">
+             Title="{loc:Translate AddRecipe_Title}">
 
     <!--
     Como funciona: Formulario de composicion de recetas culinarias con ingredientes dosificados,
@@ -17,7 +18,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="14" Spacing="16">
-            <Label Text="Crear Receta con Perfil Nutricional"
+            <Label Text="{loc:Translate AddRecipe_Header}"
                    FontAttributes="Bold"
                    FontSize="18" />
 
@@ -26,16 +27,16 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Titulo de la Receta" FontAttributes="Bold" FontSize="12" />
-                    <Entry Placeholder="Ej: Cazuela ligera de pollo y verduras"
+                    <Label Text="{loc:Translate AddRecipe_RecipeTitle}" FontAttributes="Bold" FontSize="12" />
+                    <Entry Placeholder="{loc:Translate AddRecipe_RecipeTitlePlaceholder}"
                            Text="{Binding Title}" />
 
-                    <Label Text="Descripcion" FontAttributes="Bold" FontSize="12" />
-                    <Editor Placeholder="Breve descripcion o caracteristicas del plato..."
+                    <Label Text="{loc:Translate AddRecipe_Description}" FontAttributes="Bold" FontSize="12" />
+                    <Editor Placeholder="{loc:Translate AddRecipe_DescriptionPlaceholder}"
                             Text="{Binding Description}"
                             HeightRequest="70" />
 
-                    <Label Text="Numero de Porciones" FontAttributes="Bold" FontSize="12" />
+                    <Label Text="{loc:Translate AddRecipe_Servings}" FontAttributes="Bold" FontSize="12" />
                     <Entry Placeholder="2"
                            Keyboard="Numeric"
                            Text="{Binding ServingsText}" />
@@ -43,7 +44,7 @@
             </Border>
 
             <!-- Imagen Final de la Receta Terminada -->
-            <Label Text="Imagen Final de la Receta Terminada"
+            <Label Text="{loc:Translate AddRecipe_FinalImage}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -51,17 +52,17 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Selecciona una imagen desde tu dispositivo o ingresa la ruta/nombre del archivo:"
+                    <Label Text="{loc:Translate AddRecipe_FinalImageSubtitle}"
                            FontSize="12"
                            TextColor="Gray" />
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                         <Entry Grid.Column="0"
-                               Placeholder="Ruta o nombre de archivo..."
+                               Placeholder="{loc:Translate AddRecipe_ImagePathPlaceholder}"
                                Text="{Binding FinalImagePath}" />
 
                         <Button Grid.Column="1"
-                                Text="Examinar..."
+                                Text="{loc:Translate AddRecipe_BrowseButton}"
                                 Command="{Binding PickFinalImageCommand}"
                                 FontSize="12" />
                     </Grid>
@@ -77,7 +78,7 @@
             </Border>
 
             <!-- Seccion de Ingredientes -->
-            <Label Text="Ingredientes de la Receta"
+            <Label Text="{loc:Translate AddRecipe_Ingredients}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -85,29 +86,29 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Seleccionar Alimento del Catalogo" FontAttributes="Bold" FontSize="12" />
+                    <Label Text="{loc:Translate AddRecipe_SelectFood}" FontAttributes="Bold" FontSize="12" />
                     <Picker ItemsSource="{Binding AvailableFoods}"
                             ItemDisplayBinding="{Binding Name}"
                             SelectedItem="{Binding SelectedFood}"
-                            Title="Toca para elegir ingrediente..." />
+                            Title="{loc:Translate AddRecipe_SelectFoodPlaceholder}" />
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Gramos requeridos" FontAttributes="Bold" FontSize="12" />
+                            <Label Text="{loc:Translate AddRecipe_GramsRequired}" FontAttributes="Bold" FontSize="12" />
                             <Entry Placeholder="100"
                                    Keyboard="Numeric"
                                    Text="{Binding IngredientGramsText}" />
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
-                                Text="+ Agregar Ingrediente"
+                                Text="{loc:Translate AddRecipe_AddIngredient}"
                                 VerticalOptions="End"
                                 Command="{Binding AddIngredientCommand}"
                                 FontSize="12" />
                     </Grid>
 
                     <!-- Lista de ingredientes agregados -->
-                    <Label Text="Ingredientes incorporados:"
+                    <Label Text="{loc:Translate AddRecipe_IngredientsListTitle}"
                            FontAttributes="Bold"
                            FontSize="12"
                            Margin="0, 6, 0, 0" />
@@ -115,7 +116,7 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Ingredients}"
                                          Spacing="6">
                         <BindableLayout.EmptyView>
-                            <Label Text="Aun no has agregado ingredientes."
+                            <Label Text="{loc:Translate AddRecipe_EmptyIngredients}"
                                    TextColor="Gray"
                                    FontSize="12"
                                    HorizontalTextAlignment="Center"
@@ -127,7 +128,7 @@
                                 <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
                                     <Label Grid.Column="0" Text="{Binding DisplayText}" FontAttributes="Bold" VerticalOptions="Center" />
                                     <Button Grid.Column="1"
-                                            Text="Quitar"
+                                            Text="{loc:Translate AddRecipe_Remove}"
                                             Command="{Binding Source={x:Reference ThisAddRecipePage}, Path=BindingContext.RemoveIngredientCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="#E74C3C"
@@ -142,7 +143,7 @@
             </Border>
 
             <!-- Seccion de Pasos Numerados -->
-            <Label Text="Pasos Numerados de Elaboracion"
+            <Label Text="{loc:Translate AddRecipe_PreparationSteps}"
                    FontAttributes="Bold"
                    FontSize="15" />
 
@@ -150,29 +151,29 @@
                     Padding="14"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Instruccion del Paso" FontAttributes="Bold" FontSize="12" />
-                    <Editor Placeholder="Describe detalladamente que hacer en este paso..."
+                    <Label Text="{loc:Translate AddRecipe_StepInstruction}" FontAttributes="Bold" FontSize="12" />
+                    <Editor Placeholder="{loc:Translate AddRecipe_StepInstructionPlaceholder}"
                             Text="{Binding CurrentStepInstruction}"
                             HeightRequest="60" />
 
-                    <Label Text="Imagen del Paso (Opcional)" FontAttributes="Bold" FontSize="12" />
+                    <Label Text="{loc:Translate AddRecipe_StepImage}" FontAttributes="Bold" FontSize="12" />
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                         <Entry Grid.Column="0"
-                               Placeholder="Ruta de imagen..."
+                               Placeholder="{loc:Translate AddRecipe_ImagePathPlaceholder}"
                                Text="{Binding CurrentStepImagePath}" />
                         <Button Grid.Column="1"
-                                Text="Examinar..."
+                                Text="{loc:Translate AddRecipe_BrowseButton}"
                                 Command="{Binding PickStepImageCommand}"
                                 FontSize="12" />
                     </Grid>
 
-                    <Button Text="+ Agregar Paso a la Receta"
+                    <Button Text="{loc:Translate AddRecipe_AddStep}"
                             Command="{Binding AddStepCommand}"
                             FontAttributes="Bold"
                             FontSize="12" />
 
                     <!-- Lista de Pasos Registrados -->
-                    <Label Text="Pasos de la receta:"
+                    <Label Text="{loc:Translate AddRecipe_StepsListTitle}"
                            FontAttributes="Bold"
                            FontSize="12"
                            Margin="0, 8, 0, 0" />
@@ -180,7 +181,7 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Steps}"
                                          Spacing="8">
                         <BindableLayout.EmptyView>
-                            <Label Text="Aun no has agregado pasos a la receta."
+                            <Label Text="{loc:Translate AddRecipe_EmptySteps}"
                                    TextColor="Gray"
                                    FontSize="12"
                                    HorizontalTextAlignment="Center"
@@ -196,7 +197,7 @@
                                         <Grid ColumnDefinitions="*, Auto">
                                             <Label Grid.Column="0" Text="{Binding StepTitle}" FontAttributes="Bold" />
                                             <Button Grid.Column="1"
-                                                    Text="Quitar"
+                                                    Text="{loc:Translate AddRecipe_Remove}"
                                                     Command="{Binding Source={x:Reference ThisAddRecipePage}, Path=BindingContext.RemoveStepCommand}"
                                                     CommandParameter="{Binding .}"
                                                     BackgroundColor="#E74C3C"
@@ -226,7 +227,7 @@
                    TextColor="#2980B9" />
 
             <!-- Boton Guardar Receta -->
-            <Button Text="Guardar Receta Completa"
+            <Button Text="{loc:Translate AddRecipe_SaveRecipe}"
                     Command="{Binding SaveRecipeCommand}"
                     FontAttributes="Bold"
                     HeightRequest="48" />

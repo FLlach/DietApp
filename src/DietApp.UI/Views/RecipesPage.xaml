@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
              xmlns:dto="clr-namespace:DietApp.Application.DTOs;assembly=DietApp.Application"
+             xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.RecipesPage"
              x:Name="ThisRecipesPage"
              x:DataType="vm:RecipesViewModel"
-             Title="Recetas y Preparaciones">
+             Title="{loc:Translate Recipes_Title}">
 
     <!--
     Como funciona: Pantalla principal del modulo de recetas. Muestra el catalogo de preparaciones culinarias
@@ -25,19 +26,19 @@
             <VerticalStackLayout Spacing="8">
                 <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                     <Label Grid.Column="0"
-                           Text="Recetario Nutricional"
+                           Text="{loc:Translate Recipes_Title}"
                            FontAttributes="Bold"
                            FontSize="18"
                            VerticalOptions="Center" />
 
                     <Button Grid.Column="1"
-                            Text="+ Nueva Receta"
+                            Text="{loc:Translate Recipes_NewRecipe}"
                             Command="{Binding NavigateToAddRecipeCommand}"
                             FontAttributes="Bold"
                             FontSize="12" />
                 </Grid>
 
-                <SearchBar Placeholder="Buscar recetas por titulo o descripcion..."
+                <SearchBar Placeholder="{loc:Translate Recipes_SearchPlaceholder}"
                            Text="{Binding SearchText}"
                            SearchCommand="{Binding SearchRecipesCommand}" />
             </VerticalStackLayout>
@@ -52,11 +53,11 @@
                                      VerticalOptions="Center"
                                      Spacing="12"
                                      Padding="30">
-                    <Label Text="No hay recetas registradas aun."
+                    <Label Text="{loc:Translate Recipes_Empty}"
                            HorizontalTextAlignment="Center"
                            TextColor="Gray"
                            FontSize="15" />
-                    <Button Text="Crear la primera receta"
+                    <Button Text="{loc:Translate Recipes_EmptyAction}"
                             Command="{Binding NavigateToAddRecipeCommand}"
                             HorizontalOptions="Center" />
                 </VerticalStackLayout>
@@ -118,7 +119,7 @@
                                        LineBreakMode="TailTruncation" />
 
                                 <!-- Boton de visualizacion de pasos -->
-                                <Button Text="Ver Pasos e Ingredientes"
+                                <Button Text="{loc:Translate Recipes_ViewSteps}"
                                         Command="{Binding Source={x:Reference ThisRecipesPage}, Path=BindingContext.SelectRecipeCommand}"
                                         CommandParameter="{Binding .}"
                                         Margin="0, 8, 0, 0"

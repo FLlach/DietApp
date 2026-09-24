@@ -1,3 +1,4 @@
+using DietApp.UI.Localization;
 using DietApp.UI.Views;
 
 namespace DietApp.UI;
@@ -5,9 +6,10 @@ namespace DietApp.UI;
 /// <summary>
 /// Como funciona: Code-behind de AppShell. Registra las rutas de navegacion dinamicas
 /// para pantallas secundarias como el detalle de receta (RecipeDetailPage) y el formulario
-/// de creacion de recetas (AddRecipePage).
-/// Por que se tomo esta decision: Permite navegar mediante Shell.Current.GoToAsync utilizando
-/// parametros de consulta fuertemente desacoplados de las instancias de vistas.
+/// de creacion de recetas (AddRecipePage), y actualiza dinamicamente los titulos de las pestanas
+/// al alternar entre ingles y espanol.
+/// Por que se tomo esta decision: Asegura que el cambio de idioma impacte inmediatamente en la barra
+/// de navegacion nativa inferior/superior en todas las plataformas soportadas por .NET MAUI.
 /// </summary>
 public partial class AppShell : Shell
 {
@@ -17,5 +19,22 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute(nameof(RecipeDetailPage), typeof(RecipeDetailPage));
         Routing.RegisterRoute(nameof(AddRecipePage), typeof(AddRecipePage));
+
+        LocalizationResourceManager.Instance.PropertyChanged += (s, e) =>
+        {
+            ApplyLocalizedTitles();
+        };
+
+        ApplyLocalizedTitles();
+    }
+
+    private void ApplyLocalizedTitles()
+    {
+        TabDailyTracking.Title = LocalizationResourceManager.Instance["Tab_DailyTracking"];
+        TabRecipes.Title = LocalizationResourceManager.Instance["Tab_Recipes"];
+        TabCatalog.Title = LocalizationResourceManager.Instance["Tab_Catalog"];
+        TabAddMeal.Title = LocalizationResourceManager.Instance["Tab_AddMeal"];
+        TabAddFood.Title = LocalizationResourceManager.Instance["Tab_AddFood"];
+        TabSettings.Title = LocalizationResourceManager.Instance["Tab_Settings"];
     }
 }
