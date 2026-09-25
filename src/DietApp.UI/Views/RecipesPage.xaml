@@ -77,6 +77,38 @@
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
+
+                <!-- Apartado de Alinos como opcion dentro de recetas -->
+                <Border StrokeShape="RoundRectangle 10"
+                        Padding="12, 10"
+                        Margin="0, 4, 0, 0"
+                        Stroke="{StaticResource HealthTeal}"
+                        StrokeThickness="1"
+                        Background="{AppThemeBinding Light=#F0FDFA, Dark=#132E2B}">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                            <Label Text="{loc:Translate Recipes_SeasoningsSectionTitle}"
+                                   FontAttributes="Bold"
+                                   FontSize="13"
+                                   TextColor="{StaticResource HealthTeal}" />
+                            <Label Text="{loc:Translate Recipes_SeasoningsSectionSubtitle}"
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}" />
+                        </VerticalStackLayout>
+
+                        <Button Grid.Column="1"
+                                Text="{loc:Translate Recipes_SeasoningsSectionAction}"
+                                Command="{Binding NavigateToSeasoningsCommand}"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                HeightRequest="44"
+                                MinimumHeightRequest="44"
+                                Padding="14, 0"
+                                BackgroundColor="{StaticResource HealthTeal}"
+                                TextColor="White"
+                                VerticalOptions="Center" />
+                    </Grid>
+                </Border>
             </VerticalStackLayout>
         </Border>
 

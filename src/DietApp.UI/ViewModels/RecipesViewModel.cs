@@ -193,4 +193,15 @@ public partial class RecipesViewModel : ObservableObject
     {
         await Shell.Current.GoToAsync("AddRecipePage");
     }
+
+    /// <summary>
+    /// Como funciona: Navega de forma modal a la pantalla de gestion de alinos y condimentos (SeasoningsPage).
+    /// Por que se tomo esta decision: Consolida los alinos como una opcion y subseccion modular dependiente
+    /// del recetario nutricional, liberando espacio en la barra de navegacion inferior (TabBar) para ergonomia movil.
+    /// </summary>
+    [RelayCommand]
+    public async Task NavigateToSeasoningsAsync()
+    {
+        await Shell.Current.GoToAsync("SeasoningsPage");
+    }
 }

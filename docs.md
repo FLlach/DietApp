@@ -86,16 +86,15 @@ Implementa el acceso a datos mediante **SQLite**:
 Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 
 * **Navegacion (`AppShell.xaml`)**:
-  * Pestanas en `TabBar` (optimizadas a 5 pestanas nucleares para ergonomia movil):
+  * Pestanas en `TabBar` (optimizadas a 4 pestanas nucleares para ergonomia movil):
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, banner reactivo de advertencias si se superan los limites maximos fijados por el usuario, detalle por comida y boton de accion rapida "+ Registrar Comida".
-    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion.
-    3. **Alinos** (`SeasoningsPage`): Gestion de marinadas, salsas y aderezos con aplicacion rapida a recetas.
-    4. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales y boton de accion "+ Nuevo Alimento".
-    5. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles) y configuracion personalizada de limites maximos diarios de minerales con activacion de alertas.
+    2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion, y apartado integrado para gestionar y abrir los **Alinos y Marinadas** (`SeasoningsPage`).
+    3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales y boton de accion "+ Nuevo Alimento".
+    4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles) y configuracion personalizada de limites maximos diarios de minerales con activacion de alertas.
   * Rutas registradas:
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
-    * `SeasoningsPage`: Vista dedicada de administracion de alinos.
+    * `SeasoningsPage`: Vista de administracion de alinos y marinadas, accesible modularmente desde la seccion de recetas.
     * `AddMealPage`: Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones), invocable contextualmente desde el seguimiento diario.
     * `AddFoodPage`: Formulario para ingresar alimentos adicionales al catalogo SQLite, invocable contextualmente desde el catalogo.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:

@@ -35,7 +35,6 @@ public partial class AppShell : Shell
     {
         TabDailyTracking.Title = LocalizationResourceManager.Instance["Tab_DailyTracking"];
         TabRecipes.Title = LocalizationResourceManager.Instance["Tab_Recipes"];
-        TabSeasonings.Title = LocalizationResourceManager.Instance["Tab_Seasonings"];
         TabCatalog.Title = LocalizationResourceManager.Instance["Tab_Catalog"];
         TabSettings.Title = LocalizationResourceManager.Instance["Tab_Settings"];
     }

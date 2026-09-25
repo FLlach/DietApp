@@ -31,13 +31,6 @@
                 Route="RecipesPage" />
         </Tab>
 
-        <Tab x:Name="TabSeasonings" Title="{loc:Translate Tab_Seasonings}">
-            <ShellContent
-                Title="{loc:Translate Tab_Seasonings}"
-                ContentTemplate="{DataTemplate views:SeasoningsPage}"
-                Route="SeasoningsPage" />
-        </Tab>
-
         <Tab x:Name="TabCatalog" Title="{loc:Translate Tab_Catalog}">
             <ShellContent
                 Title="{loc:Translate Tab_Catalog}"

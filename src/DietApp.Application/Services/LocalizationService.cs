@@ -184,6 +184,9 @@ public class LocalizationService : ILocalizationService
         ["Recipes_EmptyAction"] = "Crear la primera receta",
         ["Recipes_ViewSteps"] = "Ver Pasos e Ingredientes",
         ["Recipes_SortTitle"] = "Ordenar recetas por aporte mineral:",
+        ["Recipes_SeasoningsSectionTitle"] = "Apartado de Alinos y Marinadas",
+        ["Recipes_SeasoningsSectionSubtitle"] = "Administra salsas, aderezos y marinadas para incorporarlos a tus recetas con calculo mineral.",
+        ["Recipes_SeasoningsSectionAction"] = "Ver Alinos",
 
         // Ordenamiento por Minerales
         ["Sort_ByMineral"] = "Ordenar por mineral:",
@@ -385,6 +388,9 @@ public class LocalizationService : ILocalizationService
         ["Recipes_EmptyAction"] = "Create the first recipe",
         ["Recipes_ViewSteps"] = "View Steps & Ingredients",
         ["Recipes_SortTitle"] = "Sort recipes by mineral amount:",
+        ["Recipes_SeasoningsSectionTitle"] = "Seasonings & Marinades Section",
+        ["Recipes_SeasoningsSectionSubtitle"] = "Manage sauces, dressings and marinades to incorporate into your recipes with mineral calculations.",
+        ["Recipes_SeasoningsSectionAction"] = "View Seasonings",
 
         // Sorting by Minerals
         ["Sort_ByMineral"] = "Sort by mineral:",
