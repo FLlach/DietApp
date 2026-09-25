@@ -21,6 +21,7 @@ public partial class RecipeDetailViewModel : ObservableObject
     private readonly IRecipeService _recipeService;
     private readonly IMealTrackingService _mealTrackingService;
     private readonly ILocalizationService _localizationService;
+    private readonly IMineralAlertService _mineralAlertService;
 
     [ObservableProperty]
     public partial string RecipeIdString { get; set; } = string.Empty;
@@ -44,6 +45,9 @@ public partial class RecipeDetailViewModel : ObservableObject
     public partial string IntakeMessage { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial bool HasPortionWarnings { get; set; }
+
+    [ObservableProperty]
     public partial MineralSortOption? SelectedIngredientMineralOption { get; set; }
 
     [ObservableProperty]
@@ -53,15 +57,18 @@ public partial class RecipeDetailViewModel : ObservableObject
     public ObservableCollection<MineralSortOption> IngredientMineralOptions { get; } = new();
     public ObservableCollection<SortDirectionOption> IngredientDirectionOptions { get; } = new();
     public ObservableCollection<RecipeIngredientDto> DisplayedIngredients { get; } = new();
+    public ObservableCollection<RecipePortionWarningDto> PortionWarnings { get; } = new();
 
     public RecipeDetailViewModel(
         IRecipeService recipeService,
         IMealTrackingService mealTrackingService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IMineralAlertService mineralAlertService)
     {
         _recipeService = recipeService ?? throw new ArgumentNullException(nameof(recipeService));
         _mealTrackingService = mealTrackingService ?? throw new ArgumentNullException(nameof(mealTrackingService));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
+        _mineralAlertService = mineralAlertService ?? throw new ArgumentNullException(nameof(mineralAlertService));
 
         InitializeOptions();
         _localizationService.LanguageChanged += OnLanguageChanged;
@@ -71,6 +78,17 @@ public partial class RecipeDetailViewModel : ObservableObject
     {
         InitializeOptions();
         ApplyIngredientSort();
+        _ = EvaluatePortionWarningsAsync();
+    }
+
+    partial void OnIntakeDateChanged(DateTime value)
+    {
+        _ = EvaluatePortionWarningsAsync();
+    }
+
+    partial void OnServingsConsumedTextChanged(string value)
+    {
+        _ = EvaluatePortionWarningsAsync();
     }
 
     private void InitializeOptions()
@@ -142,11 +160,52 @@ public partial class RecipeDetailViewModel : ObservableObject
                 Recipe = await _recipeService.GetRecipeByIdAsync(id);
                 IntakeMessage = string.Empty;
                 ApplyIngredientSort();
+                await EvaluatePortionWarningsAsync();
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+    }
+
+    private async Task EvaluatePortionWarningsAsync()
+    {
+        if (Recipe == null || Recipe.MineralsPerServing == null || Recipe.MineralsPerServing.Count == 0)
+        {
+            PortionWarnings.Clear();
+            HasPortionWarnings = false;
+            return;
+        }
+
+        double servings = 1.0;
+        if (double.TryParse(ServingsConsumedText, out double parsedServings) && parsedServings > 0)
+        {
+            servings = parsedServings;
+        }
+
+        try
+        {
+            var dailyTotals = await _mealTrackingService.GetDailyMineralTotalsAsync(IntakeDate);
+            var warnings = _mineralAlertService.CheckRecipePortionWarnings(Recipe.MineralsPerServing, dailyTotals, servings);
+
+            PortionWarnings.Clear();
+            foreach (var warning in warnings)
+            {
+                PortionWarnings.Add(warning);
+            }
+
+            HasPortionWarnings = PortionWarnings.Count > 0;
+        }
+        catch
+        {
+            var warnings = _mineralAlertService.CheckRecipePortionWarnings(Recipe.MineralsPerServing, null, servings);
+            PortionWarnings.Clear();
+            foreach (var warning in warnings)
+            {
+                PortionWarnings.Add(warning);
+            }
+            HasPortionWarnings = PortionWarnings.Count > 0;
         }
     }
 
@@ -224,6 +283,7 @@ public partial class RecipeDetailViewModel : ObservableObject
 
             string portionWord = servings == 1 ? "1 porcion" : $"{servings:0.##} porciones";
             IntakeMessage = $"Agregado: {Recipe.Title} ({portionWord}) a {SelectedMealTypeName} del {IntakeDate:dd/MM/yyyy}. Balance de minerales actualizado.";
+            await EvaluatePortionWarningsAsync();
         }
         catch (Exception ex)
         {

@@ -170,12 +170,21 @@ La aplicacion permite al usuario definir limites maximos diarios para controlar 
     * **`ExceededLimit` (Limite superado)**: Se activa cuando el consumo diario alcanza o supera el 100% del maximo fijado.
   * Genera objetos `MineralAlertExceededDto` con cantidad actual, maximo permitido, exceso/margen, porcentaje alcanzado, nivel de severidad y formato visual (colores y etiquetas).
 
-### 6.3. Disparo Visual de Alertas (`MealTrackingPage` / `MealTrackingViewModel`)
+### 6.3. Disparo Visual de Alertas en Seguimiento Diario (`MealTrackingPage` / `MealTrackingViewModel`)
 * Al consultar cualquier fecha en el seguimiento diario, se evaluan los totales acumulados.
 * Si uno o varios minerales se encuentran proximos al limite o lo han superado, se despliega el banner de advertencia destacado.
 * Cada alerta se diferencia visualmente segun su nivel de severidad:
   * **Avisos preventivos (`NearLimit`)**: Estilizados en tonos ambar/dorado con la insignia "AVISO PREVENTIVO" / "EARLY WARNING", indicando el porcentaje consumido y el limite objetivo.
   * **Limites superados (`ExceededLimit`)**: Estilizados en tonos rojo/coral con la insignia "LIMITE SUPERADO" / "LIMIT EXCEEDED", detallando el exceso en miligramos y el porcentaje total alcanzado.
+
+### 6.4. Advertencias Preventivas al Consultar Recetas (`RecipeDetailPage` / `RecipeDetailViewModel`)
+* Al entrar en la vista de detalle de cualquier receta culinaria, el sistema audita de forma proactiva el contenido mineral por porcion contra los limites maximos fijados por el usuario.
+* El metodo `CheckRecipePortionWarnings` en `IMineralAlertService` evalua:
+  * Si consumir una sola porcion supera de forma individual el limite diario maximo fijado (`Portion >= Max`).
+  * Si consumir la porcion sumada al consumo ya acumulado en la fecha seleccionada supera el limite diario (`CurrentDaily + Portion >= Max`).
+  * Si consumir la porcion alcanza o supera el umbral preventivo configurado (`Projected >= Max * WarningPercentage`).
+* Si se detecta un exceso o aviso preventivo, se despliega de inmediato un banner destacado en la parte superior de la receta con badges coloreados (`LIMITE SUPERADO` / `AVISO PREVENTIVO`), desglosando el aporte de la receta, el consumo del dia y el margen de exceso en miligramos.
+* La evaluacion se actualiza de manera reactiva si el usuario modifica el numero de porciones a registrar o cambia la fecha de ingesta.
 
 ---
 

@@ -206,6 +206,8 @@ public class LocalizationService : ILocalizationService
         ["RecipeDetail_LogAction"] = "Registrar en mi Comida",
         ["RecipeDetail_IngredientsTitle"] = "Ingredientes de la Receta",
         ["RecipeDetail_StepsTitle"] = "Pasos de Elaboracion Numerados",
+        ["RecipeDetail_PortionWarningTitle"] = "Advertencia de Limite de Minerales",
+        ["RecipeDetail_PortionWarningSubtitle"] = "Atencion: al consumir esta receta se superara o estara cerca de superar el limite de los siguientes minerales:",
 
         // Minerales individuales
         ["Mineral_Phosphorus"] = "Fosforo (mg)",
@@ -396,6 +398,8 @@ public class LocalizationService : ILocalizationService
         ["RecipeDetail_LogAction"] = "Record in my Meal",
         ["RecipeDetail_IngredientsTitle"] = "Recipe Ingredients",
         ["RecipeDetail_StepsTitle"] = "Numbered Preparation Steps",
+        ["RecipeDetail_PortionWarningTitle"] = "Mineral Limit Warning",
+        ["RecipeDetail_PortionWarningSubtitle"] = "Attention: consuming this recipe will exceed or approach your daily limit for the following minerals:",
 
         // Individual minerals
         ["Mineral_Phosphorus"] = "Phosphorus (mg)",

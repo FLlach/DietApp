@@ -56,6 +56,66 @@
                        Margin="0, 4, 0, 0" />
             </VerticalStackLayout>
 
+            <!-- Banner de Advertencia de Limite de Minerales -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="14"
+                    IsVisible="{Binding HasPortionWarnings}"
+                    Stroke="#E67E22"
+                    StrokeThickness="1.5"
+                    Background="{AppThemeBinding Light=#FEF9E7, Dark=#2E2315}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{loc:Translate RecipeDetail_PortionWarningTitle}"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light=#B9770E, Dark=#F39C12}" />
+
+                    <Label Text="{loc:Translate RecipeDetail_PortionWarningSubtitle}"
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#7D6608, Dark=#FAD7A0}" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding PortionWarnings}"
+                                         Spacing="6">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:RecipePortionWarningDto">
+                                <Border StrokeShape="RoundRectangle 8"
+                                        Padding="10, 8"
+                                        Stroke="{Binding CardBorderHex}"
+                                        StrokeThickness="1"
+                                        Background="{Binding CardBackgroundHex}">
+                                    <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                                        <Border Grid.Column="0"
+                                                StrokeShape="RoundRectangle 4"
+                                                Padding="6, 2"
+                                                Background="{Binding CardBorderHex}"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding SeverityBadgeText}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding IconText}"
+                                               FontAttributes="Bold"
+                                               FontSize="13"
+                                               TextColor="{Binding CardTextHex}"
+                                               VerticalOptions="Center" />
+
+                                        <Label Grid.Column="2"
+                                               Text="{Binding WarningMessage}"
+                                               FontAttributes="Bold"
+                                               FontSize="12"
+                                               TextColor="{Binding CardTextHex}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Resumen Completo de Minerales por Porcion -->
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
