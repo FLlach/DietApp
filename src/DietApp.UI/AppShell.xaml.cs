@@ -20,6 +20,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(RecipeDetailPage), typeof(RecipeDetailPage));
         Routing.RegisterRoute(nameof(AddRecipePage), typeof(AddRecipePage));
         Routing.RegisterRoute(nameof(SeasoningsPage), typeof(SeasoningsPage));
+        Routing.RegisterRoute(nameof(AddMealPage), typeof(AddMealPage));
+        Routing.RegisterRoute(nameof(AddFoodPage), typeof(AddFoodPage));
 
         LocalizationResourceManager.Instance.PropertyChanged += (s, e) =>
         {
@@ -35,8 +37,6 @@ public partial class AppShell : Shell
         TabRecipes.Title = LocalizationResourceManager.Instance["Tab_Recipes"];
         TabSeasonings.Title = LocalizationResourceManager.Instance["Tab_Seasonings"];
         TabCatalog.Title = LocalizationResourceManager.Instance["Tab_Catalog"];
-        TabAddMeal.Title = LocalizationResourceManager.Instance["Tab_AddMeal"];
-        TabAddFood.Title = LocalizationResourceManager.Instance["Tab_AddFood"];
         TabSettings.Title = LocalizationResourceManager.Instance["Tab_Settings"];
     }
 }

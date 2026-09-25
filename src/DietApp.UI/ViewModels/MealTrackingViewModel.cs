@@ -103,4 +103,10 @@ public partial class MealTrackingViewModel : ObservableObject
         await _mealTrackingService.DeleteMealAsync(mealId);
         await LoadDayDataAsync();
     }
+
+    [RelayCommand]
+    public async Task NavigateToAddMealAsync()
+    {
+        await Shell.Current.GoToAsync("AddMealPage");
+    }
 }

@@ -66,7 +66,7 @@
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
                     IsVisible="{Binding HasPortionWarnings}"
-                    Stroke="#E67E22"
+                    Stroke="{StaticResource WarningAmber}"
                     StrokeThickness="1.5"
                     Background="{AppThemeBinding Light=#FEF9E7, Dark=#2E2315}">
                 <VerticalStackLayout Spacing="8">
@@ -196,7 +196,7 @@
                                         HeightRequest="44"
                                         MinimumHeightRequest="44"
                                         Padding="14, 0"
-                                        BackgroundColor="#27AE60"
+                                        BackgroundColor="{StaticResource HealthTeal}"
                                         TextColor="White" />
                             </Grid>
                         </VerticalStackLayout>
@@ -206,7 +206,7 @@
                     <Label Text="{Binding IntakeMessage}"
                            FontAttributes="Bold"
                            FontSize="12"
-                           TextColor="#1E8449" />
+                           TextColor="{StaticResource HealthTeal}" />
                 </VerticalStackLayout>
             </Border>
 

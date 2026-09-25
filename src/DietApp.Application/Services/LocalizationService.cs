@@ -339,7 +339,16 @@ public class LocalizationService : ILocalizationService
         ["Alert_Severity_Exceeded"] = "LIMITE SUPERADO",
         ["Alert_Severity_NearLimit"] = "AVISO PREVENTIVO",
         ["Settings_AboutTitle"] = "Acerca de DietApp",
-        ["Settings_AboutDescription"] = "Aplicacion especializada en control de minerales y recetas con persistencia SQLite y .NET MAUI."
+        ["Settings_AboutDescription"] = "Aplicacion especializada en control de minerales y recetas con persistencia SQLite y .NET MAUI.",
+        ["Common_Select"] = "Seleccionar",
+        ["Common_Remove"] = "Quitar",
+        ["FoodCatalog_Mineral"] = "Mineral",
+        ["FoodCatalog_MinMg"] = "Min (mg)",
+        ["FoodCatalog_MaxMg"] = "Max (mg)",
+        ["FoodCatalog_NewFood"] = "+ Nuevo Alimento",
+        ["DailyTracking_AddMeal"] = "+ Registrar Comida",
+        ["AddMeal_ChooseFoodPlaceholder"] = "Toca para elegir alimento...",
+        ["AddMeal_ChooseRecipePlaceholder"] = "Toca para elegir receta..."
     };
 
     private static readonly Dictionary<string, string> EnglishStrings = new(StringComparer.OrdinalIgnoreCase)
@@ -531,6 +540,15 @@ public class LocalizationService : ILocalizationService
         ["Alert_Severity_Exceeded"] = "LIMIT EXCEEDED",
         ["Alert_Severity_NearLimit"] = "EARLY WARNING",
         ["Settings_AboutTitle"] = "About DietApp",
-        ["Settings_AboutDescription"] = "Specialized application for mineral tracking and recipes with SQLite and .NET MAUI persistence."
+        ["Settings_AboutDescription"] = "Specialized application for mineral tracking and recipes with SQLite and .NET MAUI persistence.",
+        ["Common_Select"] = "Select",
+        ["Common_Remove"] = "Remove",
+        ["FoodCatalog_Mineral"] = "Mineral",
+        ["FoodCatalog_MinMg"] = "Min (mg)",
+        ["FoodCatalog_MaxMg"] = "Max (mg)",
+        ["FoodCatalog_NewFood"] = "+ New Food",
+        ["DailyTracking_AddMeal"] = "+ Log Meal",
+        ["AddMeal_ChooseFoodPlaceholder"] = "Tap to choose food...",
+        ["AddMeal_ChooseRecipePlaceholder"] = "Tap to choose recipe..."
     };
 }

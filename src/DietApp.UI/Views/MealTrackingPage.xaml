@@ -58,7 +58,7 @@
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
                     IsVisible="{Binding HasExceededAlerts}"
-                    Stroke="#E67E22"
+                    Stroke="{StaticResource WarningAmber}"
                     StrokeThickness="1.5"
                     Background="{AppThemeBinding Light=#FEF9E7, Dark=#2E2315}">
                 <VerticalStackLayout Spacing="8">
@@ -147,17 +147,38 @@
             </Border>
 
             <!-- Lista de Comidas del Dia -->
-            <Label Text="{loc:Translate DailyTracking_MealsDetail}"
-                   FontAttributes="Bold"
-                   FontSize="17" />
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                <Label Grid.Column="0"
+                       Text="{loc:Translate DailyTracking_MealsDetail}"
+                       FontAttributes="Bold"
+                       FontSize="17"
+                       VerticalOptions="Center" />
+
+                <Button Grid.Column="1"
+                        Text="{loc:Translate DailyTracking_AddMeal}"
+                        Command="{Binding NavigateToAddMealCommand}"
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        HeightRequest="44"
+                        MinimumHeightRequest="44"
+                        Padding="12, 0"
+                        VerticalOptions="Center" />
+            </Grid>
 
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding DayMeals}"
                                  Spacing="12">
                 <BindableLayout.EmptyView>
-                    <Label Text="{loc:Translate DailyTracking_EmptyMeals}"
-                           TextColor="Gray"
-                           HorizontalTextAlignment="Center"
-                           Margin="0, 20, 0, 20" />
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0, 20, 0, 20">
+                        <Label Text="{loc:Translate DailyTracking_EmptyMeals}"
+                               TextColor="Gray"
+                               HorizontalTextAlignment="Center" />
+                        <Button Text="{loc:Translate DailyTracking_AddMeal}"
+                                Command="{Binding NavigateToAddMealCommand}"
+                                FontSize="12"
+                                HeightRequest="44"
+                                MinimumHeightRequest="44"
+                                HorizontalOptions="Center" />
+                    </VerticalStackLayout>
                 </BindableLayout.EmptyView>
 
                 <BindableLayout.ItemTemplate>
@@ -176,7 +197,7 @@
                                             Text="{loc:Translate DailyTracking_Delete}"
                                             Command="{Binding Source={x:Reference ThisTrackingPage}, Path=BindingContext.DeleteMealCommand}"
                                             CommandParameter="{Binding Id}"
-                                            BackgroundColor="#E74C3C"
+                                            BackgroundColor="{StaticResource AlertRed}"
                                             TextColor="White"
                                             FontSize="12"
                                             HeightRequest="44"

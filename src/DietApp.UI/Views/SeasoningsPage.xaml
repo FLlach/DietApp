@@ -39,7 +39,7 @@
                         HeightRequest="44"
                         MinimumHeightRequest="44"
                         Padding="14, 0"
-                        BackgroundColor="#27AE60"
+                        BackgroundColor="{StaticResource HealthTeal}"
                         TextColor="White"
                         VerticalOptions="Center" />
             </Grid>
@@ -54,12 +54,12 @@
             <Border StrokeShape="RoundRectangle 8"
                     Padding="12, 8"
                     Background="{AppThemeBinding Light=#E8F8F5, Dark=#142D27}"
-                    Stroke="#2ECC71"
+                    Stroke="{StaticResource HealthTeal}"
                     StrokeThickness="1"
                     IsVisible="{Binding HasStatusMessage}">
                 <Label Text="{Binding StatusMessage}"
                        FontSize="13"
-                       TextColor="#16A085"
+                       TextColor="{StaticResource HealthTeal}"
                        FontAttributes="Bold" />
             </Border>
 
@@ -67,7 +67,7 @@
             <Border StrokeShape="RoundRectangle 12"
                     Padding="16"
                     IsVisible="{Binding IsCreatePanelVisible}"
-                    Stroke="#27AE60"
+                    Stroke="{StaticResource HealthTeal}"
                     StrokeThickness="1.5"
                     Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                 <VerticalStackLayout Spacing="14">
@@ -191,7 +191,7 @@
                                 FontAttributes="Bold"
                                 HeightRequest="44"
                                 FontSize="13"
-                                BackgroundColor="#27AE60"
+                                BackgroundColor="{StaticResource HealthTeal}"
                                 TextColor="White" />
 
                         <Button Grid.Column="1"
@@ -199,7 +199,7 @@
                                 Command="{Binding ToggleCreatePanelCommand}"
                                 HeightRequest="44"
                                 FontSize="13"
-                                BackgroundColor="#95A5A6"
+                                BackgroundColor="{StaticResource Gray500}"
                                 TextColor="White" />
                     </Grid>
                 </VerticalStackLayout>
@@ -260,7 +260,7 @@
                                             HeightRequest="44"
                                             MinimumHeightRequest="44"
                                             Padding="12, 4"
-                                            BackgroundColor="#E74C3C"
+                                            BackgroundColor="{StaticResource AlertRed}"
                                             TextColor="White"
                                             VerticalOptions="Center" />
                                 </Grid>

@@ -137,4 +137,10 @@ public partial class FoodCatalogViewModel : ObservableObject
         MaximumMilligramsText = string.Empty;
         await LoadFoodsAsync();
     }
+
+    [RelayCommand]
+    public async Task NavigateToAddFoodAsync()
+    {
+        await Shell.Current.GoToAsync("AddFoodPage");
+    }
 }

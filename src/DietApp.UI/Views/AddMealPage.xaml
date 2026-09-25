@@ -65,7 +65,7 @@
                     <Picker ItemsSource="{Binding AvailableFoods}"
                             ItemDisplayBinding="{Binding Name}"
                             SelectedItem="{Binding SelectedFood}"
-                            Title="Toca para elegir alimento..." />
+                            Title="{loc:Translate AddMeal_ChooseFoodPlaceholder}" />
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0">
@@ -98,7 +98,7 @@
                     <Picker ItemsSource="{Binding AvailableRecipes}"
                             ItemDisplayBinding="{Binding Title}"
                             SelectedItem="{Binding SelectedRecipe}"
-                            Title="Toca para elegir receta..." />
+                            Title="{loc:Translate AddMeal_ChooseRecipePlaceholder}" />
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0">
@@ -113,7 +113,7 @@
                                 VerticalOptions="End"
                                 HeightRequest="44"
                                 MinimumHeightRequest="44"
-                                BackgroundColor="#27AE60"
+                                BackgroundColor="{StaticResource HealthTeal}"
                                 TextColor="White"
                                 Command="{Binding AddRecipeToMealCommand}" />
                     </Grid>
@@ -144,10 +144,10 @@
                                     <Label Grid.Column="0" Text="{Binding FoodName}" FontAttributes="Bold" VerticalOptions="Center" />
                                     <Label Grid.Column="1" Text="{Binding GramsDisplay}" TextColor="Gray" VerticalOptions="Center" />
                                     <Button Grid.Column="2"
-                                            Text="Quitar"
+                                            Text="{loc:Translate Common_Remove}"
                                             Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.RemoveItemCommand}"
                                             CommandParameter="{Binding .}"
-                                            BackgroundColor="#E74C3C"
+                                            BackgroundColor="{StaticResource AlertRed}"
                                             TextColor="White"
                                             FontSize="12"
                                             HeightRequest="44"
@@ -166,7 +166,7 @@
             <Label Text="{Binding StatusMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="#2980B9" />
+                   TextColor="{StaticResource HealthTeal}" />
 
             <!-- Boton Guardar Comida -->
             <Button Text="{loc:Translate AddMeal_SaveButton}"

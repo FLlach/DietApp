@@ -24,6 +24,12 @@
                    FontSize="13"
                    TextColor="Gray" />
 
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center" />
+
             <!-- Datos Generales -->
             <Border StrokeShape="RoundRectangle 10"
                     Padding="14"
@@ -101,7 +107,7 @@
             <Label Text="{Binding FeedbackMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="#27AE60" />
+                   TextColor="{StaticResource HealthTeal}" />
 
             <!-- Boton Guardar -->
             <Button Text="{loc:Translate AddFood_SaveButton}"

@@ -45,20 +45,6 @@
                 Route="FoodCatalogPage" />
         </Tab>
 
-        <Tab x:Name="TabAddMeal" Title="{loc:Translate Tab_AddMeal}">
-            <ShellContent
-                Title="{loc:Translate Tab_AddMeal}"
-                ContentTemplate="{DataTemplate views:AddMealPage}"
-                Route="AddMealPage" />
-        </Tab>
-
-        <Tab x:Name="TabAddFood" Title="{loc:Translate Tab_AddFood}">
-            <ShellContent
-                Title="{loc:Translate Tab_AddFood}"
-                ContentTemplate="{DataTemplate views:AddFoodPage}"
-                Route="AddFoodPage" />
-        </Tab>
-
         <Tab x:Name="TabSettings" Title="{loc:Translate Tab_Settings}">
             <ShellContent
                 Title="{loc:Translate Tab_Settings}"

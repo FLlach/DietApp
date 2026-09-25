@@ -23,9 +23,23 @@
                 StrokeShape="RoundRectangle 12"
                 Background="{AppThemeBinding Light=#F8F9FA, Dark=#1E1E24}">
             <VerticalStackLayout Spacing="10">
-                <Label Text="{loc:Translate FoodCatalog_FilterTitle}"
-                       FontAttributes="Bold"
-                       FontSize="16" />
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{loc:Translate FoodCatalog_FilterTitle}"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           VerticalOptions="Center" />
+
+                    <Button Grid.Column="1"
+                            Text="{loc:Translate FoodCatalog_NewFood}"
+                            Command="{Binding NavigateToAddFoodCommand}"
+                            FontAttributes="Bold"
+                            FontSize="12"
+                            HeightRequest="44"
+                            MinimumHeightRequest="44"
+                            Padding="12, 0"
+                            VerticalOptions="Center" />
+                </Grid>
 
                 <!-- Buscador de texto -->
                 <SearchBar Placeholder="{loc:Translate FoodCatalog_SearchName}"
@@ -35,14 +49,14 @@
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
                     <!-- Selector de Mineral -->
                     <VerticalStackLayout Grid.Column="0">
-                        <Label Text="Mineral" FontSize="12" TextColor="Gray" />
+                        <Label Text="{loc:Translate FoodCatalog_Mineral}" FontSize="12" TextColor="Gray" />
                         <Picker ItemsSource="{Binding MineralOptions}"
                                 SelectedItem="{Binding SelectedMineralName}" />
                     </VerticalStackLayout>
 
                     <!-- Minimo mg -->
                     <VerticalStackLayout Grid.Column="1">
-                        <Label Text="Min (mg)" FontSize="12" TextColor="Gray" />
+                        <Label Text="{loc:Translate FoodCatalog_MinMg}" FontSize="12" TextColor="Gray" />
                         <Entry Placeholder="0"
                                Keyboard="Numeric"
                                Text="{Binding MinimumMilligramsText}" />
@@ -50,7 +64,7 @@
 
                     <!-- Maximo mg -->
                     <VerticalStackLayout Grid.Column="2">
-                        <Label Text="Max (mg)" FontSize="12" TextColor="Gray" />
+                        <Label Text="{loc:Translate FoodCatalog_MaxMg}" FontSize="12" TextColor="Gray" />
                         <Entry Placeholder="Max"
                                Keyboard="Numeric"
                                Text="{Binding MaximumMilligramsText}" />

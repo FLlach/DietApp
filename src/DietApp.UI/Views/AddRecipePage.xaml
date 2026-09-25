@@ -136,7 +136,7 @@
                                 <Button Grid.Column="1"
                                         Text="{loc:Translate AddRecipe_ApplySeasoning}"
                                         Command="{Binding ApplySeasoningCommand}"
-                                        BackgroundColor="#F39C12"
+                                        BackgroundColor="{StaticResource WarningAmber}"
                                         TextColor="White"
                                         FontSize="11"
                                         Padding="10, 4"
@@ -270,7 +270,7 @@
             <Label Text="{Binding StatusMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="#2980B9" />
+                   TextColor="{StaticResource HealthTeal}" />
 
             <!-- Boton Guardar Receta -->
             <Button Text="{loc:Translate AddRecipe_SaveRecipe}"
