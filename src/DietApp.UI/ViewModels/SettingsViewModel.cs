@@ -19,10 +19,20 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IMineralAlertService _mineralAlertService;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SpanishBorderColor))]
+    [NotifyPropertyChangedFor(nameof(SpanishBorderThickness))]
     public partial bool IsSpanishSelected { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EnglishBorderColor))]
+    [NotifyPropertyChangedFor(nameof(EnglishBorderThickness))]
     public partial bool IsEnglishSelected { get; set; }
+
+    public Color SpanishBorderColor => IsSpanishSelected ? Color.FromArgb("#0F766E") : Color.FromArgb("#CBD5E1");
+    public Color EnglishBorderColor => IsEnglishSelected ? Color.FromArgb("#0F766E") : Color.FromArgb("#CBD5E1");
+
+    public double SpanishBorderThickness => IsSpanishSelected ? 2.5 : 1.0;
+    public double EnglishBorderThickness => IsEnglishSelected ? 2.5 : 1.0;
 
     [ObservableProperty]
     public partial string StatusMessage { get; set; } = string.Empty;

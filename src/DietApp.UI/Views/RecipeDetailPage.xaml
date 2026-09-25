@@ -19,6 +19,12 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="14" Spacing="16">
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center" />
+
             <!-- Imagen Final de la Receta Terminada -->
             <Border StrokeShape="RoundRectangle 14"
                     Padding="0"
@@ -187,6 +193,9 @@
                                         Text="{loc:Translate RecipeDetail_LogAction}"
                                         Command="{Binding AddToDailyIntakeCommand}"
                                         FontAttributes="Bold"
+                                        HeightRequest="44"
+                                        MinimumHeightRequest="44"
+                                        Padding="14, 0"
                                         BackgroundColor="#27AE60"
                                         TextColor="White" />
                             </Grid>

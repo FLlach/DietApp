@@ -22,6 +22,12 @@
                    FontAttributes="Bold"
                    FontSize="18" />
 
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center" />
+
             <!-- Informacion Basica -->
             <Border StrokeShape="RoundRectangle 10"
                     Padding="14"
@@ -70,7 +76,7 @@
                     <Border StrokeShape="RoundRectangle 8"
                             HeightRequest="140"
                             Padding="0"
-                            IsVisible="{Binding FinalImagePath, Converter={x:Null}}">
+                            IsVisible="{Binding HasFinalImage}">
                         <Image Source="{Binding FinalImagePath}"
                                Aspect="AspectFill" />
                     </Border>
@@ -165,8 +171,12 @@
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="#E74C3C"
                                             TextColor="White"
-                                            FontSize="11"
-                                            Padding="6, 2" />
+                                            FontSize="12"
+                                            HeightRequest="44"
+                                            MinimumHeightRequest="44"
+                                            MinimumWidthRequest="44"
+                                            Padding="12, 4"
+                                            VerticalOptions="Center" />
                                 </Grid>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -226,16 +236,20 @@
                                         Padding="10"
                                         Background="{AppThemeBinding Light=#F8F9FA, Dark=#1A252F}">
                                     <VerticalStackLayout Spacing="6">
-                                        <Grid ColumnDefinitions="*, Auto">
-                                            <Label Grid.Column="0" Text="{Binding StepTitle}" FontAttributes="Bold" />
+                                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                            <Label Grid.Column="0" Text="{Binding StepTitle}" FontAttributes="Bold" VerticalOptions="Center" />
                                             <Button Grid.Column="1"
                                                     Text="{loc:Translate AddRecipe_Remove}"
                                                     Command="{Binding Source={x:Reference ThisAddRecipePage}, Path=BindingContext.RemoveStepCommand}"
                                                     CommandParameter="{Binding .}"
                                                     BackgroundColor="#E74C3C"
                                                     TextColor="White"
-                                                    FontSize="10"
-                                                    Padding="6, 2" />
+                                                    FontSize="12"
+                                                    HeightRequest="44"
+                                                    MinimumHeightRequest="44"
+                                                    MinimumWidthRequest="44"
+                                                    Padding="12, 4"
+                                                    VerticalOptions="Center" />
                                         </Grid>
 
                                         <Label Text="{Binding Instruction}" FontSize="13" />

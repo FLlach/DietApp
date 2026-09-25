@@ -41,7 +41,8 @@
                         <Border Grid.Column="0"
                                 StrokeShape="RoundRectangle 10"
                                 Padding="12"
-                                Stroke="{Binding IsSpanishSelected, Converter={x:Null}}"
+                                Stroke="{Binding SpanishBorderColor}"
+                                StrokeThickness="{Binding SpanishBorderThickness}"
                                 Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="ES"
@@ -55,9 +56,11 @@
                                        HorizontalTextAlignment="Center" />
                                 <Button Text="Seleccionar"
                                         Command="{Binding SelectSpanishCommand}"
-                                        FontSize="11"
-                                        Padding="10, 4"
-                                        HeightRequest="36"
+                                        FontSize="12"
+                                        Padding="12, 6"
+                                        HeightRequest="44"
+                                        MinimumHeightRequest="44"
+                                        MinimumWidthRequest="44"
                                         BackgroundColor="{AppThemeBinding Light=#2980B9, Dark=#3498DB}"
                                         TextColor="White" />
                             </VerticalStackLayout>
@@ -67,7 +70,8 @@
                         <Border Grid.Column="1"
                                 StrokeShape="RoundRectangle 10"
                                 Padding="12"
-                                Stroke="{Binding IsEnglishSelected, Converter={x:Null}}"
+                                Stroke="{Binding EnglishBorderColor}"
+                                StrokeThickness="{Binding EnglishBorderThickness}"
                                 Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="EN"
@@ -81,9 +85,11 @@
                                        HorizontalTextAlignment="Center" />
                                 <Button Text="Select"
                                         Command="{Binding SelectEnglishCommand}"
-                                        FontSize="11"
-                                        Padding="10, 4"
-                                        HeightRequest="36"
+                                        FontSize="12"
+                                        Padding="12, 6"
+                                        HeightRequest="44"
+                                        MinimumHeightRequest="44"
+                                        MinimumWidthRequest="44"
                                         BackgroundColor="{AppThemeBinding Light=#27AE60, Dark=#2ECC71}"
                                         TextColor="White" />
                             </VerticalStackLayout>

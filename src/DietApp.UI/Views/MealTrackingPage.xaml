@@ -18,6 +18,12 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="14" Spacing="16">
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center" />
+
             <!-- Barra de Navegacion por Fechas -->
             <Border StrokeShape="RoundRectangle 10"
                     Padding="12"
@@ -26,6 +32,9 @@
                     <Button Grid.Column="0"
                             Text="{loc:Translate DailyTracking_PreviousDay}"
                             Command="{Binding GoToPreviousDayCommand}"
+                            HeightRequest="44"
+                            MinimumHeightRequest="44"
+                            Padding="12, 0"
                             FontSize="12" />
 
                     <Label Grid.Column="1"
@@ -38,6 +47,9 @@
                     <Button Grid.Column="2"
                             Text="{loc:Translate DailyTracking_NextDay}"
                             Command="{Binding GoToNextDayCommand}"
+                            HeightRequest="44"
+                            MinimumHeightRequest="44"
+                            Padding="12, 0"
                             FontSize="12" />
                 </Grid>
             </Border>
@@ -166,8 +178,11 @@
                                             CommandParameter="{Binding Id}"
                                             BackgroundColor="#E74C3C"
                                             TextColor="White"
-                                            FontSize="11"
-                                            Padding="8, 2" />
+                                            FontSize="12"
+                                            HeightRequest="44"
+                                            MinimumHeightRequest="44"
+                                            Padding="12, 4"
+                                            VerticalOptions="Center" />
                                 </Grid>
 
                                 <!-- Alimentos de la comida -->

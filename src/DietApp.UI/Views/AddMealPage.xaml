@@ -22,6 +22,12 @@
                    FontAttributes="Bold"
                    FontSize="18" />
 
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center" />
+
             <!-- Encabezado de la comida -->
             <Border StrokeShape="RoundRectangle 10"
                     Padding="14"
@@ -72,6 +78,8 @@
                         <Button Grid.Column="1"
                                 Text="{loc:Translate AddMeal_AddFoodButton}"
                                 VerticalOptions="End"
+                                HeightRequest="44"
+                                MinimumHeightRequest="44"
                                 Command="{Binding AddFoodToMealCommand}" />
                     </Grid>
                 </VerticalStackLayout>
@@ -103,6 +111,8 @@
                         <Button Grid.Column="1"
                                 Text="{loc:Translate AddMeal_AddRecipeButton}"
                                 VerticalOptions="End"
+                                HeightRequest="44"
+                                MinimumHeightRequest="44"
                                 BackgroundColor="#27AE60"
                                 TextColor="White"
                                 Command="{Binding AddRecipeToMealCommand}" />
@@ -139,8 +149,12 @@
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="#E74C3C"
                                             TextColor="White"
-                                            FontSize="11"
-                                            Padding="6, 2" />
+                                            FontSize="12"
+                                            HeightRequest="44"
+                                            MinimumHeightRequest="44"
+                                            MinimumWidthRequest="44"
+                                            Padding="12, 4"
+                                            VerticalOptions="Center" />
                                 </Grid>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>

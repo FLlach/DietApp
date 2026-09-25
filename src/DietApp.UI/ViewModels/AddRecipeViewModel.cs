@@ -32,7 +32,10 @@ public partial class AddRecipeViewModel : ObservableObject
     public partial string ServingsText { get; set; } = "2";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFinalImage))]
     public partial string FinalImagePath { get; set; } = string.Empty;
+
+    public bool HasFinalImage => !string.IsNullOrWhiteSpace(FinalImagePath);
 
     [ObservableProperty]
     public partial FoodItemDto? SelectedFood { get; set; }

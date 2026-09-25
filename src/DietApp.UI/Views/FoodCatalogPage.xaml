@@ -70,6 +70,14 @@
             </VerticalStackLayout>
         </Border>
 
+        <!-- Indicador de Carga -->
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource Primary}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+
         <!-- Lista de Alimentos con perfil de minerales -->
         <CollectionView Grid.Row="1"
                         ItemsSource="{Binding Foods}"

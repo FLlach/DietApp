@@ -38,7 +38,10 @@ public partial class SeasoningsViewModel : ObservableObject
     public partial string GramsText { get; set; } = "15";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     public partial string StatusMessage { get; set; } = string.Empty;
+
+    public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
 
     [ObservableProperty]
     public partial bool HasSeasonings { get; set; }

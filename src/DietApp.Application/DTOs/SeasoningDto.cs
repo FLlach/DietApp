@@ -21,6 +21,11 @@ public class SeasoningDto
     public int ItemsCount => Items?.Count ?? 0;
 
     /// <summary>
+    /// Indica si el alino cuenta con una descripcion no vacia para visibilidad reactiva en la interfaz.
+    /// </summary>
+    public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
+
+    /// <summary>
     /// Resumen sintetico de ingredientes y gramos totales para badges y pickers.
     /// </summary>
     public string SummaryDisplayText
