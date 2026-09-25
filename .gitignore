@@ -37,3 +37,7 @@ bld/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+## Graphify generated files
+graphify-out/
+
