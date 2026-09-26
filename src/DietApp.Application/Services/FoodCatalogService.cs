@@ -37,7 +37,13 @@ public class FoodCatalogService : IFoodCatalogService
 
         IReadOnlyList<FoodItem> initialList;
 
-        if (criteria.SelectedMineral.HasValue)
+        if (criteria.FilterByProtein)
+        {
+            double minProtein = criteria.MinimumProteinGrams ?? 0.0;
+            double maxProtein = criteria.MaximumProteinGrams ?? double.MaxValue;
+            initialList = await _foodRepository.FilterByProteinRangeAsync(minProtein, maxProtein);
+        }
+        else if (criteria.SelectedMineral.HasValue)
         {
             double min = criteria.MinimumMilligrams ?? 0.0;
             double max = criteria.MaximumMilligrams ?? double.MaxValue;
@@ -55,6 +61,17 @@ public class FoodCatalogService : IFoodCatalogService
                 .Where(food => food.Name.ToLowerInvariant().Contains(term) ||
                                food.Category.ToLowerInvariant().Contains(term))
                 .ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(criteria.SortBy))
+        {
+            initialList = criteria.SortBy switch
+            {
+                "ProteinDesc" => initialList.OrderByDescending(f => f.ProteinGrams).ThenBy(f => f.Name).ToList(),
+                "ProteinAsc" => initialList.OrderBy(f => f.ProteinGrams).ThenBy(f => f.Name).ToList(),
+                "NameAsc" => initialList.OrderBy(f => f.Name).ToList(),
+                _ => initialList
+            };
         }
 
         return initialList.Select(food => food.ToDto()).ToList();
@@ -79,7 +96,9 @@ public class FoodCatalogService : IFoodCatalogService
             foodDto.Name,
             foodDto.Category,
             foodDto.ReferenceGrams,
-            minerals);
+            minerals,
+            foodDto.Calories,
+            foodDto.ProteinGrams);
 
         var existing = await _foodRepository.GetByIdAsync(food.Id);
         if (existing == null)

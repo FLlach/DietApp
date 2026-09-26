@@ -77,6 +77,7 @@ public static class FoodDataCentralImporter
             }
 
             double calories = 0.0;
+            double protein = 0.0;
             double phosphorus = 0.0;
             double potassium = 0.0;
             double sodium = 0.0;
@@ -116,6 +117,9 @@ public static class FoodDataCentralImporter
                             case "208": // Energia / Calorias (kcal)
                                 calories = amount;
                                 break;
+                            case "203": // Proteina (g)
+                                protein = amount;
+                                break;
                             case "305": // Fosforo (P)
                                 phosphorus = amount;
                                 break;
@@ -150,6 +154,7 @@ public static class FoodDataCentralImporter
                 Category = category.Trim(),
                 ReferenceGrams = 100.0, // Normalizado a 100 gramos de referencia oficial
                 Calories = calories,
+                ProteinGrams = protein,
                 PhosphorusMg = phosphorus,
                 PotassiumMg = potassium,
                 SodiumMg = sodium,
@@ -232,5 +237,80 @@ public static class FoodDataCentralImporter
             conn.InsertAll(foodsToInsert);
             conn.InsertAll(portionsToInsert);
         });
+    }
+
+    /// <summary>
+    /// Como funciona: Recorre el stream JSON de FoodData Central y actualiza la columna ProteinGrams
+    /// para aquellos alimentos que tengan valor cero en la base de datos existente.
+    /// Por que se tomo esta decision: Permite una migracion automatica y transparente de bases de datos
+    /// SQLite preexistentes sin requerir borrar la base de datos ni perder registros del usuario.
+    /// </summary>
+    public static async Task BackfillProteinIfMissingAsync(
+        Stream jsonStream,
+        SQLiteAsyncConnection databaseConnection)
+    {
+        if (jsonStream == null) return;
+
+        using var document = await JsonDocument.ParseAsync(jsonStream);
+        var root = document.RootElement;
+        if (!root.TryGetProperty("FoundationFoods", out var foodsElement) || foodsElement.ValueKind != JsonValueKind.Array)
+        {
+            return;
+        }
+
+        var fdcProteinMap = new Dictionary<int, double>();
+
+        foreach (var foodElement in foodsElement.EnumerateArray())
+        {
+            if (foodElement.ValueKind != JsonValueKind.Object) continue;
+
+            if (foodElement.TryGetProperty("fdcId", out var fdcProp) &&
+                fdcProp.ValueKind == JsonValueKind.Number &&
+                fdcProp.TryGetInt32(out int fdcId) && fdcId > 0)
+            {
+                if (foodElement.TryGetProperty("foodNutrients", out var nutrientsProp) &&
+                    nutrientsProp.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var nutrientItem in nutrientsProp.EnumerateArray())
+                    {
+                        if (nutrientItem.ValueKind != JsonValueKind.Object) continue;
+
+                        if (nutrientItem.TryGetProperty("nutrient", out var nutrientObj) &&
+                            nutrientObj.ValueKind == JsonValueKind.Object &&
+                            nutrientObj.TryGetProperty("number", out var numProp) &&
+                            numProp.GetString() == "203")
+                        {
+                            if (nutrientItem.TryGetProperty("amount", out var amtProp) &&
+                                amtProp.TryGetDouble(out double amount))
+                            {
+                                fdcProteinMap[fdcId] = amount;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (fdcProteinMap.Count > 0)
+        {
+            await databaseConnection.RunInTransactionAsync(conn =>
+            {
+                foreach (var (fdcId, proteinGrams) in fdcProteinMap)
+                {
+                    conn.Execute("UPDATE Foods SET ProteinGrams = ? WHERE FdcId = ? AND (ProteinGrams = 0 OR ProteinGrams IS NULL)", proteinGrams, fdcId);
+                }
+            });
+        }
+    }
+
+    public static async Task BackfillProteinIfMissingFromFileAsync(
+        string jsonFilePath,
+        SQLiteAsyncConnection databaseConnection)
+    {
+        if (!File.Exists(jsonFilePath)) return;
+
+        using var fileStream = File.OpenRead(jsonFilePath);
+        await BackfillProteinIfMissingAsync(fileStream, databaseConnection);
     }
 }

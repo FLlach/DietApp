@@ -60,6 +60,7 @@ public partial class RecipesViewModel : ObservableObject
     private void InitializeSortOptions()
     {
         var previousMineral = SelectedMineralOption?.Mineral;
+        var previousIsProtein = SelectedMineralOption?.IsProtein ?? false;
         var previousDescending = SelectedDirectionOption?.IsDescending ?? true;
 
         MineralOptions.Clear();
@@ -67,6 +68,13 @@ public partial class RecipesViewModel : ObservableObject
         {
             Mineral = null,
             DisplayName = _localizationService["Sort_Default"]
+        });
+
+        MineralOptions.Add(new MineralSortOption
+        {
+            Mineral = null,
+            IsProtein = true,
+            DisplayName = _localizationService["Sort_Protein"]
         });
 
         foreach (MineralType mineral in Enum.GetValues<MineralType>())
@@ -90,7 +98,7 @@ public partial class RecipesViewModel : ObservableObject
             DisplayName = _localizationService["Sort_Ascending"]
         });
 
-        SelectedMineralOption = MineralOptions.FirstOrDefault(o => o.Mineral == previousMineral) ?? MineralOptions[0];
+        SelectedMineralOption = MineralOptions.FirstOrDefault(o => o.Mineral == previousMineral && o.IsProtein == previousIsProtein) ?? MineralOptions[0];
         SelectedDirectionOption = DirectionOptions.FirstOrDefault(d => d.IsDescending == previousDescending) ?? DirectionOptions[0];
     }
 
@@ -148,7 +156,7 @@ public partial class RecipesViewModel : ObservableObject
     [RelayCommand]
     public void ResetSort()
     {
-        SelectedMineralOption = MineralOptions.FirstOrDefault(o => o.Mineral == null) ?? MineralOptions[0];
+        SelectedMineralOption = MineralOptions.FirstOrDefault(o => o.Mineral == null && !o.IsProtein) ?? MineralOptions[0];
         SelectedDirectionOption = DirectionOptions.FirstOrDefault(d => d.IsDescending) ?? DirectionOptions[0];
         ApplyFilterAndSort();
     }
@@ -164,7 +172,14 @@ public partial class RecipesViewModel : ObservableObject
                 recipe.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (SelectedMineralOption?.Mineral is MineralType mineral)
+        if (SelectedMineralOption?.IsProtein == true)
+        {
+            bool isDescending = SelectedDirectionOption?.IsDescending ?? true;
+            query = isDescending
+                ? query.OrderByDescending(recipe => recipe.ProteinPerServing).ThenBy(recipe => recipe.Title)
+                : query.OrderBy(recipe => recipe.ProteinPerServing).ThenBy(recipe => recipe.Title);
+        }
+        else if (SelectedMineralOption?.Mineral is MineralType mineral)
         {
             bool isDescending = SelectedDirectionOption?.IsDescending ?? true;
             query = isDescending

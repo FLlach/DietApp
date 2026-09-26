@@ -28,6 +28,8 @@ public class SeasoningItemEntity
 
     public double CalculatedCalories { get; set; }
 
+    public double CalculatedProtein { get; set; }
+
     public string CalculatedMineralsJson { get; set; } = "[]";
 
     public SeasoningItem ToDomain()
@@ -41,7 +43,8 @@ public class SeasoningItemEntity
             FoodName,
             Grams,
             CalculatedCalories,
-            minerals);
+            minerals,
+            CalculatedProtein);
     }
 
     public static SeasoningItemEntity FromDomain(Guid seasoningId, SeasoningItem item)
@@ -54,6 +57,7 @@ public class SeasoningItemEntity
             FoodName = item.FoodName,
             Grams = item.Grams,
             CalculatedCalories = item.CalculatedCalories,
+            CalculatedProtein = item.CalculatedProtein,
             CalculatedMineralsJson = JsonSerializer.Serialize(item.CalculatedMinerals)
         };
     }

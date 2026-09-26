@@ -17,6 +17,7 @@ public class RecipeIngredient
     public string FoodName { get; private set; }
     public double Grams { get; private set; }
     public double CalculatedCalories { get; private set; }
+    public double CalculatedProtein { get; private set; }
     public IReadOnlyList<MineralAmount> CalculatedMinerals { get; private set; }
 
     public RecipeIngredient(
@@ -25,7 +26,8 @@ public class RecipeIngredient
         string foodName,
         double grams,
         double calculatedCalories,
-        IReadOnlyList<MineralAmount> calculatedMinerals)
+        IReadOnlyList<MineralAmount> calculatedMinerals,
+        double calculatedProtein = 0.0)
     {
         if (grams <= 0)
         {
@@ -39,6 +41,7 @@ public class RecipeIngredient
         FoodName = string.IsNullOrWhiteSpace(foodName) ? "Ingrediente sin nombre" : foodName.Trim();
         Grams = grams;
         CalculatedCalories = calculatedCalories >= 0 ? calculatedCalories : 0;
+        CalculatedProtein = calculatedProtein >= 0 ? calculatedProtein : 0;
         CalculatedMinerals = calculatedMinerals ?? Array.Empty<MineralAmount>();
     }
 
@@ -54,6 +57,7 @@ public class RecipeIngredient
 
         var minerals = foodItem.CalculateMineralsForPortion(grams);
         var calories = foodItem.CalculateCaloriesForPortion(grams);
+        var protein = foodItem.CalculateProteinForPortion(grams);
 
         return new RecipeIngredient(
             Guid.NewGuid(),
@@ -61,7 +65,8 @@ public class RecipeIngredient
             foodItem.Name,
             grams,
             calories,
-            minerals);
+            minerals,
+            protein);
     }
 
     /// <summary>

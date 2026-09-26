@@ -119,9 +119,30 @@
                     Padding="16"
                     Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate DailyTracking_DailyTotal}"
-                           FontAttributes="Bold"
-                           FontSize="16" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate DailyTracking_DailyTotal}"
+                               FontAttributes="Bold"
+                               FontSize="16"
+                               VerticalOptions="Center" />
+
+                        <Border Grid.Column="1"
+                                Padding="10, 5"
+                                StrokeShape="RoundRectangle 8"
+                                Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                VerticalOptions="Center">
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="{loc:Translate DailyTracking_ProteinTotal}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                <Label Text="{Binding DailyProteinDisplay}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1B5E20, Dark=#A5D6A7}" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
 
                     <Label Text="{loc:Translate DailyTracking_DailyTotalSubtitle}"
                            FontSize="12"
@@ -188,10 +209,15 @@
                                 Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                             <VerticalStackLayout Spacing="8">
                                 <Grid ColumnDefinitions="*, Auto">
-                                    <Label Grid.Column="0"
-                                           Text="{Binding TitleDisplay}"
-                                           FontAttributes="Bold"
-                                           FontSize="16" />
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding TitleDisplay}"
+                                               FontAttributes="Bold"
+                                               FontSize="16" />
+                                        <Label Text="{Binding NutritionSummary}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                    </VerticalStackLayout>
 
                                     <Button Grid.Column="1"
                                             Text="{loc:Translate DailyTracking_Delete}"

@@ -62,6 +62,18 @@ public class SqliteFoodRepository : IFoodRepository
         return entities.Select(e => e.ToDomain()).ToList();
     }
 
+    public async Task<IReadOnlyList<FoodItem>> FilterByProteinRangeAsync(
+        double minimumGrams,
+        double maximumGrams)
+    {
+        await _dbContext.InitializeAsync();
+
+        string sql = "SELECT * FROM Foods WHERE ProteinGrams >= ? AND ProteinGrams <= ? ORDER BY ProteinGrams DESC";
+        var entities = await _dbContext.Connection.QueryAsync<FoodEntity>(sql, minimumGrams, maximumGrams);
+
+        return entities.Select(e => e.ToDomain()).ToList();
+    }
+
     public async Task<IReadOnlyList<FoodItem>> SearchByNameOrCategoryAsync(string query)
     {
         await _dbContext.InitializeAsync();

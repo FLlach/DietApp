@@ -49,4 +49,36 @@ public class DailyMineralAggregatorService
 
         return results;
     }
+
+    /// <summary>
+    /// Calcula los gramos de proteina totales acumulados entre multiples comidas del dia.
+    /// </summary>
+    public double AggregateProtein(IEnumerable<Meal> meals)
+    {
+        if (meals == null) return 0.0;
+
+        double totalProtein = 0.0;
+        foreach (var meal in meals)
+        {
+            totalProtein += meal.CalculateTotalProtein();
+        }
+
+        return totalProtein;
+    }
+
+    /// <summary>
+    /// Calcula las calorias totales acumuladas entre multiples comidas del dia.
+    /// </summary>
+    public double AggregateCalories(IEnumerable<Meal> meals)
+    {
+        if (meals == null) return 0.0;
+
+        double totalCalories = 0.0;
+        foreach (var meal in meals)
+        {
+            totalCalories += meal.CalculateTotalCalories();
+        }
+
+        return totalCalories;
+    }
 }

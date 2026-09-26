@@ -15,6 +15,7 @@ public class SeasoningItemDto
     public string FoodName { get; set; } = string.Empty;
     public double Grams { get; set; }
     public double Calories { get; set; }
+    public double Protein { get; set; }
     public List<MineralAmountDto> Minerals { get; set; } = new();
 
     public string DisplayText => $"{FoodName} ({Grams:F0}g)";

@@ -12,7 +12,11 @@ namespace DietApp.Application.DTOs;
 public class MineralFilterCriteriaDto
 {
     public MineralType? SelectedMineral { get; set; }
+    public bool FilterByProtein { get; set; }
     public double? MinimumMilligrams { get; set; }
     public double? MaximumMilligrams { get; set; }
+    public double? MinimumProteinGrams { get; set; }
+    public double? MaximumProteinGrams { get; set; }
     public string SearchTerm { get; set; } = string.Empty;
+    public string? SortBy { get; set; }
 }

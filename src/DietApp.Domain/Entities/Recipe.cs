@@ -96,6 +96,28 @@ public class Recipe
     }
 
     /// <summary>
+    /// Calcula los gramos de proteina totales de la receta completa.
+    /// </summary>
+    public double CalculateTotalProtein()
+    {
+        double total = 0.0;
+        foreach (var ingredient in _ingredients)
+        {
+            total += ingredient.CalculatedProtein;
+        }
+
+        return total;
+    }
+
+    /// <summary>
+    /// Calcula los gramos de proteina por porcion individual dividiendo el total por el numero de porciones.
+    /// </summary>
+    public double CalculateProteinPerServing()
+    {
+        return Servings > 0 ? CalculateTotalProtein() / Servings : 0.0;
+    }
+
+    /// <summary>
     /// Calcula los minerales totales acumulados por todos los ingredientes de la receta.
     /// </summary>
     public IReadOnlyList<MineralAmount> CalculateTotalMinerals()

@@ -73,6 +73,26 @@ public class FoodRepository : IFoodRepository
         }
     }
 
+    public async Task<IReadOnlyList<FoodItem>> FilterByProteinRangeAsync(
+        double minimumGrams,
+        double maximumGrams)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            var filtered = _foods
+                .Where(food => food.ProteinGrams >= minimumGrams && food.ProteinGrams <= maximumGrams)
+                .OrderByDescending(food => food.ProteinGrams)
+                .ToList();
+
+            return filtered;
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
     public async Task<IReadOnlyList<FoodItem>> SearchByNameOrCategoryAsync(string query)
     {
         await _lock.WaitAsync();

@@ -16,5 +16,6 @@ public interface IMealTrackingService
     Task<MealDto> RecordMealWithMixedItemsAsync(DateTime date, MealType mealType, string note, IEnumerable<(Guid id, double quantity, bool isRecipe)> items);
     Task<MealDto> RecordRecipeInMealAsync(DateTime date, MealType mealType, Guid recipeId, double servingsConsumed, string note = "");
     Task<IReadOnlyList<MineralAmountDto>> GetDailyMineralTotalsAsync(DateTime date);
+    Task<double> GetDailyTotalProteinAsync(DateTime date);
     Task DeleteMealAsync(Guid mealId);
 }

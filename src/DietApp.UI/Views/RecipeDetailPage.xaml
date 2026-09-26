@@ -44,16 +44,29 @@
                 <Border StrokeShape="RoundRectangle 8"
                         Padding="12, 8"
                         Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="{loc:Translate RecipeDetail_NutritionPerServing}"
-                               FontSize="12"
-                               FontAttributes="Bold"
-                               TextColor="Gray" />
-                        <Label Text="{Binding Recipe.NutritionSubtitle}"
-                               FontAttributes="Bold"
-                               FontSize="13"
-                               TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{loc:Translate RecipeDetail_NutritionPerServing}"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="Gray" />
+                            <Label Text="{Binding Recipe.NutritionSubtitle}"
+                                   FontAttributes="Bold"
+                                   FontSize="13"
+                                   TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="1"
+                                Padding="8, 4"
+                                StrokeShape="RoundRectangle 6"
+                                Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                VerticalOptions="Center">
+                            <Label Text="{Binding Recipe.ProteinPerServingDisplay}"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                        </Border>
+                    </Grid>
                 </Border>
 
                 <!-- Descripcion -->

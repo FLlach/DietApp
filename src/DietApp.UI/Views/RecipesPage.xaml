@@ -153,10 +153,25 @@
                                    IsVisible="{Binding HasFinalImage}" />
 
                             <VerticalStackLayout Padding="14" Spacing="6">
-                                <!-- Titulo de la Receta -->
-                                <Label Text="{Binding Title}"
-                                       FontAttributes="Bold"
-                                       FontSize="18" />
+                                <!-- Titulo de la Receta y Badge de Proteina -->
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           FontSize="18"
+                                           VerticalOptions="Center" />
+
+                                    <Border Grid.Column="1"
+                                            Padding="8, 3"
+                                            StrokeShape="RoundRectangle 6"
+                                            Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                            VerticalOptions="Center">
+                                        <Label Text="{Binding ProteinPerServingDisplay}"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                    </Border>
+                                </Grid>
 
                                 <!-- Subtitulo de Minerales y Calorias por Porcion -->
                                 <Border StrokeShape="RoundRectangle 6"

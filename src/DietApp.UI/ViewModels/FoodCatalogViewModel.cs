@@ -22,7 +22,10 @@ public partial class FoodCatalogViewModel : ObservableObject
     public partial string SearchText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string SelectedMineralName { get; set; } = "Todos los minerales";
+    public partial string SelectedMineralName { get; set; } = "Todos los nutrientes";
+
+    [ObservableProperty]
+    public partial string SelectedSortOption { get; set; } = "Por defecto";
 
     [ObservableProperty]
     public partial string MinimumMilligramsText { get; set; } = string.Empty;
@@ -35,17 +38,20 @@ public partial class FoodCatalogViewModel : ObservableObject
 
     public ObservableCollection<FoodItemDto> Foods { get; } = new();
     public ObservableCollection<string> MineralOptions { get; } = new();
+    public ObservableCollection<string> SortOptions { get; } = new();
 
     public FoodCatalogViewModel(IFoodCatalogService foodCatalogService)
     {
         _foodCatalogService = foodCatalogService ?? throw new ArgumentNullException(nameof(foodCatalogService));
 
         InitializeMineralOptions();
+        InitializeSortOptions();
     }
 
     private void InitializeMineralOptions()
     {
-        MineralOptions.Add("Todos los minerales");
+        MineralOptions.Add("Todos los nutrientes");
+        MineralOptions.Add("Proteina (g)");
         MineralOptions.Add("Fosforo");
         MineralOptions.Add("Potasio");
         MineralOptions.Add("Sodio");
@@ -53,6 +59,14 @@ public partial class FoodCatalogViewModel : ObservableObject
         MineralOptions.Add("Magnesio");
         MineralOptions.Add("Hierro");
         MineralOptions.Add("Zinc");
+    }
+
+    private void InitializeSortOptions()
+    {
+        SortOptions.Add("Por defecto");
+        SortOptions.Add("Proteina (Mayor a menor)");
+        SortOptions.Add("Proteina (Menor a mayor)");
+        SortOptions.Add("Nombre (A-Z)");
     }
 
     [RelayCommand]
@@ -90,7 +104,22 @@ public partial class FoodCatalogViewModel : ObservableObject
                 SearchTerm = SearchText
             };
 
-            if (SelectedMineralName != "Todos los minerales")
+            bool isProtein = SelectedMineralName == "Proteina (g)";
+            criteria.FilterByProtein = isProtein;
+
+            if (isProtein)
+            {
+                if (double.TryParse(MinimumMilligramsText, out double minProtein))
+                {
+                    criteria.MinimumProteinGrams = minProtein;
+                }
+
+                if (double.TryParse(MaximumMilligramsText, out double maxProtein))
+                {
+                    criteria.MaximumProteinGrams = maxProtein;
+                }
+            }
+            else if (SelectedMineralName != "Todos los nutrientes" && SelectedMineralName != "Todos los minerales")
             {
                 criteria.SelectedMineral = SelectedMineralName switch
                 {
@@ -103,17 +132,25 @@ public partial class FoodCatalogViewModel : ObservableObject
                     "Zinc" => MineralType.Zinc,
                     _ => null
                 };
+
+                if (double.TryParse(MinimumMilligramsText, out double minVal))
+                {
+                    criteria.MinimumMilligrams = minVal;
+                }
+
+                if (double.TryParse(MaximumMilligramsText, out double maxVal))
+                {
+                    criteria.MaximumMilligrams = maxVal;
+                }
             }
 
-            if (double.TryParse(MinimumMilligramsText, out double minVal))
+            criteria.SortBy = SelectedSortOption switch
             {
-                criteria.MinimumMilligrams = minVal;
-            }
-
-            if (double.TryParse(MaximumMilligramsText, out double maxVal))
-            {
-                criteria.MaximumMilligrams = maxVal;
-            }
+                "Proteina (Mayor a menor)" => "ProteinDesc",
+                "Proteina (Menor a mayor)" => "ProteinAsc",
+                "Nombre (A-Z)" => "NameAsc",
+                _ => null
+            };
 
             var items = await _foodCatalogService.FilterFoodsAsync(criteria);
             Foods.Clear();
@@ -132,7 +169,8 @@ public partial class FoodCatalogViewModel : ObservableObject
     public async Task ClearFilterAsync()
     {
         SearchText = string.Empty;
-        SelectedMineralName = "Todos los minerales";
+        SelectedMineralName = "Todos los nutrientes";
+        SelectedSortOption = "Por defecto";
         MinimumMilligramsText = string.Empty;
         MaximumMilligramsText = string.Empty;
         await LoadFoodsAsync();

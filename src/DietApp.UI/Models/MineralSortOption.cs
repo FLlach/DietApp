@@ -11,6 +11,7 @@ namespace DietApp.UI.Models;
 public class MineralSortOption
 {
     public MineralType? Mineral { get; set; }
+    public bool IsProtein { get; set; }
     public string DisplayName { get; set; } = string.Empty;
 
     public override string ToString() => DisplayName;

@@ -18,6 +18,7 @@ public class FoodItem
     public string Category { get; private set; }
     public double ReferenceGrams { get; private set; }
     public double Calories { get; private set; }
+    public double ProteinGrams { get; private set; }
     public IReadOnlyList<MineralAmount> Minerals { get; private set; }
 
     public FoodItem(
@@ -26,7 +27,8 @@ public class FoodItem
         string category,
         double referenceGrams,
         IEnumerable<MineralAmount> minerals,
-        double calories = 0.0)
+        double calories = 0.0,
+        double proteinGrams = 0.0)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -47,11 +49,19 @@ public class FoodItem
                 "Las calorias no pueden ser un valor negativo.");
         }
 
+        if (proteinGrams < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(proteinGrams),
+                "La cantidad de proteina no puede ser un valor negativo.");
+        }
+
         Id = id == Guid.Empty ? Guid.NewGuid() : id;
         Name = name.Trim();
         Category = string.IsNullOrWhiteSpace(category) ? "General" : category.Trim();
         ReferenceGrams = referenceGrams;
         Calories = calories;
+        ProteinGrams = proteinGrams;
         Minerals = minerals?.ToList() ?? new List<MineralAmount>();
     }
 
@@ -109,5 +119,21 @@ public class FoodItem
         }
 
         return (grams / ReferenceGrams) * Calories;
+    }
+
+    /// <summary>
+    /// Calcula los gramos de proteina proyectados para una porcion arbitraria en gramos.
+    /// </summary>
+    /// <param name="grams">Peso consumido en gramos.</param>
+    public double CalculateProteinForPortion(double grams)
+    {
+        if (grams < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(grams),
+                "La cantidad de gramos consumida no puede ser negativa.");
+        }
+
+        return (grams / ReferenceGrams) * ProteinGrams;
     }
 }

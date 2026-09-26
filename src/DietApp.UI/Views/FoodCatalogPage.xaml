@@ -47,14 +47,14 @@
                            SearchCommand="{Binding ApplyFilterCommand}" />
 
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
-                    <!-- Selector de Mineral -->
+                    <!-- Selector de Mineral / Nutriente -->
                     <VerticalStackLayout Grid.Column="0">
                         <Label Text="{loc:Translate FoodCatalog_Mineral}" FontSize="12" TextColor="Gray" />
                         <Picker ItemsSource="{Binding MineralOptions}"
                                 SelectedItem="{Binding SelectedMineralName}" />
                     </VerticalStackLayout>
 
-                    <!-- Minimo mg -->
+                    <!-- Minimo -->
                     <VerticalStackLayout Grid.Column="1">
                         <Label Text="{loc:Translate FoodCatalog_MinMg}" FontSize="12" TextColor="Gray" />
                         <Entry Placeholder="0"
@@ -62,13 +62,25 @@
                                Text="{Binding MinimumMilligramsText}" />
                     </VerticalStackLayout>
 
-                    <!-- Maximo mg -->
+                    <!-- Maximo -->
                     <VerticalStackLayout Grid.Column="2">
                         <Label Text="{loc:Translate FoodCatalog_MaxMg}" FontSize="12" TextColor="Gray" />
                         <Entry Placeholder="Max"
                                Keyboard="Numeric"
                                Text="{Binding MaximumMilligramsText}" />
                     </VerticalStackLayout>
+                </Grid>
+
+                <!-- Selector de Ordenamiento -->
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                    <Label Grid.Column="0"
+                           Text="{loc:Translate FoodCatalog_SortTitle}"
+                           FontSize="12"
+                           TextColor="Gray"
+                           VerticalOptions="Center" />
+                    <Picker Grid.Column="1"
+                            ItemsSource="{Binding SortOptions}"
+                            SelectedItem="{Binding SelectedSortOption}" />
                 </Grid>
 
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
@@ -115,9 +127,24 @@
                             StrokeShape="RoundRectangle 10"
                             Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="{Binding Name}"
-                                   FontAttributes="Bold"
-                                   FontSize="17" />
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                <Label Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       FontAttributes="Bold"
+                                       FontSize="17"
+                                       VerticalOptions="Center" />
+
+                                <Border Grid.Column="1"
+                                        Padding="8, 3"
+                                        StrokeShape="RoundRectangle 6"
+                                        Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                        VerticalOptions="Center">
+                                    <Label Text="{Binding ProteinBadgeText}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                </Border>
+                            </Grid>
 
                             <Label Text="{Binding SubtitleSummary}"
                                    FontSize="13"

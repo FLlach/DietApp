@@ -28,6 +28,8 @@ public class RecipeIngredientEntity
 
     public double CalculatedCalories { get; set; }
 
+    public double CalculatedProtein { get; set; }
+
     public string CalculatedMineralsJson { get; set; } = "[]";
 
     public RecipeIngredient ToDomain()
@@ -41,7 +43,8 @@ public class RecipeIngredientEntity
             FoodName,
             Grams,
             CalculatedCalories,
-            minerals);
+            minerals,
+            CalculatedProtein);
     }
 
     public static RecipeIngredientEntity FromDomain(Guid recipeId, RecipeIngredient ingredient)
@@ -54,6 +57,7 @@ public class RecipeIngredientEntity
             FoodName = ingredient.FoodName,
             Grams = ingredient.Grams,
             CalculatedCalories = ingredient.CalculatedCalories,
+            CalculatedProtein = ingredient.CalculatedProtein,
             CalculatedMineralsJson = JsonSerializer.Serialize(ingredient.CalculatedMinerals)
         };
     }

@@ -15,6 +15,7 @@ public class SeasoningDto
     public string Description { get; set; } = string.Empty;
     public double TotalGrams { get; set; }
     public double TotalCalories { get; set; }
+    public double TotalProtein { get; set; }
     public List<SeasoningItemDto> Items { get; set; } = new();
     public List<MineralAmountDto> TotalMinerals { get; set; } = new();
 
@@ -32,7 +33,7 @@ public class SeasoningDto
     {
         get
         {
-            return $"{Name} ({TotalGrams:F0}g | {TotalCalories:F0} kcal)";
+            return $"{Name} ({TotalGrams:F0}g | {TotalCalories:F0} kcal | {TotalProtein:F1}g prot.)";
         }
     }
 

@@ -15,6 +15,7 @@ public interface IFoodRepository
     Task<FoodItem?> GetByIdAsync(Guid id);
     Task<IReadOnlyList<FoodItem>> GetAllAsync();
     Task<IReadOnlyList<FoodItem>> FilterByMineralRangeAsync(MineralType mineralType, double minimumMilligrams, double maximumMilligrams);
+    Task<IReadOnlyList<FoodItem>> FilterByProteinRangeAsync(double minimumGrams, double maximumGrams);
     Task<IReadOnlyList<FoodItem>> SearchByNameOrCategoryAsync(string query);
     Task AddAsync(FoodItem foodItem);
     Task UpdateAsync(FoodItem foodItem);

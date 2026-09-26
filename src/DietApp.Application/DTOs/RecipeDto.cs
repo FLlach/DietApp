@@ -20,13 +20,17 @@ public class RecipeDto
 
     public double CaloriesPerServing { get; set; }
     public double TotalCalories { get; set; }
+    public double ProteinPerServing { get; set; }
+    public double TotalProtein { get; set; }
     public List<MineralAmountDto> MineralsPerServing { get; set; } = new();
     public List<MineralAmountDto> TotalMinerals { get; set; } = new();
     public List<RecipeIngredientDto> Ingredients { get; set; } = new();
     public List<RecipeStepDto> Steps { get; set; } = new();
 
+    public string ProteinPerServingDisplay => $"{ProteinPerServing:F1} g proteina / porcion";
+
     /// <summary>
-    /// Subtitulo resumen que detalla calorias y minerales por porcion.
+    /// Subtitulo resumen que detalla calorias, proteina y minerales por porcion.
     /// </summary>
     public string NutritionSubtitle
     {
@@ -40,7 +44,7 @@ public class RecipeDto
             string mineralsJoined = string.Join(", ", mineralsParts);
             string mineralsSummary = string.IsNullOrWhiteSpace(mineralsJoined) ? "Sin minerales registrados" : mineralsJoined;
 
-            return $"Por porcion ({Servings} {(Servings == 1 ? "porcion" : "porciones")}): {CaloriesPerServing:F0} kcal | {mineralsSummary}";
+            return $"Por porcion ({Servings} {(Servings == 1 ? "porcion" : "porciones")}): {CaloriesPerServing:F0} kcal | {ProteinPerServing:F1}g proteina | {mineralsSummary}";
         }
     }
 

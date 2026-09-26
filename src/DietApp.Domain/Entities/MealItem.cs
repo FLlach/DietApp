@@ -15,6 +15,8 @@ public class MealItem
     public Guid FoodItemId { get; private set; }
     public string FoodName { get; private set; }
     public double PortionInGrams { get; private set; }
+    public double CalculatedCalories { get; private set; }
+    public double CalculatedProtein { get; private set; }
     public IReadOnlyList<MineralAmount> CalculatedMinerals { get; private set; }
 
     public MealItem(
@@ -22,7 +24,9 @@ public class MealItem
         Guid foodItemId,
         string foodName,
         double portionInGrams,
-        IReadOnlyList<MineralAmount> calculatedMinerals)
+        IReadOnlyList<MineralAmount> calculatedMinerals,
+        double calculatedCalories = 0.0,
+        double calculatedProtein = 0.0)
     {
         if (portionInGrams <= 0)
         {
@@ -35,6 +39,8 @@ public class MealItem
         FoodItemId = foodItemId;
         FoodName = string.IsNullOrWhiteSpace(foodName) ? "Alimento sin nombre" : foodName.Trim();
         PortionInGrams = portionInGrams;
+        CalculatedCalories = calculatedCalories >= 0 ? calculatedCalories : 0.0;
+        CalculatedProtein = calculatedProtein >= 0 ? calculatedProtein : 0.0;
         CalculatedMinerals = calculatedMinerals ?? Array.Empty<MineralAmount>();
     }
 
@@ -49,13 +55,17 @@ public class MealItem
         }
 
         var minerals = foodItem.CalculateMineralsForPortion(portionInGrams);
+        var calories = foodItem.CalculateCaloriesForPortion(portionInGrams);
+        var protein = foodItem.CalculateProteinForPortion(portionInGrams);
 
         return new MealItem(
             Guid.NewGuid(),
             foodItem.Id,
             foodItem.Name,
             portionInGrams,
-            minerals);
+            minerals,
+            calories,
+            protein);
     }
 
     /// <summary>
@@ -88,6 +98,9 @@ public class MealItem
             scaledMinerals.Add(mineralsPerServing[i].Scale(servingsConsumed));
         }
 
+        double calculatedCalories = recipe.CalculateCaloriesPerServing() * servingsConsumed;
+        double calculatedProtein = recipe.CalculateProteinPerServing() * servingsConsumed;
+
         string servingText = servingsConsumed == 1 ? "1 porcion" : $"{servingsConsumed:0.##} porciones";
         string foodName = $"{recipe.Title} ({servingText})";
 
@@ -96,6 +109,8 @@ public class MealItem
             recipe.Id,
             foodName,
             consumedGrams,
-            scaledMinerals);
+            scaledMinerals,
+            calculatedCalories,
+            calculatedProtein);
     }
 }

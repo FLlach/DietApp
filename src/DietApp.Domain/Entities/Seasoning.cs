@@ -72,6 +72,16 @@ public class Seasoning
         return totalCalories;
     }
 
+    public double CalculateTotalProtein()
+    {
+        double totalProtein = 0.0;
+        foreach (var item in _items)
+        {
+            totalProtein += item.CalculatedProtein;
+        }
+        return totalProtein;
+    }
+
     public IReadOnlyList<MineralAmount> CalculateTotalMinerals()
     {
         var accumulated = new Dictionary<MineralType, double>();

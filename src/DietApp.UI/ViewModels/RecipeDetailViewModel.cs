@@ -105,6 +105,7 @@ public partial class RecipeDetailViewModel : ObservableObject
 
         // Opciones de ordenamiento para ingredientes
         var previousMineral = SelectedIngredientMineralOption?.Mineral;
+        var previousIsProtein = SelectedIngredientMineralOption?.IsProtein ?? false;
         var previousDescending = SelectedIngredientDirectionOption?.IsDescending ?? true;
 
         IngredientMineralOptions.Clear();
@@ -112,6 +113,13 @@ public partial class RecipeDetailViewModel : ObservableObject
         {
             Mineral = null,
             DisplayName = _localizationService["Sort_Default"]
+        });
+
+        IngredientMineralOptions.Add(new MineralSortOption
+        {
+            Mineral = null,
+            IsProtein = true,
+            DisplayName = _localizationService["Sort_Protein"]
         });
 
         foreach (MineralType mineral in Enum.GetValues<MineralType>())
@@ -135,7 +143,7 @@ public partial class RecipeDetailViewModel : ObservableObject
             DisplayName = _localizationService["Sort_Ascending"]
         });
 
-        SelectedIngredientMineralOption = IngredientMineralOptions.FirstOrDefault(o => o.Mineral == previousMineral) ?? IngredientMineralOptions[0];
+        SelectedIngredientMineralOption = IngredientMineralOptions.FirstOrDefault(o => o.Mineral == previousMineral && o.IsProtein == previousIsProtein) ?? IngredientMineralOptions[0];
         SelectedIngredientDirectionOption = IngredientDirectionOptions.FirstOrDefault(d => d.IsDescending == previousDescending) ?? IngredientDirectionOptions[0];
     }
 
@@ -219,7 +227,14 @@ public partial class RecipeDetailViewModel : ObservableObject
 
         IEnumerable<RecipeIngredientDto> query = Recipe.Ingredients;
 
-        if (SelectedIngredientMineralOption?.Mineral is MineralType mineral)
+        if (SelectedIngredientMineralOption?.IsProtein == true)
+        {
+            bool isDescending = SelectedIngredientDirectionOption?.IsDescending ?? true;
+            query = isDescending
+                ? query.OrderByDescending(i => i.CalculatedProtein).ThenBy(i => i.FoodName)
+                : query.OrderBy(i => i.CalculatedProtein).ThenBy(i => i.FoodName);
+        }
+        else if (SelectedIngredientMineralOption?.Mineral is MineralType mineral)
         {
             bool isDescending = SelectedIngredientDirectionOption?.IsDescending ?? true;
             query = isDescending

@@ -1,14 +1,16 @@
 # Documentacion Tecnica - DietApp
 
 ## 1. Descripcion General
-DietApp es una aplicacion movil y de escritorio construida con **C# y .NET MAUI** orientada al registro, control y seguimiento de la ingesta de alimentos con un enfoque especializado en el contenido de **minerales** (fosforo, potasio, sodio, calcio, magnesio, hierro y zinc) y valor calorico (kcal).
+DietApp es una aplicacion movil y de escritorio construida con **C# y .NET MAUI** orientada al registro, control y seguimiento de la ingesta de alimentos con un enfoque especializado en el contenido de **minerales** (fosforo, potasio, sodio, calcio, magnesio, hierro y zinc), **proteinas** (g) y valor calorico (kcal).
 
 Permite:
-* Filtrar alimentos de forma avanzada por umbrales maximos y minimos de minerales (de especial utilidad en dietas renales, cardiovasculares o deportivas).
-* Calcular el aporte acumulado de compuestos por cada comida y a nivel diario.
-* **Modulo de Recetas Nutricionales**: Crear y consultar preparaciones culinarias con titulo, imagen final de la receta terminada, subtitulo automatico de minerales y calorias por porcion calculado con base en los ingredientes, e instrucciones en pasos numerados con opcion de adjuntar imagenes en cada etapa.
-* **Registro de Recetas en la Ingesta Diaria**: Capacidad de registrar porciones de recetas directamente en el conteo diario de comidas (tanto desde la pantalla de detalle de la receta como desde el compositor de comidas), escalando proporcionalmente el aporte de minerales y calorias consumidos.
-* **Persistencia Relacional en SQLite**: Almacenamiento local de alto rendimiento con indices B-Tree en columnas de minerales y precarga de 363 alimentos de la base oficial USDA FoodData Central Foundation Foods normalizados a gramos.
+* Filtrar alimentos de forma avanzada por umbrales maximos y minimos de minerales y proteinas (de especial utilidad en dietas renales, cardiovasculares o deportivas).
+* Ordenar el catalogo de alimentos y las recetas por densidad proteica (mayor a menor o menor a mayor).
+* Cuantificar la cantidad de proteina por alimento en porciones base de referencia y calcular su aporte escalado en recetas y comidas consumidas.
+* Calcular el aporte acumulado de minerales, calorias y proteinas totales por cada comida y a nivel diario.
+* **Modulo de Recetas Nutricionales**: Crear y consultar preparaciones culinarias con titulo, imagen final de la receta terminada, subtitulo automatico de minerales, calorias y proteina por porcion calculado con base en los ingredientes, e instrucciones en pasos numerados con opcion de adjuntar imagenes en cada etapa.
+* **Registro de Recetas en la Ingesta Diaria**: Capacidad de registrar porciones de recetas directamente en el conteo diario de comidas (tanto desde la pantalla de detalle de la receta como desde el compositor de comidas), escalando proporcionalmente el aporte de minerales, proteinas y calorias consumidos.
+* **Persistencia Relacional en SQLite**: Almacenamiento local de alto rendimiento con indices B-Tree en columnas de minerales y proteinas, con precarga y backfill de nutrientes de la base oficial USDA FoodData Central Foundation Foods (incluyendo codigo de nutriente 203 de proteinas) normalizados a gramos.
 
 ---
 
@@ -215,7 +217,60 @@ La aplicacion incluye una seccion especializada para la gestion de alinos, vinag
 
 ---
 
-## 8. Instrucciones de Compilacion y Ejecucion
+---
+
+## 8. Modulo de Cuantificacion y Seguimiento de Proteinas
+
+La aplicacion incluye integracion integral de **proteinas (g)** a traves de las cuatro capas de la arquitectura DDD:
+
+### 8.1. Logica de Dominio (`DietApp.Domain`)
+* **`FoodItem`**: Modela la propiedad `ProteinGrams` (gramos de proteina presentes en la porcion base de referencia, por ejemplo 100g). Incluye el metodo puro `CalculateProteinForPortion(double grams)` que calcula el aporte escalado para cualquier gramaje consumido: `(ProteinGrams * grams) / ReferenceGrams`.
+* **`RecipeIngredient` y `SeasoningItem`**: Calculan y almacenan la instantanea inmutable `CalculatedProtein` al instanciarse a partir de un alimento base dosificado en gramos.
+* **`Recipe`**: Como raiz de agregado culinario, calcula la proteina total sumando sus ingredientes (`CalculateTotalProtein()`) y la densidad por porcion individual (`CalculateProteinPerServing() = TotalProtein / Servings`).
+* **`MealItem`**: Registra la cantidad de proteina consumida tanto si proviene directamente de un alimento (`FromFoodItem`) como si proviene de una racion de receta (`FromRecipe`), preservando fidelidad matematica.
+* **`Meal`**: Suma la proteina de todos los alimentos y recetas ingeridas en la comida con `CalculateTotalProtein()`.
+* **`DailyMineralAggregatorService`**: Consolida la ingesta total de proteina del dia mediante `AggregateProtein(IEnumerable<Meal>)`.
+* **`IFoodRepository`**: Define el contrato `FilterByProteinRangeAsync(double minimumGrams, double maximumGrams)` para filtrado por densidad proteica.
+
+### 8.2. Casos de Uso y Contratos (`DietApp.Application`)
+* **DTOs Enriquecidos**:
+  * `FoodItemDto`: Expone `ProteinGrams`, `SubtitleSummary` con indicacion de proteinas y la propiedad formateada `ProteinBadgeText` (`"{ProteinGrams:F1} g proteina"`).
+  * `RecipeDto`: Expone `ProteinPerServing`, `TotalProtein`, `ProteinPerServingDisplay` (`"{ProteinPerServing:F1} g proteina / porcion"`) y actualiza `NutritionSubtitle` con el aporte proteico por porcion.
+  * `RecipeIngredientDto`: Expone `CalculatedProtein` y resume el aporte en `DisplayText`.
+  * `MealDto` y `MealItemDto`: Exponen `CalculatedProtein`, `TotalProtein` y el resumen nutricional `NutritionSummary`.
+  * `MineralFilterCriteriaDto`: Incorpora `FilterByProtein`, `MinimumProteinGrams`, `MaximumProteinGrams` y la opcion de ordenamiento `SortBy` (`ProteinDesc`, `ProteinAsc`).
+* **Servicios de Aplicacion**:
+  * `FoodCatalogService`: Aplica filtros por umbral de proteina y ordenamiento descendente o ascendente segun el criterio del usuario. Guarda y persiste el valor de proteina al ingresar nuevos alimentos.
+  * `MealTrackingService`: Ofrece `GetDailyTotalProteinAsync(DateTime date)` para consultar el acumulado proteico de cualquier fecha.
+
+### 8.3. Persistencia y Base de Datos SQLite (`DietApp.Infrastructure`)
+* **Modelos Relacionales**:
+  * `FoodEntity`: Incorpora la columna `ProteinGrams` con atributo `[Indexed]` para acelerar consultas y ordenamientos por rangos.
+  * `MealItemEntity`, `RecipeIngredientEntity`, `SeasoningItemEntity`: Almacenan `CalculatedProtein`.
+* **Dataset Oficial USDA FoodData Central**:
+  * `FoodDataCentralImporter` extrae de forma automatizada el codigo de nutriente oficial `"203"` (Protein en gramos con unidad `"g"`) de cada alimento de la fundacion USDA Foundation Foods.
+  * Incluye la rutina `BackfillProteinIfMissingAsync` para rellenar retroactivamente valores de proteinas en bases de datos que ya contenian alimentos precargados.
+* **Semillas y Migraciones**:
+  * `InitialFoodCatalogSeed`: Incluye los valores reales de proteina de cada alimento semilla precargado.
+  * `DietAppDbContext`: Aplica rutinas automaticas en `InitializeAsync` para sincronizar y actualizar el esquema y poblar valores de proteina en tablas relacionales existentes.
+
+### 8.4. Interfaz de Usuario y Experiencia (`DietApp.UI`)
+* **Catalogo de Alimentos (`FoodCatalogPage` / `FoodCatalogViewModel`)**:
+  * Selector desplegable para filtrar por "Proteina (g)" con campos numericos de minimo y maximo.
+  * Selector de ordenamiento con opciones: "Proteina (Mayor a menor)", "Proteina (Menor a mayor)" y "Nombre (A-Z)".
+  * Badge visual estilizado en cada tarjeta de alimento con la cantidad de proteina (`ProteinBadgeText`).
+* **Formulario de Nuevo Alimento (`AddFoodPage` / `AddFoodViewModel`)**:
+  * Campos dedicados para ingresar calorias (kcal) y proteina (g por porcion de referencia).
+* **Seguimiento Diario (`MealTrackingPage` / `MealTrackingViewModel`)**:
+  * Bloque de resumen diario con badge destacado que muestra la proteina total consumida en la fecha (`DailyProteinDisplay`).
+  * Desglose de macronutrientes en cada tarjeta de comida registrada (`NutritionSummary`).
+* **Recetario y Detalle de Receta (`RecipesPage`, `RecipeDetailPage`)**:
+  * Ordenamiento de recetas e ingredientes por contenido de proteina a traves de `MineralSortOption` (`IsProtein`).
+  * Badge visual del aporte de proteina por porcion en las tarjetas de recetas y en la seccion superior de la receta.
+
+---
+
+## 9. Instrucciones de Compilacion y Ejecucion
 
 ### Ejecucion en Windows (Modo Rapido):
 Para compilar y ejecutar en Windows directamente desde la terminal:

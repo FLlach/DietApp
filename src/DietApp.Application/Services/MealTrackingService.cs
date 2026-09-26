@@ -130,6 +130,15 @@ public class MealTrackingService : IMealTrackingService
         return aggregateTotals.Select(m => m.ToDto()).ToList();
     }
 
+    public async Task<double> GetDailyTotalProteinAsync(DateTime date)
+    {
+        var startOfDay = date.Date;
+        var endOfDay = startOfDay.AddDays(1).AddTicks(-1);
+
+        var meals = await _mealRepository.GetByDateRangeAsync(startOfDay, endOfDay);
+        return _aggregatorService.AggregateProtein(meals);
+    }
+
     public async Task DeleteMealAsync(Guid mealId)
     {
         await _mealRepository.DeleteAsync(mealId);

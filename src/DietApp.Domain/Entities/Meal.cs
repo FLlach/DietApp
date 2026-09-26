@@ -88,4 +88,32 @@ public class Meal
 
         return totals;
     }
+
+    /// <summary>
+    /// Calcula las calorias totales acumuladas en esta comida.
+    /// </summary>
+    public double CalculateTotalCalories()
+    {
+        double total = 0.0;
+        for (int i = 0; i < _items.Count; i++)
+        {
+            total += _items[i].CalculatedCalories;
+        }
+
+        return total;
+    }
+
+    /// <summary>
+    /// Calcula los gramos de proteina totales consumidos en esta comida.
+    /// </summary>
+    public double CalculateTotalProtein()
+    {
+        double total = 0.0;
+        for (int i = 0; i < _items.Count; i++)
+        {
+            total += _items[i].CalculatedProtein;
+        }
+
+        return total;
+    }
 }

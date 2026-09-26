@@ -27,6 +27,12 @@ public partial class AddFoodViewModel : ObservableObject
     public partial string ReferenceGramsText { get; set; } = "100";
 
     [ObservableProperty]
+    public partial string CaloriesText { get; set; } = "0";
+
+    [ObservableProperty]
+    public partial string ProteinText { get; set; } = "0";
+
+    [ObservableProperty]
     public partial string PhosphorusText { get; set; } = "0";
 
     [ObservableProperty]
@@ -78,6 +84,18 @@ public partial class AddFoodViewModel : ObservableObject
             IsBusy = true;
             FeedbackMessage = string.Empty;
 
+            double calories = 0;
+            if (double.TryParse(CaloriesText, out double parsedCalories) && parsedCalories >= 0)
+            {
+                calories = parsedCalories;
+            }
+
+            double proteinGrams = 0;
+            if (double.TryParse(ProteinText, out double parsedProtein) && parsedProtein >= 0)
+            {
+                proteinGrams = parsedProtein;
+            }
+
             var minerals = new List<MineralAmountDto>();
 
             AddMineralIfValid(minerals, MineralType.Phosphorus, "Fosforo", PhosphorusText);
@@ -94,6 +112,8 @@ public partial class AddFoodViewModel : ObservableObject
                 Name = Name.Trim(),
                 Category = string.IsNullOrWhiteSpace(Category) ? "General" : Category.Trim(),
                 ReferenceGrams = referenceGrams,
+                Calories = calories,
+                ProteinGrams = proteinGrams,
                 Minerals = minerals
             };
 
@@ -102,6 +122,8 @@ public partial class AddFoodViewModel : ObservableObject
 
             // Limpiar formulario tras guardar
             Name = string.Empty;
+            CaloriesText = "0";
+            ProteinText = "0";
             PhosphorusText = "0";
             PotassiumText = "0";
             SodiumText = "0";

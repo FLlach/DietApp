@@ -29,7 +29,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Magnesium, 27.0),
                     new(MineralType.Calcium, 5.0)
                 },
-                89.0),
+                89.0,
+                1.1),
 
             new FoodItem(
                 Guid.Parse("22222222-2222-2222-2222-222222222222"),
@@ -45,7 +46,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Iron, 2.7),
                     new(MineralType.Magnesium, 79.0)
                 },
-                23.0),
+                23.0,
+                2.9),
 
             new FoodItem(
                 Guid.Parse("33333333-3333-3333-3333-333333333333"),
@@ -60,7 +62,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Zinc, 1.0),
                     new(MineralType.Magnesium, 29.0)
                 },
-                165.0),
+                165.0,
+                31.0),
 
             new FoodItem(
                 Guid.Parse("44444444-4444-4444-4444-444444444444"),
@@ -76,7 +79,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Zinc, 1.3),
                     new(MineralType.Magnesium, 36.0)
                 },
-                116.0),
+                116.0,
+                9.0),
 
             new FoodItem(
                 Guid.Parse("55555555-5555-5555-5555-555555555555"),
@@ -91,7 +95,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Magnesium, 29.0),
                     new(MineralType.Calcium, 12.0)
                 },
-                208.0),
+                208.0,
+                25.0),
 
             new FoodItem(
                 Guid.Parse("66666666-6666-6666-6666-666666666666"),
@@ -106,7 +111,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Potassium, 92.0),
                     new(MineralType.Zinc, 2.7)
                 },
-                431.0),
+                431.0,
+                35.8),
 
             new FoodItem(
                 Guid.Parse("77777777-7777-7777-7777-777777777777"),
@@ -121,7 +127,8 @@ public static class InitialFoodCatalogSeed
                     new(MineralType.Magnesium, 20.0),
                     new(MineralType.Iron, 0.3)
                 },
-                87.0)
+                87.0,
+                2.0)
         };
     }
 }

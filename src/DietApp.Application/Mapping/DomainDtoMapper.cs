@@ -95,6 +95,7 @@ public static class DomainDtoMapper
             Category = food.Category,
             ReferenceGrams = food.ReferenceGrams,
             Calories = food.Calories,
+            ProteinGrams = food.ProteinGrams,
             Minerals = food.Minerals.Select(m => m.ToDto()).ToList()
         };
     }
@@ -107,6 +108,8 @@ public static class DomainDtoMapper
             FoodItemId = item.FoodItemId,
             FoodName = item.FoodName,
             PortionInGrams = item.PortionInGrams,
+            CalculatedCalories = item.CalculatedCalories,
+            CalculatedProtein = item.CalculatedProtein,
             CalculatedMinerals = item.CalculatedMinerals.Select(m => m.ToDto()).ToList()
         };
     }
@@ -136,6 +139,7 @@ public static class DomainDtoMapper
             FoodName = ingredient.FoodName,
             Grams = ingredient.Grams,
             CalculatedCalories = ingredient.CalculatedCalories,
+            CalculatedProtein = ingredient.CalculatedProtein,
             CalculatedMinerals = ingredient.CalculatedMinerals.Select(m => m.ToDto()).ToList()
         };
     }
@@ -164,6 +168,8 @@ public static class DomainDtoMapper
             FinalImagePath = recipe.FinalImagePath,
             TotalCalories = recipe.CalculateTotalCalories(),
             CaloriesPerServing = recipe.CalculateCaloriesPerServing(),
+            TotalProtein = recipe.CalculateTotalProtein(),
+            ProteinPerServing = recipe.CalculateProteinPerServing(),
             TotalMinerals = totalMinerals.Select(m => m.ToDto()).ToList(),
             MineralsPerServing = mineralsPerServing.Select(m => m.ToDto()).ToList(),
             Ingredients = recipe.Ingredients.Select(i => i.ToDto()).ToList(),
@@ -180,6 +186,7 @@ public static class DomainDtoMapper
             FoodName = item.FoodName,
             Grams = item.Grams,
             Calories = item.CalculatedCalories,
+            Protein = item.CalculatedProtein,
             Minerals = item.CalculatedMinerals.Select(m => m.ToDto()).ToList()
         };
     }
@@ -195,6 +202,7 @@ public static class DomainDtoMapper
             Description = seasoning.Description,
             TotalGrams = seasoning.CalculateTotalGrams(),
             TotalCalories = seasoning.CalculateTotalCalories(),
+            TotalProtein = seasoning.CalculateTotalProtein(),
             TotalMinerals = totalMinerals.Select(m => m.ToDto()).ToList(),
             Items = seasoning.Items.Select(i => i.ToDto()).ToList()
         };

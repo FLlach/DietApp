@@ -15,9 +15,10 @@ public class RecipeIngredientDto
     public string FoodName { get; set; } = string.Empty;
     public double Grams { get; set; }
     public double CalculatedCalories { get; set; }
+    public double CalculatedProtein { get; set; }
     public List<MineralAmountDto> CalculatedMinerals { get; set; } = new();
 
-    public string DisplayText => $"{FoodName}: {Grams:F0}g ({CalculatedCalories:F0} kcal)";
+    public string DisplayText => $"{FoodName}: {Grams:F0}g ({CalculatedCalories:F0} kcal, {CalculatedProtein:F1}g prot.)";
 
     public string MineralsSummary
     {

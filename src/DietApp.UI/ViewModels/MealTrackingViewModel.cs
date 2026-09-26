@@ -28,6 +28,12 @@ public partial class MealTrackingViewModel : ObservableObject
     [ObservableProperty]
     public partial bool HasExceededAlerts { get; set; }
 
+    [ObservableProperty]
+    public partial double DailyTotalProtein { get; set; }
+
+    [ObservableProperty]
+    public partial string DailyProteinDisplay { get; set; } = "0.0 g";
+
     public ObservableCollection<MealDto> DayMeals { get; } = new();
     public ObservableCollection<MineralAmountDto> DailyMinerals { get; } = new();
     public ObservableCollection<MineralAlertExceededDto> ExceededAlerts { get; } = new();
@@ -67,6 +73,10 @@ public partial class MealTrackingViewModel : ObservableObject
             {
                 DailyMinerals.Add(total);
             }
+
+            var protein = await _mealTrackingService.GetDailyTotalProteinAsync(SelectedDate);
+            DailyTotalProtein = protein;
+            DailyProteinDisplay = $"{protein:F1} g";
 
             // Evaluar alertas de limites maximos fijados por el usuario
             var alerts = _mineralAlertService.CheckExceededThresholds(DailyMinerals);

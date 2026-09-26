@@ -26,6 +26,10 @@ public class MealItemEntity
 
     public double PortionInGrams { get; set; }
 
+    public double CalculatedCalories { get; set; }
+
+    public double CalculatedProtein { get; set; }
+
     public string CalculatedMineralsJson { get; set; } = "[]";
 
     public MealItem ToDomain()
@@ -38,7 +42,9 @@ public class MealItemEntity
             FoodItemId,
             FoodName,
             PortionInGrams,
-            minerals);
+            minerals,
+            CalculatedCalories,
+            CalculatedProtein);
     }
 
     public static MealItemEntity FromDomain(Guid mealId, MealItem item)
@@ -50,6 +56,8 @@ public class MealItemEntity
             FoodItemId = item.FoodItemId,
             FoodName = item.FoodName,
             PortionInGrams = item.PortionInGrams,
+            CalculatedCalories = item.CalculatedCalories,
+            CalculatedProtein = item.CalculatedProtein,
             CalculatedMineralsJson = JsonSerializer.Serialize(item.CalculatedMinerals)
         };
     }

@@ -47,6 +47,21 @@
                     <Entry Placeholder="100"
                            Keyboard="Numeric"
                            Text="{Binding ReferenceGramsText}" />
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="{loc:Translate AddFood_Calories}" FontAttributes="Bold" FontSize="13" />
+                            <Entry Placeholder="0"
+                                   Keyboard="Numeric"
+                                   Text="{Binding CaloriesText}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="{loc:Translate AddFood_Protein}" FontAttributes="Bold" FontSize="13" />
+                            <Entry Placeholder="0"
+                                   Keyboard="Numeric"
+                                   Text="{Binding ProteinText}" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
 

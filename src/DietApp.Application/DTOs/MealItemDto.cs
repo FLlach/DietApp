@@ -12,7 +12,10 @@ public class MealItemDto
     public Guid FoodItemId { get; set; }
     public string FoodName { get; set; } = string.Empty;
     public double PortionInGrams { get; set; }
+    public double CalculatedCalories { get; set; }
+    public double CalculatedProtein { get; set; }
     public List<MineralAmountDto> CalculatedMinerals { get; set; } = new();
 
-    public string PortionSummary => $"{PortionInGrams:F0}g";
+    public string PortionSummary => $"{PortionInGrams:F0}g ({CalculatedCalories:F0} kcal, {CalculatedProtein:F1}g prot.)";
+    public string ProteinSummary => $"{CalculatedProtein:F1} g prot.";
 }

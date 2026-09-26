@@ -13,7 +13,9 @@ public class FoodItemDto
     public string Category { get; set; } = string.Empty;
     public double ReferenceGrams { get; set; } = 100.0;
     public double Calories { get; set; } = 0.0;
+    public double ProteinGrams { get; set; } = 0.0;
     public List<MineralAmountDto> Minerals { get; set; } = new();
 
-    public string SubtitleSummary => $"{Category} - Base {ReferenceGrams:F0}g ({Calories:F0} kcal)";
+    public string SubtitleSummary => $"{Category} - Base {ReferenceGrams:F0}g ({Calories:F0} kcal, {ProteinGrams:F1}g prot.)";
+    public string ProteinBadgeText => $"{ProteinGrams:F1} g proteina";
 }

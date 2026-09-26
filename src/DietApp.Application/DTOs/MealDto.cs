@@ -19,6 +19,10 @@ public class MealDto
     public List<MealItemDto> Items { get; set; } = new();
     public List<MineralAmountDto> TotalMinerals { get; set; } = new();
 
+    public double TotalCalories => Items?.Sum(i => i.CalculatedCalories) ?? 0.0;
+    public double TotalProtein => Items?.Sum(i => i.CalculatedProtein) ?? 0.0;
+    public string NutritionSummary => $"{TotalCalories:F0} kcal | {TotalProtein:F1} g proteina";
+
     /// <summary>
     /// Como funciona: Formatea el titulo descriptivo de la comida para el registro diario con su tipo,
     /// nota (si existe) y fecha (dd/MM/yyyy), omitiendo intencionalmente la hora (HH:mm) para no mostrar 00:00.

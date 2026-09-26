@@ -135,6 +135,87 @@ public class DietAppDbContext
                     }
                 }
             }
+            else
+            {
+                // Actualizar valores de proteina si la base de datos ya existia pero tiene ceros
+                int zeroProteinCount = await _connection.Table<FoodEntity>().Where(f => f.ProteinGrams == 0).CountAsync();
+                if (zeroProteinCount > 0)
+                {
+                    var preloadedFoods = InitialFoodCatalogSeed.GetPreloadedFoods();
+                    foreach (var seed in preloadedFoods)
+                    {
+                        await _connection.ExecuteAsync("UPDATE Foods SET ProteinGrams = ? WHERE Id = ? AND (ProteinGrams = 0 OR ProteinGrams IS NULL)", seed.ProteinGrams, seed.Id);
+                    }
+
+                    if (assetStreamProvider != null)
+                    {
+                        try
+                        {
+                            using var stream = await assetStreamProvider();
+                            if (stream != null)
+                            {
+                                await FoodDataCentralImporter.BackfillProteinIfMissingAsync(stream, _connection);
+                            }
+                        }
+                        catch { }
+                    }
+
+                    string candidatePath = jsonSeedFilePath ?? string.Empty;
+                    if (string.IsNullOrWhiteSpace(candidatePath) || !File.Exists(candidatePath))
+                    {
+                        string[] possiblePaths =
+                        {
+                            "FoodData_Central_foundation_food_json_2026-04-30.json",
+                            Path.Combine(AppContext.BaseDirectory, "FoodData_Central_foundation_food_json_2026-04-30.json"),
+                            Path.Combine(Directory.GetCurrentDirectory(), "FoodData_Central_foundation_food_json_2026-04-30.json"),
+                            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FoodData_Central_foundation_food_json_2026-04-30.json")
+                        };
+
+                        foreach (var path in possiblePaths)
+                        {
+                            if (File.Exists(path))
+                            {
+                                candidatePath = path;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(candidatePath) && File.Exists(candidatePath))
+                    {
+                        await FoodDataCentralImporter.BackfillProteinIfMissingFromFileAsync(candidatePath, _connection);
+                    }
+                }
+            }
+
+            // Sincronizar proteinas calculadas en ingredientes y comidas existentes
+            var zeroProteinIngredients = await _connection.Table<RecipeIngredientEntity>().Where(i => i.CalculatedProtein == 0).ToListAsync();
+            if (zeroProteinIngredients.Count > 0)
+            {
+                foreach (var ingredient in zeroProteinIngredients)
+                {
+                    var food = await _connection.Table<FoodEntity>().FirstOrDefaultAsync(f => f.Id == ingredient.FoodItemId);
+                    if (food != null && food.ProteinGrams > 0)
+                    {
+                        double calculatedProtein = (ingredient.Grams / (food.ReferenceGrams > 0 ? food.ReferenceGrams : 100.0)) * food.ProteinGrams;
+                        await _connection.ExecuteAsync("UPDATE RecipeIngredients SET CalculatedProtein = ? WHERE Id = ?", calculatedProtein, ingredient.Id);
+                    }
+                }
+            }
+
+            var zeroProteinMealItems = await _connection.Table<MealItemEntity>().Where(m => m.CalculatedProtein == 0).ToListAsync();
+            if (zeroProteinMealItems.Count > 0)
+            {
+                foreach (var mealItem in zeroProteinMealItems)
+                {
+                    var food = await _connection.Table<FoodEntity>().FirstOrDefaultAsync(f => f.Id == mealItem.FoodItemId);
+                    if (food != null && food.ProteinGrams > 0)
+                    {
+                        double calculatedProtein = (mealItem.PortionInGrams / (food.ReferenceGrams > 0 ? food.ReferenceGrams : 100.0)) * food.ProteinGrams;
+                        await _connection.ExecuteAsync("UPDATE MealItems SET CalculatedProtein = ? WHERE Id = ?", calculatedProtein, mealItem.Id);
+                    }
+                }
+            }
 
             // Validar si la tabla de recetas esta vacia para precargar recetas de ejemplo
             int recipeCount = await _connection.Table<RecipeEntity>().CountAsync();
