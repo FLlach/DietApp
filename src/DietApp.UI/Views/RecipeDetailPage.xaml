@@ -9,12 +9,12 @@
              Title="{loc:Translate RecipeDetail_Title}">
 
     <!--
-    Como funciona: Pantalla de presentacion detallada de la receta culinaria.
-    Exhibe la imagen final de la receta terminada, el subtitulo nutricional por porcion,
-    panel para registrar directamente la receta en la ingesta diaria del usuario,
-    la lista de ingredientes y la secuencia de pasos numerados con imagenes ilustrativas.
-    Por que se tomo esta decision: Permite al usuario tanto consultar la guia culinaria
-    como registrar inmediatamente las porciones consumidas en su historial de comidas.
+    Como funciona: Pantalla de presentacion detallada de la receta culinaria (Vista A de DESIGN.md y mockupBase.jpeg).
+    Exhibe el Hero fotográfico con boton circular translucido de retorno y barra oscura flotante con titulo y calorias,
+    seguido de las pildoras de minerales criticos, la cuadricula regular 2x2 de ingredientes con fotografia y gramaje,
+    el panel para registrar la ingesta diaria, advertencias clinicas y la secuencia ilustrada de elaboracion.
+    Por que se tomo esta decision: Replica fielmente la arquitectura visual de alta fidelidad definida en DESIGN.md,
+    maximizando la legibilidad nutricional y la ergonomia tactil en plataformas moviles y de escritorio.
     -->
 
     <ScrollView>
@@ -25,72 +25,215 @@
                                Color="{StaticResource Primary}"
                                HorizontalOptions="Center" />
 
-            <!-- Imagen Final de la Receta Terminada -->
-            <Border StrokeShape="RoundRectangle 14"
-                    Padding="0"
-                    IsVisible="{Binding Recipe.HasFinalImage}">
-                <Image Source="{Binding Recipe.FinalImagePath}"
-                       Aspect="AspectFill"
-                       HeightRequest="220" />
-            </Border>
-
-            <!-- Encabezado y Titulo -->
-            <VerticalStackLayout Spacing="6">
-                <Label Text="{Binding Recipe.Title}"
-                       FontAttributes="Bold"
-                       FontSize="22" />
-
-                <!-- Subtitulo de Minerales y Calorias por Porcion -->
-                <Border StrokeShape="RoundRectangle 8"
-                        Padding="12, 8"
-                        Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
-                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                        <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="{loc:Translate RecipeDetail_NutritionPerServing}"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="Gray" />
-                            <Label Text="{Binding Recipe.NutritionSubtitle}"
-                                   FontAttributes="Bold"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
-                        </VerticalStackLayout>
-
-                        <Border Grid.Column="1"
-                                Padding="8, 4"
-                                StrokeShape="RoundRectangle 6"
-                                Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
-                                VerticalOptions="Center">
-                            <Label Text="{Binding Recipe.ProteinPerServingDisplay}"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
-                        </Border>
-                    </Grid>
+            <!-- Hero Fotografia con Boton Circular 'X' y Barra Oscura Flotante (Vista A) -->
+            <Grid HeightRequest="250" Margin="0, 0, 0, 2">
+                <Border StrokeShape="RoundRectangle 20"
+                        Padding="0"
+                        StrokeThickness="0">
+                    <Image Source="{Binding Recipe.FinalImagePath}"
+                           Aspect="AspectFill"
+                           HeightRequest="250" />
                 </Border>
 
-                <!-- Descripcion -->
-                <Label Text="{Binding Recipe.Description}"
-                       FontSize="14"
-                       Margin="0, 4, 0, 0" />
+                <!-- Boton circular translucido 'X' para retorno rapido -->
+                <Button Text="✕"
+                        Command="{Binding CloseCommand}"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        MinimumWidthRequest="44"
+                        MinimumHeightRequest="44"
+                        CornerRadius="22"
+                        Padding="0"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        BackgroundColor="#70000000"
+                        TextColor="White"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Start"
+                        Margin="12" />
+
+                <!-- Barra oscura flotante superpuesta sobre el borde inferior -->
+                <Border StrokeShape="RoundRectangle 20"
+                        Background="#E60C0C0C"
+                        Padding="16, 10"
+                        Margin="12, 0, 12, 10"
+                        VerticalOptions="End"
+                        HorizontalOptions="Fill">
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="{Binding Recipe.Title}"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               FontSize="19"
+                               LineBreakMode="TailTruncation"
+                               VerticalOptions="Center" />
+
+                        <Label Grid.Column="1"
+                               Text="{Binding Recipe.EnergyBadge}"
+                               TextColor="{StaticResource Secondary}"
+                               FontAttributes="Bold"
+                               FontSize="13"
+                               VerticalOptions="Center"
+                               HorizontalOptions="End" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Fila de Pildoras de Nutrientes Criticos (mockupBase.jpeg) -->
+            <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8" Margin="0, 0, 0, 2">
+                <!-- Pildora Sodio -->
+                <Border Grid.Column="0"
+                        Style="{StaticResource PillNeutralStyle}">
+                    <Label Text="{Binding Recipe.SodiumBadge}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Pildora Potasio Destacada Coral -->
+                <Border Grid.Column="1"
+                        Style="{StaticResource PillCoralStyle}">
+                    <Label Text="{Binding Recipe.PotassiumBadge}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Pildora Fosforo -->
+                <Border Grid.Column="2"
+                        Style="{StaticResource PillNeutralStyle}">
+                    <Label Text="{Binding Recipe.PhosphorusBadge}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Seccion de Ingredientes (Cuadricula 2x2 segun mockupBase.jpeg) -->
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <Label Grid.Column="0"
+                           Text="{loc:Translate RecipeDetail_IngredientsTitle}"
+                           FontAttributes="Bold"
+                           FontSize="20"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
+                           VerticalOptions="Center" />
+
+                    <!-- Badge de Proteina por Porcion -->
+                    <Border Grid.Column="1"
+                            Padding="8, 4"
+                            StrokeShape="RoundRectangle 6"
+                            Background="{AppThemeBinding Light=#EBF8EE, Dark=#1B382B}"
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            VerticalOptions="Center">
+                        <Label Text="{Binding Recipe.ProteinPerServingDisplay}"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2E7D32, Dark=#A6D7A8}" />
+                    </Border>
+                </Grid>
+
+                <!-- Cuadricula 2x2 de Tarjetas de Ingredientes con Fotografia y Gramaje -->
+                <FlexLayout BindableLayout.ItemsSource="{Binding DisplayedIngredients}"
+                            Wrap="Wrap"
+                            JustifyContent="SpaceBetween"
+                            AlignItems="Start">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="dto:RecipeIngredientDto">
+                            <Border FlexLayout.Basis="48%"
+                                    Style="{StaticResource IngredientCardStyle}"
+                                    Margin="0, 0, 0, 10">
+                                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                    <Border StrokeShape="RoundRectangle 8"
+                                            Padding="0"
+                                            StrokeThickness="0"
+                                            HeightRequest="80"
+                                            WidthRequest="120"
+                                            Background="Transparent"
+                                            HorizontalOptions="Center">
+                                        <Image Source="{Binding ImagePath}"
+                                               Aspect="AspectFit"
+                                               HeightRequest="80"
+                                               WidthRequest="120"
+                                               HorizontalOptions="Center" />
+                                    </Border>
+                                    <Label Text="{Binding FoodName}"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="1" />
+                                    <Label Text="{Binding GramsDisplay}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+                <!-- Selector de ordenamiento por mineral para ingredientes -->
+                <Border StrokeShape="RoundRectangle 10"
+                        Padding="10, 8"
+                        Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                        StrokeThickness="1"
+                        Margin="0, 2, 0, 0">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{loc:Translate RecipeDetail_SortIngredients}"
+                               FontAttributes="Bold"
+                               FontSize="11"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                            <Border Grid.Column="0"
+                                    StrokeShape="RoundRectangle 6"
+                                    Padding="4, 0"
+                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                <Picker ItemsSource="{Binding IngredientMineralOptions}"
+                                        ItemDisplayBinding="{Binding DisplayName}"
+                                        SelectedItem="{Binding SelectedIngredientMineralOption}"
+                                        FontSize="12" />
+                            </Border>
+
+                            <Border Grid.Column="1"
+                                    StrokeShape="RoundRectangle 6"
+                                    Padding="4, 0"
+                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                <Picker ItemsSource="{Binding IngredientDirectionOptions}"
+                                        ItemDisplayBinding="{Binding DisplayName}"
+                                        SelectedItem="{Binding SelectedIngredientDirectionOption}"
+                                        FontSize="12" />
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- Banner de Advertencia de Limite de Minerales -->
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
                     IsVisible="{Binding HasPortionWarnings}"
-                    Stroke="{StaticResource WarningAmber}"
+                    Stroke="{StaticResource Primary}"
                     StrokeThickness="1.5"
-                    Background="{AppThemeBinding Light=#FEF9E7, Dark=#2E2315}">
+                    Background="{AppThemeBinding Light=#FFF3ED, Dark=#2E1D16}">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{loc:Translate RecipeDetail_PortionWarningTitle}"
                            FontAttributes="Bold"
                            FontSize="15"
-                           TextColor="{AppThemeBinding Light=#B9770E, Dark=#F39C12}" />
+                           TextColor="{StaticResource Primary}" />
 
                     <Label Text="{loc:Translate RecipeDetail_PortionWarningSubtitle}"
                            FontSize="12"
-                           TextColor="{AppThemeBinding Light=#7D6608, Dark=#FAD7A0}" />
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding PortionWarnings}"
                                          Spacing="6">
@@ -115,18 +258,18 @@
                                         </Border>
 
                                         <Label Grid.Column="1"
-                                               Text="{Binding IconText}"
-                                               FontAttributes="Bold"
-                                               FontSize="13"
-                                               TextColor="{Binding CardTextHex}"
-                                               VerticalOptions="Center" />
+                                                Text="{Binding IconText}"
+                                                FontAttributes="Bold"
+                                                FontSize="13"
+                                                TextColor="{Binding CardTextHex}"
+                                                VerticalOptions="Center" />
 
                                         <Label Grid.Column="2"
-                                               Text="{Binding WarningMessage}"
-                                               FontAttributes="Bold"
-                                               FontSize="12"
-                                               TextColor="{Binding CardTextHex}"
-                                               VerticalOptions="Center" />
+                                                Text="{Binding WarningMessage}"
+                                                FontAttributes="Bold"
+                                                FontSize="12"
+                                                TextColor="{Binding CardTextHex}"
+                                                VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -138,12 +281,14 @@
             <!-- Resumen Completo de Minerales por Porcion -->
             <Border StrokeShape="RoundRectangle 12"
                     Padding="14"
-                    Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
+                    Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{loc:Translate RecipeDetail_MineralsPerServingTitle}"
                            FontAttributes="Bold"
                            FontSize="15"
-                           TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
                     <Label Text="{loc:Translate RecipeDetail_MineralsPerServingSubtitle}"
                            FontSize="12"
@@ -157,7 +302,7 @@
                                 <Border Margin="0, 3, 8, 5"
                                         Padding="10, 6"
                                         StrokeShape="RoundRectangle 8"
-                                        Background="{AppThemeBinding Light=#D4E6F1, Dark=#2E4053}">
+                                        Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
                                     <Label Text="{Binding DisplayText}"
                                            FontSize="13"
                                            FontAttributes="Bold" />
@@ -169,14 +314,16 @@
             </Border>
 
             <!-- Panel de Accion: Registrar en la Ingesta Diaria -->
-            <Border StrokeShape="RoundRectangle 12"
+            <Border StrokeShape="RoundRectangle 14"
                     Padding="14"
-                    Background="{AppThemeBinding Light=#EAFAF1, Dark=#142B1E}">
+                    Background="{AppThemeBinding Light=#F7FBF4, Dark=#17231A}"
+                    Stroke="{StaticResource Secondary}"
+                    StrokeThickness="1">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="{loc:Translate RecipeDetail_IntakePanelTitle}"
                            FontAttributes="Bold"
                            FontSize="16"
-                           TextColor="{AppThemeBinding Light=#196F3D, Dark=#52BE80}" />
+                           TextColor="{AppThemeBinding Light=#2E7D32, Dark={StaticResource Secondary}}" />
 
                     <Label Text="{loc:Translate RecipeDetail_IntakePanelSubtitle}"
                            FontSize="12"
@@ -205,12 +352,7 @@
                                 <Button Grid.Column="1"
                                         Text="{loc:Translate RecipeDetail_LogAction}"
                                         Command="{Binding AddToDailyIntakeCommand}"
-                                        FontAttributes="Bold"
-                                        HeightRequest="44"
-                                        MinimumHeightRequest="44"
-                                        Padding="14, 0"
-                                        BackgroundColor="{StaticResource HealthTeal}"
-                                        TextColor="White" />
+                                        Style="{StaticResource PillActionCompletedStyle}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Grid>
@@ -219,94 +361,33 @@
                     <Label Text="{Binding IntakeMessage}"
                            FontAttributes="Bold"
                            FontSize="12"
-                           TextColor="{StaticResource HealthTeal}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Seccion de Ingredientes -->
-            <Label Text="{loc:Translate RecipeDetail_IngredientsTitle}"
-                   FontAttributes="Bold"
-                   FontSize="17" />
-
-            <Border StrokeShape="RoundRectangle 12"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="10">
-                    <!-- Controles para ordenar ingredientes por mineral -->
-                    <Border StrokeShape="RoundRectangle 8"
-                            Padding="10, 8"
-                            Background="{AppThemeBinding Light=#F8F9F9, Dark=#1C2833}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label Text="{loc:Translate RecipeDetail_SortIngredients}"
-                                   FontAttributes="Bold"
-                                   FontSize="12"
-                                   TextColor="{AppThemeBinding Light=#2C3E50, Dark=#BDC3C7}" />
-
-                            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
-                                <Border Grid.Column="0"
-                                        StrokeShape="RoundRectangle 6"
-                                        Padding="4, 0"
-                                        Background="{AppThemeBinding Light=#FFFFFF, Dark=#2C3E50}">
-                                    <Picker ItemsSource="{Binding IngredientMineralOptions}"
-                                            ItemDisplayBinding="{Binding DisplayName}"
-                                            SelectedItem="{Binding SelectedIngredientMineralOption}"
-                                            FontSize="12" />
-                                </Border>
-
-                                <Border Grid.Column="1"
-                                        StrokeShape="RoundRectangle 6"
-                                        Padding="4, 0"
-                                        Background="{AppThemeBinding Light=#FFFFFF, Dark=#2C3E50}">
-                                    <Picker ItemsSource="{Binding IngredientDirectionOptions}"
-                                            ItemDisplayBinding="{Binding DisplayName}"
-                                            SelectedItem="{Binding SelectedIngredientDirectionOption}"
-                                            FontSize="12" />
-                                </Border>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <!-- Lista de Ingredientes Ordenados -->
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding DisplayedIngredients}"
-                                         Spacing="8">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="dto:RecipeIngredientDto">
-                                <VerticalStackLayout Spacing="2">
-                                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" VerticalOptions="Center">
-                                        <Label Grid.Column="0" Text="•" FontAttributes="Bold" FontSize="14" />
-                                        <Label Grid.Column="1" Text="{Binding DisplayText}" FontAttributes="Bold" FontSize="14" />
-                                    </Grid>
-                                    <Label Text="{Binding MineralsSummary}"
-                                           FontSize="11"
-                                           TextColor="Gray"
-                                           Margin="16, 0, 0, 4" />
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </VerticalStackLayout>
+                           TextColor="{StaticResource Primary}" />
                 </VerticalStackLayout>
             </Border>
 
             <!-- Seccion de Pasos Numerados de Elaboracion -->
             <Label Text="{loc:Translate RecipeDetail_StepsTitle}"
                    FontAttributes="Bold"
-                   FontSize="17" />
+                   FontSize="17"
+                   TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Recipe.Steps}"
-                                 Spacing="14">
+                                 Spacing="12">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="dto:RecipeStepDto">
                         <Border StrokeShape="RoundRectangle 12"
                                 Padding="14"
-                                Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                                Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1">
                             <VerticalStackLayout Spacing="10">
                                 <!-- Numero y Titulo del Paso -->
                                 <HorizontalStackLayout Spacing="8">
                                     <Border StrokeShape="RoundRectangle 6"
                                             Padding="8, 3"
-                                            Background="{AppThemeBinding Light=#2980B9, Dark=#3498DB}">
+                                            Background="{StaticResource Secondary}">
                                         <Label Text="{Binding StepTitle}"
-                                               TextColor="White"
+                                               TextColor="{StaticResource ContrastDark}"
                                                FontAttributes="Bold"
                                                FontSize="12" />
                                     </Border>

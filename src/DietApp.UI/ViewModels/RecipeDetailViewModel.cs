@@ -309,4 +309,14 @@ public partial class RecipeDetailViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
+    /// <summary>
+    /// Como funciona: Navega hacia la pantalla previa cerrando la ficha de detalle.
+    /// Por que se tomo esta decision: Controla el boton circular superior de cierre ('X') especificado en Vista A de mockupBase.jpeg.
+    /// </summary>
+    [RelayCommand]
+    public async Task CloseAsync()
+    {
+        await Shell.Current.GoToAsync("..");
+    }
 }

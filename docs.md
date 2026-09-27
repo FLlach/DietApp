@@ -277,9 +277,70 @@ Para compilar y ejecutar en Windows directamente desde la terminal:
 ```powershell
 dotnet build -t:Run -f net10.0-windows10.0.19041.0 src/DietApp.UI/DietApp.UI.csproj
 ```
+```powershell
+dotnet run --project src/DietApp.UI/DietApp.UI.csproj -f net10.0-windows10.0.19041.0
+```
 
 ### Ejecucion en Android:
 1. Abrir la solucion `DietApp.slnx` en Visual Studio.
 2. Seleccionar como proyecto de inicio `DietApp.UI`.
 3. Seleccionar el emulador de Android o un dispositivo fisico conectado en la barra superior.
 4. Presionar `F5` para iniciar la depuracion.
+
+---
+
+## 10. Sistema Visual y Experiencia de Usuario (Alineacion DESIGN.md y mockupBase.jpeg)
+
+### 10.1. Paleta Oficial y Recursos Semanticos
+* **Colores Principales**:
+  * **Coral Orange (`#ef713f`)**: Color primario de marca, empleado en botones principales, badges de alerta de nutrientes criticos (ej. Potasio elevado), checks de seleccion activa y acentos clave.
+  * **Soft Lime Green (`#bed35a`)**: Color secundario, empleado en acciones de confirmacion (`Completado`) y estados de exito.
+  * **Warm Surface (`#fffaf8`)**: Fondo de pantallas principales en tema claro que transmite naturalidad y calidez.
+  * **Card Background (`#ffffff`)**: Fondo de tarjetas elevadas e ingredientes con bordes sutiles calidos (`#eee6e1`).
+  * **Dark Contrast (`#0c0c0c`)**: Contenedores flotantes oscuros de alto impacto (overlay de plato en Vista A y barra de acciones en Vista B), y texto de maxima legibilidad.
+* **Archivos Clave**:
+  * [Colors.xaml](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/Resources/Styles/Colors.xaml): Definicion de colores y pinceles semanticos (`PillCoralBrush`, `PillLimeBrush`, `CardBackgroundLightBrush`, `BorderWarmLightBrush`).
+  * [Styles.xaml](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/Resources/Styles/Styles.xaml): Estilos base de pildoras (`PillCoralStyle`, `PillNeutralStyle`, `PillActionCompletedStyle`, `PillActionSecondaryStyle`), tarjetas de ingredientes (`IngredientCardStyle`) y barra de navegacion `Shell`.
+
+### 10.2. Vista A: Ficha de Detalle de Receta (`RecipeDetailPage`)
+* **Hero Visual y Overlay**:
+  * Contenedor superior con imagen culinaria real (`recipe_hero_dish.jpg`).
+  * Boton circular translucido flotante en la esquina superior izquierda con icono de cierre ('✕') que ejecuta `CloseCommand` para navegar hacia atras (`Shell.Current.GoToAsync("..")`).
+  * Barra inferior flotante oscura superpuesta sobre el borde de la fotografia con el titulo de la receta (`Receta ABCDE`) y el aporte energetico (`500 kcal por porcion`).
+* **Pildoras de Minerales Criticos**:
+  * Fila horizontal que resalta el balance clinico con pastillas nutricionales (`0,3 Sodio`, `150 Potasio` destacada en Coral Orange `#ef713f`, `0,1 Fosforo`).
+* **Cuadricula 2x2 de Ingredientes**:
+  * Tarjetas individuales con fondo blanco, bordes finos calidos, imagen fotografica (`food_potatoes.jpg`, `food_rice.jpg`, `food_broccoli.jpg`, `food_chicken.jpg`), nombre del alimento y gramaje formateado.
+* **Preservacion Clinica**:
+  * Incluye avisos preventivos de limites recomendados, seleccion de fecha para registro en ingesta diaria y pasos de elaboracion culinaria.
+
+### 10.3. Vista B: Seleccion de Componentes y Alinos (`SeasoningsPage`)
+* **Carrusel Superior de Modulos Nutricionales**:
+  * Fila de modulos con tarjetas de balance: modulo principal con pildoras de aporte de nutrientes y badge de atencion, modulo de postre con indicador de check, y modulo de liquido con indicador de check.
+* **Selector de Categorias**:
+  * Pestanas limpias de navegacion interna (`Base`, `Alinos`, `Postre`, `Liquido`).
+* **Cuadricula 2x2 de Seleccion**:
+  * Tarjetas interactivas de alinos (`#Personalizado`, `Aceite de Oliva`, `Oregano`, `Aceite de Canola`) con imagenes fotograficas y badge circular de check naranja en esquina superior derecha para el elemento activo.
+* **Barra Inferior de Accion Fija**:
+  * Contenedor inferior oscuro con botones en forma de pildora: `Agregar` (estilo secundario con borde fino) y `Completado` (boton verde lima suave `#bed35a` con texto oscuro).
+* **Constructor Personalizado**:
+  * Mantiene el panel de creacion de mezclas de condimentos a medida con calculo instantaneo de minerales.
+
+### 10.4. Fotografia Culinaria Integrada
+* Se eliminaron placeholders genericos en favor de fotografia culinaria real ubicada en `src/DietApp.UI/Resources/Images/`:
+  * `recipe_hero_dish.jpg`, `food_potatoes.jpg`, `food_rice.jpg`, `food_broccoli.jpg`, `food_chicken.jpg`.
+  * `seasoning_custom.jpg`, `seasoning_olive_oil.jpg`, `seasoning_oregano.jpg`, `seasoning_canola_oil.jpg`.
+  * `module_dessert.jpg`, `module_liquid.jpg`.
+* Se incorporo migracion transparente en `DietAppDbContext` para sustituir referencias residuales en bases de datos SQLite locales existentes.
+
+### 10.5. Soporte Integral de Modo Claro y Modo Oscuro
+* **Arquitectura de Temas (DDD)**:
+  * `ThemeMode` en `DietApp.Domain.Enums` define los estados `Light`, `Dark` y `System`.
+  * `IThemeService` en `DietApp.Application.Services` define el contrato para consultar, conmutar y persistir el tema de la aplicacion.
+  * `AppThemeService` en `DietApp.UI.Services` implementa el servicio mediante `Preferences` y conmuta `Application.Current.UserAppTheme` en el hilo principal (`MainThread`).
+  * `App.xaml.cs` inicializa el servicio al arrancar, fijando por defecto el modo oscuro si no existe configuracion previa.
+* **Selector en Pantalla de Ajustes (`SettingsPage` / `SettingsViewModel`)**:
+  * Tarjeta interactiva con tres opciones: `Modo Claro` (superficie calida `#fffaf8`, tarjetas blancas `#ffffff` y tipografia profunda `#0c0c0c`), `Modo Oscuro` (fondo oscuro `#0c0c0c`/`#121214`, tarjetas oscuras `#1c1c20` y textos en blanco) y `Sistema` (sincronizacion automatica con el dispositivo).
+  * Conmutacion reactiva instantanea de toda la interfaz y soporte bilingue (espanol/ingles).
+* **Armonizacion de Superficies y Bordes**:
+  * Pinceles de borde dinamicos `AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}` aplicados en tarjetas, modulos y listas.

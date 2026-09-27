@@ -122,7 +122,7 @@
             <Label Text="{Binding FeedbackMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource HealthTeal}" />
+                   TextColor="{StaticResource Primary}" />
 
             <!-- Boton Guardar -->
             <Button Text="{loc:Translate AddFood_SaveButton}"

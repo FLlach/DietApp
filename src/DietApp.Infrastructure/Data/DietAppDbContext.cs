@@ -240,6 +240,19 @@ public class DietAppDbContext
                     }
                 }
             }
+            else
+            {
+                // Sincronizar fotografias reales en recetas existentes para descartar placeholders genericos
+                int placeholderImages = await _connection.Table<RecipeEntity>().Where(r => r.FinalImagePath == "dotnet_bot.png").CountAsync();
+                if (placeholderImages > 0)
+                {
+                    await _connection.ExecuteAsync("UPDATE Recipes SET FinalImagePath = 'recipe_hero_dish.jpg', Title = 'Receta ABCDE' WHERE Id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'");
+                    await _connection.ExecuteAsync("UPDATE Recipes SET FinalImagePath = 'recipe_hero_dish.jpg' WHERE FinalImagePath = 'dotnet_bot.png'");
+                    await _connection.ExecuteAsync("UPDATE RecipeSteps SET ImagePath = 'food_potatoes.jpg' WHERE StepNumber = 1 AND ImagePath = 'dotnet_bot.png'");
+                    await _connection.ExecuteAsync("UPDATE RecipeSteps SET ImagePath = 'food_chicken.jpg' WHERE StepNumber = 2 AND ImagePath = 'dotnet_bot.png'");
+                    await _connection.ExecuteAsync("UPDATE RecipeSteps SET ImagePath = 'recipe_hero_dish.jpg' WHERE StepNumber = 3 AND ImagePath = 'dotnet_bot.png'");
+                }
+            }
 
             // Validar si la tabla de alinos esta vacia para precargar alinos de ejemplo
             int seasoningCount = await _connection.Table<SeasoningEntity>().CountAsync();

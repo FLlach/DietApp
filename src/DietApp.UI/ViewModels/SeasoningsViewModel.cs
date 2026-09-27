@@ -46,9 +46,15 @@ public partial class SeasoningsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool HasSeasonings { get; set; }
 
+    [ObservableProperty]
+    public partial string SelectedCategory { get; set; } = "Aliños";
+
     public ObservableCollection<SeasoningDto> Seasonings { get; } = new();
     public ObservableCollection<FoodItemDto> AvailableFoods { get; } = new();
     public ObservableCollection<SeasoningDraftItemModel> DraftItems { get; } = new();
+    public ObservableCollection<MealModuleSummaryModel> SummaryModules { get; } = new();
+    public ObservableCollection<string> Categories { get; } = new();
+    public ObservableCollection<ComponentSelectionItemModel> SelectableSeasonings { get; } = new();
 
     public SeasoningsViewModel(
         ISeasoningService seasoningService,
@@ -58,6 +64,120 @@ public partial class SeasoningsViewModel : ObservableObject
         _seasoningService = seasoningService ?? throw new ArgumentNullException(nameof(seasoningService));
         _foodCatalogService = foodCatalogService ?? throw new ArgumentNullException(nameof(foodCatalogService));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
+
+        InitializeMockupModules();
+    }
+
+    private void InitializeMockupModules()
+    {
+        SummaryModules.Clear();
+        SummaryModules.Add(new MealModuleSummaryModel
+        {
+            Title = "Receta ABCD",
+            PortionText = "1 porcion",
+            BadgeIcon = "!",
+            IsAlertBadge = true,
+            NutrientPills = new List<NutrientPillItemModel>
+            {
+                new() { Text = "0,3 Sodio", IsHighlighted = false },
+                new() { Text = "150 Potasio", IsHighlighted = true },
+                new() { Text = "0,1 Fosforo", IsHighlighted = false }
+            }
+        });
+
+        SummaryModules.Add(new MealModuleSummaryModel
+        {
+            Title = "Postre",
+            PortionText = "1 porcion",
+            BadgeIcon = "✓",
+            IsAlertBadge = false,
+            ImagePath = "module_dessert.jpg",
+            NutrientPills = new List<NutrientPillItemModel>
+            {
+                new() { Text = "100 Fibra", IsHighlighted = false },
+                new() { Text = "200 Azucar", IsHighlighted = false }
+            }
+        });
+
+        SummaryModules.Add(new MealModuleSummaryModel
+        {
+            Title = "Liquido",
+            PortionText = "Min. 200 ml",
+            BadgeIcon = "✓",
+            IsAlertBadge = false,
+            ImagePath = "module_liquid.jpg",
+            NutrientPills = new List<NutrientPillItemModel>
+            {
+                new() { Text = "Agua Mineral", IsHighlighted = false },
+                new() { Text = "Jugo Natural", IsHighlighted = false }
+            }
+        });
+
+        Categories.Clear();
+        Categories.Add("Base");
+        Categories.Add("Alinos");
+        Categories.Add("Postre");
+        Categories.Add("Liquido");
+
+        SelectableSeasonings.Clear();
+        SelectableSeasonings.Add(new ComponentSelectionItemModel
+        {
+            Id = "custom",
+            Title = "#Personalizado",
+            ImagePath = "seasoning_custom.jpg",
+            IsSelected = true
+        });
+        SelectableSeasonings.Add(new ComponentSelectionItemModel
+        {
+            Id = "olive_oil",
+            Title = "Aceite de Oliva",
+            ImagePath = "seasoning_olive_oil.jpg",
+            IsSelected = false
+        });
+        SelectableSeasonings.Add(new ComponentSelectionItemModel
+        {
+            Id = "oregano",
+            Title = "Oregano",
+            ImagePath = "seasoning_oregano.jpg",
+            IsSelected = false
+        });
+        SelectableSeasonings.Add(new ComponentSelectionItemModel
+        {
+            Id = "canola_oil",
+            Title = "Aceite de Canola",
+            ImagePath = "seasoning_canola_oil.jpg",
+            IsSelected = false
+        });
+    }
+
+    [RelayCommand]
+    public void SelectCategory(string category)
+    {
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            SelectedCategory = category;
+        }
+    }
+
+    [RelayCommand]
+    public void ToggleSelectableItem(ComponentSelectionItemModel item)
+    {
+        if (item != null)
+        {
+            item.IsSelected = !item.IsSelected;
+            if (item.IsSelected && item.Id == "custom")
+            {
+                IsCreatePanelVisible = true;
+            }
+        }
+    }
+
+    [RelayCommand]
+    public void CompleteSelection()
+    {
+        var selectedNames = SelectableSeasonings.Where(s => s.IsSelected).Select(s => s.Title).ToList();
+        string summary = selectedNames.Count > 0 ? string.Join(", ", selectedNames) : "Alino base";
+        StatusMessage = $"Seleccion completada ({summary}). Balance de componentes y alinos consolidado.";
     }
 
     [RelayCommand]

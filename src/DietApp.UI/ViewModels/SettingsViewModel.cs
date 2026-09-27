@@ -17,6 +17,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly ILocalizationService _localizationService;
     private readonly IMineralAlertService _mineralAlertService;
+    private readonly IThemeService _themeService;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SpanishBorderColor))]
@@ -28,14 +29,40 @@ public partial class SettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(EnglishBorderThickness))]
     public partial bool IsEnglishSelected { get; set; }
 
-    public Color SpanishBorderColor => IsSpanishSelected ? Color.FromArgb("#0F766E") : Color.FromArgb("#CBD5E1");
-    public Color EnglishBorderColor => IsEnglishSelected ? Color.FromArgb("#0F766E") : Color.FromArgb("#CBD5E1");
+    public Color SpanishBorderColor => IsSpanishSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
+    public Color EnglishBorderColor => IsEnglishSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
 
     public double SpanishBorderThickness => IsSpanishSelected ? 2.5 : 1.0;
     public double EnglishBorderThickness => IsEnglishSelected ? 2.5 : 1.0;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LightBorderColor))]
+    [NotifyPropertyChangedFor(nameof(LightBorderThickness))]
+    public partial bool IsLightSelected { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DarkBorderColor))]
+    [NotifyPropertyChangedFor(nameof(DarkBorderThickness))]
+    public partial bool IsDarkSelected { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SystemBorderColor))]
+    [NotifyPropertyChangedFor(nameof(SystemBorderThickness))]
+    public partial bool IsSystemSelected { get; set; }
+
+    public Color LightBorderColor => IsLightSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
+    public Color DarkBorderColor => IsDarkSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
+    public Color SystemBorderColor => IsSystemSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
+
+    public double LightBorderThickness => IsLightSelected ? 2.5 : 1.0;
+    public double DarkBorderThickness => IsDarkSelected ? 2.5 : 1.0;
+    public double SystemBorderThickness => IsSystemSelected ? 2.5 : 1.0;
+
+    [ObservableProperty]
     public partial string StatusMessage { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ThemeStatusMessage { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string AlertsStatusMessage { get; set; } = string.Empty;
@@ -50,15 +77,19 @@ public partial class SettingsViewModel : ObservableObject
 
     public SettingsViewModel(
         ILocalizationService localizationService,
-        IMineralAlertService mineralAlertService)
+        IMineralAlertService mineralAlertService,
+        IThemeService themeService)
     {
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _mineralAlertService = mineralAlertService ?? throw new ArgumentNullException(nameof(mineralAlertService));
+        _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
 
         UpdateSelectionState();
+        UpdateThemeSelectionState();
         InitializeMineralAlerts();
 
         _localizationService.LanguageChanged += OnLanguageChanged;
+        _themeService.ThemeChanged += OnThemeChanged;
     }
 
     partial void OnWarningPercentageChanged(double value)
@@ -72,11 +103,48 @@ public partial class SettingsViewModel : ObservableObject
         UpdateMineralAlertNames();
     }
 
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        UpdateThemeSelectionState();
+    }
+
+    private void UpdateThemeSelectionState()
+    {
+        var current = _themeService.CurrentTheme;
+        IsLightSelected = current == ThemeMode.Light;
+        IsDarkSelected = current == ThemeMode.Dark;
+        IsSystemSelected = current == ThemeMode.System;
+    }
+
     private void UpdateSelectionState()
     {
         var lang = _localizationService.CurrentLanguage;
         IsSpanishSelected = lang == "es";
         IsEnglishSelected = lang == "en";
+    }
+
+    [RelayCommand]
+    public void SelectLight()
+    {
+        _themeService.SetTheme(ThemeMode.Light);
+        UpdateThemeSelectionState();
+        ThemeStatusMessage = _localizationService.GetString("Settings_ThemeNotice");
+    }
+
+    [RelayCommand]
+    public void SelectDark()
+    {
+        _themeService.SetTheme(ThemeMode.Dark);
+        UpdateThemeSelectionState();
+        ThemeStatusMessage = _localizationService.GetString("Settings_ThemeNotice");
+    }
+
+    [RelayCommand]
+    public void SelectSystem()
+    {
+        _themeService.SetTheme(ThemeMode.System);
+        UpdateThemeSelectionState();
+        ThemeStatusMessage = _localizationService.GetString("Settings_ThemeNotice");
     }
 
     private void InitializeMineralAlerts()

@@ -117,7 +117,9 @@
             <!-- Resumen Total de Minerales del Dia -->
             <Border StrokeShape="RoundRectangle 12"
                     Padding="16"
-                    Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light=#FFF9F5, Dark=#1C1C20}">
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                         <Label Grid.Column="0"
@@ -156,10 +158,11 @@
                                 <Border Margin="0, 3, 8, 5"
                                         Padding="10, 6"
                                         StrokeShape="RoundRectangle 8"
-                                        Background="{AppThemeBinding Light=#D4E6F1, Dark=#2E4053}">
+                                        Background="{AppThemeBinding Light=#FFF1EA, Dark=#26262B}">
                                     <Label Text="{Binding DisplayText}"
                                            FontSize="13"
-                                           FontAttributes="Bold" />
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -206,7 +209,9 @@
                     <DataTemplate x:DataType="dto:MealDto">
                         <Border StrokeShape="RoundRectangle 12"
                                 Padding="14"
-                                Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C20}">
                             <VerticalStackLayout Spacing="8">
                                 <Grid ColumnDefinitions="*, Auto">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
@@ -264,9 +269,10 @@
                                             <Border Margin="0, 2, 6, 4"
                                                     Padding="6, 2"
                                                     StrokeShape="RoundRectangle 6"
-                                                    Background="{AppThemeBinding Light=#EAEDED, Dark=#34495E}">
+                                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
                                                 <Label Text="{Binding DisplayText}"
-                                                       FontSize="11" />
+                                                       FontSize="11"
+                                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                             </Border>
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>

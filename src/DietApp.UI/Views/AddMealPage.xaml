@@ -113,8 +113,9 @@
                                 VerticalOptions="End"
                                 HeightRequest="44"
                                 MinimumHeightRequest="44"
-                                BackgroundColor="{StaticResource HealthTeal}"
-                                TextColor="White"
+                                BackgroundColor="{StaticResource Secondary}"
+                                TextColor="{StaticResource ContrastDark}"
+                                FontAttributes="Bold"
                                 Command="{Binding AddRecipeToMealCommand}" />
                     </Grid>
                 </VerticalStackLayout>
@@ -166,7 +167,7 @@
             <Label Text="{Binding StatusMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource HealthTeal}" />
+                   TextColor="{StaticResource Primary}" />
 
             <!-- Boton Guardar Comida -->
             <Button Text="{loc:Translate AddMeal_SaveButton}"

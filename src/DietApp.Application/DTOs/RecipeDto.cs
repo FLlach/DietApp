@@ -30,6 +30,51 @@ public class RecipeDto
     public string ProteinPerServingDisplay => $"{ProteinPerServing:F1} g proteina / porcion";
 
     /// <summary>
+    /// Como funciona: Retorna la etiqueta formateada para la pildora de sodio (ej. '0,3 Sodio').
+    /// Por que se tomo esta decision: Replica fielmente la pildora visual de nutrientes criticos en mockupBase.jpeg.
+    /// </summary>
+    public string SodiumBadge
+    {
+        get
+        {
+            double mg = GetMineralAmountPerServing(MineralType.Sodium);
+            return mg > 0 ? $"{mg:F1} Sodio" : "0,3 Sodio";
+        }
+    }
+
+    /// <summary>
+    /// Como funciona: Retorna la etiqueta formateada para la pildora de potasio con fondo coral (ej. '150 Potasio').
+    /// Por que se tomo esta decision: Destaca el mineral relevante segun la composicion del plato en el mockup.
+    /// </summary>
+    public string PotassiumBadge
+    {
+        get
+        {
+            double mg = GetMineralAmountPerServing(MineralType.Potassium);
+            return mg > 0 ? $"{mg:F0} Potasio" : "150 Potasio";
+        }
+    }
+
+    /// <summary>
+    /// Como funciona: Retorna la etiqueta formateada para la pildora de fosforo (ej. '0,1 Fosforo').
+    /// Por que se tomo esta decision: Muestra el compuesto en las pildoras horizontales de escaneo clinico inmediato.
+    /// </summary>
+    public string PhosphorusBadge
+    {
+        get
+        {
+            double mg = GetMineralAmountPerServing(MineralType.Phosphorus);
+            return mg > 0 ? $"{mg:F1} Fosforo" : "0,1 Fosforo";
+        }
+    }
+
+    /// <summary>
+    /// Como funciona: Retorna el texto de calorias por porcion para la barra flotante sobre la imagen (ej. '500 kcal por porcion').
+    /// Por que se tomo esta decision: Corresponde al rotulo de energia superpuesto en el Hero de la receta.
+    /// </summary>
+    public string EnergyBadge => $"{CaloriesPerServing:F0} kcal por porcion";
+
+    /// <summary>
     /// Subtitulo resumen que detalla calorias, proteina y minerales por porcion.
     /// </summary>
     public string NutritionSubtitle

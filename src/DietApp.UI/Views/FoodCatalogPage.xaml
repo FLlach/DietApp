@@ -21,7 +21,9 @@
                 Margin="12"
                 Padding="14"
                 StrokeShape="RoundRectangle 12"
-                Background="{AppThemeBinding Light=#F8F9FA, Dark=#1E1E24}">
+                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                StrokeThickness="1"
+                Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}">
             <VerticalStackLayout Spacing="10">
                 <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                     <Label Grid.Column="0"
@@ -125,7 +127,9 @@
                     <Border Margin="0, 0, 0, 10"
                             Padding="14"
                             StrokeShape="RoundRectangle 10"
-                            Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                            Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                            StrokeThickness="1"
+                            Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}">
                         <VerticalStackLayout Spacing="6">
                             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                                 <Label Grid.Column="0"
@@ -159,10 +163,11 @@
                                         <Border Margin="0, 2, 8, 4"
                                                 Padding="8, 3"
                                                 StrokeShape="RoundRectangle 6"
-                                                Background="{AppThemeBinding Light=#E9ECEF, Dark=#343A40}">
+                                                Background="{AppThemeBinding Light=#FFF1EA, Dark=#26262B}">
                                             <Label Text="{Binding DisplayText}"
                                                    FontSize="12"
-                                                   FontAttributes="Bold" />
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                         </Border>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>

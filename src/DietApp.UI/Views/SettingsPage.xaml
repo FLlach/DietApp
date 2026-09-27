@@ -96,11 +96,153 @@
                         </Border>
                     </Grid>
 
-                    <!-- Mensaje de estado al cambiar -->
+                    <!-- Mensaje de estado al cambiar idioma -->
                     <Label Text="{Binding StatusMessage}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource HealthTeal}"
+                           TextColor="{StaticResource Primary}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Tarjeta de Seleccion de Tema Visual (Modo Claro / Modo Oscuro / Sistema) -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="16"
+                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="{loc:Translate Settings_ThemeTitle}"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+
+                    <Label Text="{loc:Translate Settings_ThemeSubtitle}"
+                           FontSize="13"
+                           TextColor="Gray" />
+
+                    <!-- Opciones de Tema Visual -->
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8" Margin="0, 4, 0, 0">
+                        <!-- Opcion Modo Claro -->
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 10"
+                                Padding="8, 12"
+                                Stroke="{Binding LightBorderColor}"
+                                StrokeThickness="{Binding LightBorderThickness}"
+                                Background="{AppThemeBinding Light=#FFFBF8, Dark=#1E1E24}">
+                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                <Border StrokeShape="RoundRectangle 6"
+                                        Padding="6, 3"
+                                        Background="#FFF4EE"
+                                        Stroke="{StaticResource Primary}"
+                                        StrokeThickness="1"
+                                        HorizontalOptions="Center">
+                                    <Label Text="CLARO"
+                                           FontAttributes="Bold"
+                                           FontSize="11"
+                                           TextColor="{StaticResource Primary}" />
+                                </Border>
+                                <Label Text="{loc:Translate Settings_ThemeLight}"
+                                       FontAttributes="Bold"
+                                       FontSize="13"
+                                       HorizontalTextAlignment="Center" />
+                                <Label Text="{loc:Translate Settings_ThemeLightDesc}"
+                                       FontSize="10"
+                                       TextColor="Gray"
+                                       HorizontalTextAlignment="Center" />
+                                <Button Text="{loc:Translate Common_Select}"
+                                        Command="{Binding SelectLightCommand}"
+                                        FontSize="11"
+                                        Padding="8, 4"
+                                        HeightRequest="44"
+                                        MinimumHeightRequest="44"
+                                        MinimumWidthRequest="44"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        TextColor="White" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Opcion Modo Oscuro -->
+                        <Border Grid.Column="1"
+                                StrokeShape="RoundRectangle 10"
+                                Padding="8, 12"
+                                Stroke="{Binding DarkBorderColor}"
+                                StrokeThickness="{Binding DarkBorderThickness}"
+                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
+                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                <Border StrokeShape="RoundRectangle 6"
+                                        Padding="6, 3"
+                                        Background="#0C0C0C"
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        HorizontalOptions="Center">
+                                    <Label Text="OSCURO"
+                                           FontAttributes="Bold"
+                                           FontSize="11"
+                                           TextColor="{StaticResource Secondary}" />
+                                </Border>
+                                <Label Text="{loc:Translate Settings_ThemeDark}"
+                                       FontAttributes="Bold"
+                                       FontSize="13"
+                                       HorizontalTextAlignment="Center" />
+                                <Label Text="{loc:Translate Settings_ThemeDarkDesc}"
+                                       FontSize="10"
+                                       TextColor="Gray"
+                                       HorizontalTextAlignment="Center" />
+                                <Button Text="{loc:Translate Common_Select}"
+                                        Command="{Binding SelectDarkCommand}"
+                                        FontSize="11"
+                                        Padding="8, 4"
+                                        HeightRequest="44"
+                                        MinimumHeightRequest="44"
+                                        MinimumWidthRequest="44"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource CardBackgroundDark}}"
+                                        BorderColor="{StaticResource Secondary}"
+                                        BorderWidth="1"
+                                        TextColor="{StaticResource Secondary}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Opcion Sistema -->
+                        <Border Grid.Column="2"
+                                StrokeShape="RoundRectangle 10"
+                                Padding="8, 12"
+                                Stroke="{Binding SystemBorderColor}"
+                                StrokeThickness="{Binding SystemBorderThickness}"
+                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
+                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                <Border StrokeShape="RoundRectangle 6"
+                                        Padding="6, 3"
+                                        Background="{StaticResource Gray500}"
+                                        HorizontalOptions="Center">
+                                    <Label Text="AUTO"
+                                           FontAttributes="Bold"
+                                           FontSize="11"
+                                           TextColor="White" />
+                                </Border>
+                                <Label Text="{loc:Translate Settings_ThemeSystem}"
+                                       FontAttributes="Bold"
+                                       FontSize="13"
+                                       HorizontalTextAlignment="Center" />
+                                <Label Text="{loc:Translate Settings_ThemeSystemDesc}"
+                                       FontSize="10"
+                                       TextColor="Gray"
+                                       HorizontalTextAlignment="Center" />
+                                <Button Text="{loc:Translate Common_Select}"
+                                        Command="{Binding SelectSystemCommand}"
+                                        FontSize="11"
+                                        Padding="8, 4"
+                                        HeightRequest="44"
+                                        MinimumHeightRequest="44"
+                                        MinimumWidthRequest="44"
+                                        BackgroundColor="{StaticResource Gray600}"
+                                        TextColor="White" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Mensaje de estado al cambiar tema -->
+                    <Label Text="{Binding ThemeStatusMessage}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}"
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Border>
@@ -208,7 +350,7 @@
                                 FontAttributes="Bold"
                                 HeightRequest="44"
                                 FontSize="12"
-                                BackgroundColor="{StaticResource HealthTeal}"
+                                BackgroundColor="{StaticResource Primary}"
                                 TextColor="White" />
 
                         <Button Grid.Column="1"
@@ -224,7 +366,7 @@
                     <Label Text="{Binding AlertsStatusMessage}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource HealthTeal}"
+                           TextColor="{StaticResource Primary}"
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Border>

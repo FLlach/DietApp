@@ -18,6 +18,37 @@ public class RecipeIngredientDto
     public double CalculatedProtein { get; set; }
     public List<MineralAmountDto> CalculatedMinerals { get; set; } = new();
 
+    private string _imagePath = string.Empty;
+
+    /// <summary>
+    /// Como funciona: Ruta de la fotografia del ingrediente para exhibicion en la cuadricula 2x2.
+    /// Si no se asigno una ruta explicita, infiere la imagen gastronomica correspondiente segun el nombre.
+    /// Por que se tomo esta decision: Permite alinear la interfaz con el mockup visual de detalle de receta.
+    /// </summary>
+    public string ImagePath
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(_imagePath)) return _imagePath;
+            if (FoodName.Contains("Papa", StringComparison.OrdinalIgnoreCase) || FoodName.Contains("Potato", StringComparison.OrdinalIgnoreCase))
+                return "food_potatoes.jpg";
+            if (FoodName.Contains("Arroz", StringComparison.OrdinalIgnoreCase) || FoodName.Contains("Rice", StringComparison.OrdinalIgnoreCase))
+                return "food_rice.jpg";
+            if (FoodName.Contains("Brocol", StringComparison.OrdinalIgnoreCase) || FoodName.Contains("Broccol", StringComparison.OrdinalIgnoreCase))
+                return "food_broccoli.jpg";
+            if (FoodName.Contains("Pollo", StringComparison.OrdinalIgnoreCase) || FoodName.Contains("Chicken", StringComparison.OrdinalIgnoreCase))
+                return "food_chicken.jpg";
+            return "food_chicken.jpg";
+        }
+        set => _imagePath = value;
+    }
+
+    /// <summary>
+    /// Como funciona: Formato estandarizado de peso en gramos para las tarjetas visuales (ej. '200 gr.').
+    /// Por que se tomo esta decision: Replica fielmente la composicion tipografica de la Vista A en mockupBase.jpeg.
+    /// </summary>
+    public string GramsDisplay => $"{Grams:F0} gr.";
+
     public string DisplayText => $"{FoodName}: {Grams:F0}g ({CalculatedCalories:F0} kcal, {CalculatedProtein:F1}g prot.)";
 
     public string MineralsSummary

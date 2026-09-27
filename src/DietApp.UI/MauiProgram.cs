@@ -71,6 +71,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<IMineralAlertStorage, MauiPreferencesMineralAlertStorage>();
         builder.Services.AddSingleton<IMineralAlertService, MineralAlertService>();
 
+        // Gestion de Tema Visual (Modo Claro, Modo Oscuro, Sistema)
+        builder.Services.AddSingleton<IThemeService, AppThemeService>();
+
         // Capa de Aplicacion - Casos de Uso y Servicios
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();
         builder.Services.AddTransient<IMealTrackingService, MealTrackingService>();

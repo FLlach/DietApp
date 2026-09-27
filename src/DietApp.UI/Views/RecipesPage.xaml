@@ -82,18 +82,18 @@
                 <Border StrokeShape="RoundRectangle 10"
                         Padding="12, 10"
                         Margin="0, 4, 0, 0"
-                        Stroke="{StaticResource HealthTeal}"
+                        Stroke="{StaticResource Primary}"
                         StrokeThickness="1"
-                        Background="{AppThemeBinding Light=#F0FDFA, Dark=#132E2B}">
+                        Background="{AppThemeBinding Light=#FFF8F5, Dark=#261D18}">
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                             <Label Text="{loc:Translate Recipes_SeasoningsSectionTitle}"
                                    FontAttributes="Bold"
                                    FontSize="13"
-                                   TextColor="{StaticResource HealthTeal}" />
+                                   TextColor="{StaticResource Primary}" />
                             <Label Text="{loc:Translate Recipes_SeasoningsSectionSubtitle}"
                                    FontSize="11"
-                                   TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}" />
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
@@ -104,8 +104,8 @@
                                 HeightRequest="44"
                                 MinimumHeightRequest="44"
                                 Padding="14, 0"
-                                BackgroundColor="{StaticResource HealthTeal}"
-                                TextColor="White"
+                                BackgroundColor="{StaticResource Secondary}"
+                                TextColor="{StaticResource ContrastDark}"
                                 VerticalOptions="Center" />
                     </Grid>
                 </Border>
@@ -143,8 +143,10 @@
                 <DataTemplate x:DataType="dto:RecipeDto">
                     <Border Margin="0, 0, 0, 12"
                             Padding="0"
-                            StrokeShape="RoundRectangle 12"
-                            Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                            StrokeShape="RoundRectangle 14"
+                            Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                            StrokeThickness="1"
+                            Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}">
                         <VerticalStackLayout Spacing="0">
                             <!-- Imagen final de la receta si existe -->
                             <Image Source="{Binding FinalImagePath}"
@@ -164,23 +166,25 @@
                                     <Border Grid.Column="1"
                                             Padding="8, 3"
                                             StrokeShape="RoundRectangle 6"
-                                            Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                            Background="{AppThemeBinding Light=#EBF8EE, Dark=#1B382B}"
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
                                             VerticalOptions="Center">
                                         <Label Text="{Binding ProteinPerServingDisplay}"
                                                FontSize="11"
                                                FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                               TextColor="{AppThemeBinding Light=#2E7D32, Dark=#A6D7A8}" />
                                     </Border>
                                 </Grid>
 
                                 <!-- Subtitulo de Minerales y Calorias por Porcion -->
-                                <Border StrokeShape="RoundRectangle 6"
+                                <Border StrokeShape="RoundRectangle 8"
                                         Padding="8, 4"
-                                        Background="{AppThemeBinding Light=#EBF5FB, Dark=#1A252F}">
+                                        Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
                                     <Label Text="{Binding NutritionSubtitle}"
                                            FontSize="12"
                                            FontAttributes="Bold"
-                                           TextColor="{AppThemeBinding Light=#1B4F72, Dark=#85C1E9}" />
+                                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 </Border>
 
                                 <!-- Badges Visuales de Minerales por Porcion -->
@@ -192,11 +196,11 @@
                                             <Border Margin="0, 2, 6, 2"
                                                     Padding="6, 3"
                                                     StrokeShape="RoundRectangle 6"
-                                                    Background="{AppThemeBinding Light=#E8F8F5, Dark=#164E43}">
+                                                    Background="{AppThemeBinding Light=#FFF3ED, Dark=#2E1D16}">
                                                 <Label Text="{Binding DisplayText}"
                                                        FontSize="11"
                                                        FontAttributes="Bold"
-                                                       TextColor="{AppThemeBinding Light=#117A65, Dark=#48C9B0}" />
+                                                       TextColor="{StaticResource Primary}" />
                                             </Border>
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>

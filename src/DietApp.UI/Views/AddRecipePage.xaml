@@ -270,7 +270,7 @@
             <Label Text="{Binding StatusMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource HealthTeal}" />
+                   TextColor="{StaticResource Primary}" />
 
             <!-- Boton Guardar Receta -->
             <Button Text="{loc:Translate AddRecipe_SaveRecipe}"
