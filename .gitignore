@@ -6,6 +6,7 @@
 [Oo]bj/
 .vs/
 .vscode/
+.idea/
 
 ## Build results
 [Dd]ebug/
