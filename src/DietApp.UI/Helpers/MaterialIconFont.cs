@@ -86,4 +86,10 @@ public static class MaterialIconFont
     public const string WaterDrop = "\ue798";
     public const string Cloud = "\ue2bd";
     public const string SetMeal = "\ue56c";
+    public const string Sync = "\ue627";
+    public const string FilterAlt = "\uef4f";
+    public const string Mic = "\ue029";
+    public const string ArrowDropDown = "\ue5c5";
+    public const string UnfoldMore = "\ue5d7";
+    public const string Star = "\ue838";
 }
