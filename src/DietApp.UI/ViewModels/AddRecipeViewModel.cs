@@ -33,19 +33,19 @@ public partial class AddRecipeViewModel : ObservableObject
         _catalogService = catalogService;
         _seasoningService = seasoningService;
 
-        InitializePrototypeData();
+        UpdateCounts();
         RecalculateProjections();
     }
 
     // 1. Datos Principales
     [ObservableProperty]
-    private string _title = "Salmón al Vapor con Hierbas y Patatas Torneadas";
+    private string _title = string.Empty;
 
     [ObservableProperty]
-    private string _description = "Preparación baja en sodio con técnica de doble cocción para desmineralización moderada de potasio.";
+    private string _description = string.Empty;
 
     [ObservableProperty]
-    private int _servings = 2;
+    private int _servings = 1;
 
     partial void OnServingsChanged(int value)
     {
@@ -53,16 +53,16 @@ public partial class AddRecipeViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private int _cookTimeMinutes = 25;
+    private int _cookTimeMinutes = 15;
 
     [ObservableProperty]
-    private string _imageUrl = "recipe_hero_dish.jpg";
+    private string _imageUrl = string.Empty;
 
     [ObservableProperty]
-    private bool _hasImage = true;
+    private bool _hasImage = false;
 
     [ObservableProperty]
-    private bool _hasNoImage = false;
+    private bool _hasNoImage = true;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -71,20 +71,26 @@ public partial class AddRecipeViewModel : ObservableObject
     public ObservableCollection<RecipeIngredientDraftModel> IngredientsList { get; } = new();
 
     [ObservableProperty]
-    private string _ingredientsCountDisplay = "3 agregados";
+    private string _ingredientsCountDisplay = "0 agregados";
+
+    [ObservableProperty]
+    private bool _hasIngredients;
+
+    [ObservableProperty]
+    private bool _hasNoIngredients = true;
 
     // 3. Proyeccion Clinica en Tiempo Real (Por Racion)
     [ObservableProperty]
-    private string _energyPerServingText = "410";
+    private string _energyPerServingText = "0";
 
     [ObservableProperty]
-    private string _proteinPerServingText = "31.2";
+    private string _proteinPerServingText = "0";
 
     [ObservableProperty]
-    private string _fatPerServingText = "19.4";
+    private string _fatPerServingText = "0";
 
     [ObservableProperty]
-    private string _sodiumBadgeText = "Apto bajo sodio";
+    private string _sodiumBadgeText = "Sin ingredientes";
 
     [ObservableProperty]
     private bool _isSodiumSafe = true;
@@ -95,7 +101,13 @@ public partial class AddRecipeViewModel : ObservableObject
     public ObservableCollection<RecipeStepDraftModel> StepsList { get; } = new();
 
     [ObservableProperty]
-    private string _stepsCountDisplay = "2 pasos activos";
+    private string _stepsCountDisplay = "0 pasos";
+
+    [ObservableProperty]
+    private bool _hasSteps;
+
+    [ObservableProperty]
+    private bool _hasNoSteps = true;
 
     [ObservableProperty]
     private string _newStepInstruction = string.Empty;
@@ -104,7 +116,7 @@ public partial class AddRecipeViewModel : ObservableObject
     private int _newStepTimeMinutes = 10;
 
     [ObservableProperty]
-    private string _newStepTechnique = "Vapor suave";
+    private string _newStepTechnique = "Cocción suave";
 
     // 5. Selectores Modales / Desplegables de Alimentos y Aliños
     [ObservableProperty]
@@ -123,76 +135,14 @@ public partial class AddRecipeViewModel : ObservableObject
 
     public ObservableCollection<SeasoningDto> AvailableSeasonings { get; } = new();
 
-    private void InitializePrototypeData()
-    {
-        // Ingredientes iniciales fieles al prototipo Stitch
-        IngredientsList.Add(new RecipeIngredientDraftModel
-        {
-            FoodId = Guid.NewGuid(),
-            Name = "Lomo de Salmón Fresco",
-            Grams = 250,
-            Calories = 515,
-            ProteinGrams = 50.0,
-            SodiumMg = 110,
-            PotassiumMg = 910,
-            PhosphorusMg = 500,
-            IconGlyph = MaterialIconFont.DinnerDining,
-            IsFromSeasoning = false
-        });
-
-        IngredientsList.Add(new RecipeIngredientDraftModel
-        {
-            FoodId = Guid.NewGuid(),
-            Name = "Patata Nueva (Doble Cocción)",
-            Grams = 180,
-            Calories = 140,
-            ProteinGrams = 3.6,
-            SodiumMg = 12,
-            PotassiumMg = 320,
-            PhosphorusMg = 90,
-            IconGlyph = MaterialIconFont.Eco,
-            IsFromSeasoning = false
-        });
-
-        IngredientsList.Add(new RecipeIngredientDraftModel
-        {
-            FoodId = Guid.NewGuid(),
-            Name = "Vinagreta de Eneldo & Oliva",
-            Grams = 20,
-            Calories = 164,
-            ProteinGrams = 0.2,
-            SodiumMg = 4,
-            PotassiumMg = 18,
-            PhosphorusMg = 6,
-            IconGlyph = MaterialIconFont.Opacity,
-            IsFromSeasoning = true,
-            SeasoningBadgeText = "ALIÑO"
-        });
-
-        // Pasos de elaboracion iniciales fieles a Stitch
-        StepsList.Add(new RecipeStepDraftModel
-        {
-            StepNumber = 1,
-            Instruction = "Pelar las patatas y cortarlas en torneados regulares. Aplicar técnica de doble remojo durante 4 horas y descartar el agua para minimizar sales lixiviables.",
-            TimeDisplayText = "15 min",
-            TechniqueTag = "Remojo clínico"
-        });
-
-        StepsList.Add(new RecipeStepDraftModel
-        {
-            StepNumber = 2,
-            Instruction = "Disponer el salmón en la vaporera con el eneldo fresco. Cocinar a 95°C durante 10 minutos conservando los ácidos grasos omega-3 intactos.",
-            TimeDisplayText = "10 min",
-            TechniqueTag = "Vapor suave"
-        });
-
-        UpdateCounts();
-    }
-
     private void UpdateCounts()
     {
         IngredientsCountDisplay = $"{IngredientsList.Count} {(IngredientsList.Count == 1 ? "agregado" : "agregados")}";
-        StepsCountDisplay = $"{StepsList.Count} {(StepsList.Count == 1 ? "paso activo" : "pasos activos")}";
+        StepsCountDisplay = $"{StepsList.Count} {(StepsList.Count == 1 ? "paso" : "pasos")}";
+        HasIngredients = IngredientsList.Count > 0;
+        HasNoIngredients = IngredientsList.Count == 0;
+        HasSteps = StepsList.Count > 0;
+        HasNoSteps = StepsList.Count == 0;
     }
 
     public void RecalculateProjections()
@@ -206,23 +156,27 @@ public partial class AddRecipeViewModel : ObservableObject
         double totalPhosphorus = IngredientsList.Sum(i => i.PhosphorusMg);
         double totalGrams = IngredientsList.Sum(i => i.Grams);
 
-        // Estimacion de grasas cardiosaludables segun ingredientes
-        double estimatedFat = Math.Max(2.0, (totalCalories - (totalProtein * 4.0)) / 9.0 * 0.45);
+        // Estimacion de grasas cardiosaludables segun ingredientes dosificados
+        double estimatedFat = totalGrams > 0
+            ? Math.Max(0.0, (totalCalories - (totalProtein * 4.0)) / 9.0 * 0.45)
+            : 0.0;
 
-        double calPerServing = totalCalories / portions;
-        double protPerServing = totalProtein / portions;
-        double fatPerServing = estimatedFat / portions;
+        double calPerServing = totalGrams > 0 ? (totalCalories / portions) : 0.0;
+        double protPerServing = totalGrams > 0 ? (totalProtein / portions) : 0.0;
+        double fatPerServing = totalGrams > 0 ? (estimatedFat / portions) : 0.0;
 
-        double naPerServing = totalSodium / portions;
-        double kPerServing = totalPotassium / portions;
-        double pPerServing = totalPhosphorus / portions;
+        double naPerServing = totalGrams > 0 ? (totalSodium / portions) : 0.0;
+        double kPerServing = totalGrams > 0 ? (totalPotassium / portions) : 0.0;
+        double pPerServing = totalGrams > 0 ? (totalPhosphorus / portions) : 0.0;
 
-        EnergyPerServingText = $"{calPerServing:N0}";
-        ProteinPerServingText = $"{protPerServing:0.#}";
-        FatPerServingText = $"{fatPerServing:0.#}";
+        EnergyPerServingText = totalGrams > 0 ? $"{calPerServing:N0}" : "0";
+        ProteinPerServingText = totalGrams > 0 ? $"{protPerServing:0.#}" : "0";
+        FatPerServingText = totalGrams > 0 ? $"{fatPerServing:0.#}" : "0";
 
-        IsSodiumSafe = naPerServing <= 150;
-        SodiumBadgeText = IsSodiumSafe ? "Apto bajo sodio" : "Sodio moderado";
+        IsSodiumSafe = totalGrams == 0 || naPerServing <= 150;
+        SodiumBadgeText = totalGrams == 0
+            ? "Sin ingredientes"
+            : (IsSodiumSafe ? "Apto bajo sodio" : "Sodio moderado");
 
         // Actualizar balance de 7 minerales clinicos por racion
         MineralProjections.Clear();
@@ -231,8 +185,8 @@ public partial class AddRecipeViewModel : ObservableObject
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "P",
-            AmountDisplay = $"{pPerServing:N0} mg",
-            StatusText = pPerServing <= 300 ? "Óptimo" : "Controlar",
+            AmountDisplay = totalGrams > 0 ? $"{pPerServing:N0} mg" : "- mg",
+            StatusText = totalGrams == 0 ? "-" : (pPerServing <= 300 ? "Óptimo" : "Controlar"),
             StatusColor = pPerServing <= 300 ? Color.FromArgb("#416900") : Color.FromArgb("#A53C0B"),
             BackgroundColor = Color.FromArgb("#EAEDFF"),
             BorderColor = Color.FromArgb("#C1CAB0"),
@@ -244,8 +198,8 @@ public partial class AddRecipeViewModel : ObservableObject
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "K",
-            AmountDisplay = $"{kPerServing:N0} mg",
-            StatusText = kElevated ? "Medio" : "Bajo",
+            AmountDisplay = totalGrams > 0 ? $"{kPerServing:N0} mg" : "- mg",
+            StatusText = totalGrams == 0 ? "-" : (kElevated ? "Medio" : "Bajo"),
             StatusColor = kElevated ? Color.FromArgb("#855300") : Color.FromArgb("#416900"),
             BackgroundColor = kElevated ? Color.FromArgb("#FFF7F5") : Color.FromArgb("#EAEDFF"),
             BorderColor = kElevated ? Color.FromArgb("#FC7B48") : Color.FromArgb("#C1CAB0"),
@@ -256,8 +210,8 @@ public partial class AddRecipeViewModel : ObservableObject
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "Na",
-            AmountDisplay = $"{naPerServing:N0} mg",
-            StatusText = naPerServing < 100 ? "Bajo" : "Aceptable",
+            AmountDisplay = totalGrams > 0 ? $"{naPerServing:N0} mg" : "- mg",
+            StatusText = totalGrams == 0 ? "-" : (naPerServing < 100 ? "Bajo" : "Aceptable"),
             StatusColor = Color.FromArgb("#416900"),
             BackgroundColor = Color.FromArgb("#EAF8DC"),
             BorderColor = Color.FromArgb("#84CC16"),
@@ -265,12 +219,12 @@ public partial class AddRecipeViewModel : ObservableObject
         });
 
         // 4. Calcio (Ca)
-        double caPerServing = Math.Max(15.0, (totalGrams * 0.18) / portions);
+        double caPerServing = totalGrams > 0 ? (totalGrams * 0.18) / portions : 0.0;
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "Ca",
-            AmountDisplay = $"{caPerServing:N0} mg",
-            StatusText = "14%",
+            AmountDisplay = totalGrams > 0 ? $"{caPerServing:N0} mg" : "- mg",
+            StatusText = totalGrams > 0 ? "14%" : "-",
             StatusColor = Color.FromArgb("#424936"),
             BackgroundColor = Color.FromArgb("#EAEDFF"),
             BorderColor = Color.FromArgb("#C1CAB0"),
@@ -278,12 +232,12 @@ public partial class AddRecipeViewModel : ObservableObject
         });
 
         // 5. Magnesio (Mg)
-        double mgPerServing = Math.Max(12.0, (totalGrams * 0.16) / portions);
+        double mgPerServing = totalGrams > 0 ? (totalGrams * 0.16) / portions : 0.0;
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "Mg",
-            AmountDisplay = $"{mgPerServing:N0} mg",
-            StatusText = "22%",
+            AmountDisplay = totalGrams > 0 ? $"{mgPerServing:N0} mg" : "- mg",
+            StatusText = totalGrams > 0 ? "22%" : "-",
             StatusColor = Color.FromArgb("#424936"),
             BackgroundColor = Color.FromArgb("#EAEDFF"),
             BorderColor = Color.FromArgb("#C1CAB0"),
@@ -291,12 +245,12 @@ public partial class AddRecipeViewModel : ObservableObject
         });
 
         // 6. Hierro (Fe)
-        double fePerServing = Math.Max(0.5, (totalGrams * 0.005) / portions);
+        double fePerServing = totalGrams > 0 ? (totalGrams * 0.005) / portions : 0.0;
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "Fe",
-            AmountDisplay = $"{fePerServing:0.#} mg",
-            StatusText = "12%",
+            AmountDisplay = totalGrams > 0 ? $"{fePerServing:0.#} mg" : "- mg",
+            StatusText = totalGrams > 0 ? "12%" : "-",
             StatusColor = Color.FromArgb("#424936"),
             BackgroundColor = Color.FromArgb("#EAEDFF"),
             BorderColor = Color.FromArgb("#C1CAB0"),
@@ -304,12 +258,12 @@ public partial class AddRecipeViewModel : ObservableObject
         });
 
         // 7. Zinc (Zn)
-        double znPerServing = Math.Max(0.4, (totalGrams * 0.004) / portions);
+        double znPerServing = totalGrams > 0 ? (totalGrams * 0.004) / portions : 0.0;
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "Zn",
-            AmountDisplay = $"{znPerServing:0.#} mg",
-            StatusText = "18%",
+            AmountDisplay = totalGrams > 0 ? $"{znPerServing:0.#} mg" : "- mg",
+            StatusText = totalGrams > 0 ? "18%" : "-",
             StatusColor = Color.FromArgb("#424936"),
             BackgroundColor = Color.FromArgb("#EAEDFF"),
             BorderColor = Color.FromArgb("#C1CAB0"),
@@ -317,12 +271,12 @@ public partial class AddRecipeViewModel : ObservableObject
         });
 
         // 8. H2O Libre
-        double waterPerServing = Math.Max(50.0, (totalGrams * 0.8) / portions);
+        double waterPerServing = totalGrams > 0 ? (totalGrams * 0.8) / portions : 0.0;
         MineralProjections.Add(new MineralProjectionModel
         {
             Symbol = "H₂O Libre",
-            AmountDisplay = $"{waterPerServing:N0} ml",
-            StatusText = "Hidrat.",
+            AmountDisplay = totalGrams > 0 ? $"{waterPerServing:N0} ml" : "- ml",
+            StatusText = totalGrams > 0 ? "Hidrat." : "-",
             StatusColor = Color.FromArgb("#424936"),
             BackgroundColor = Color.FromArgb("#E2E7FF"),
             BorderColor = Color.FromArgb("#C1CAB0"),

@@ -95,7 +95,7 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles) y configuracion personalizada de limites maximos diarios de minerales con activacion de alertas.
   * Rutas registradas:
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel completo de minerales por porcion, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
-    * `AddRecipePage`: Formulario para crear recetas con selector de imagenes por paso y final.
+    * `AddRecipePage`: Compositor clinico de recetas con inicializacion limpia (formulario vacio con estados vacios para ingredientes, pasos y fotografia), dosificacion en tiempo real de alimentos y alinos, y proyecciones instantaneas de nutrientes por porcion.
     * `SeasoningsPage`: Vista de administracion de alinos y marinadas, accesible modularmente desde la seccion de recetas.
     * `AddMealPage`: Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones), invocable contextualmente desde el seguimiento diario.
     * `AddFoodPage`: Formulario para ingresar alimentos adicionales al catalogo SQLite, invocable contextualmente desde el catalogo.

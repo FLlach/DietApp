@@ -108,6 +108,9 @@
                                 Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
                                 HeightRequest="176"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BrowseGalleryCommand}" />
+                            </Border.GestureRecognizers>
                             <Grid>
                                 <!-- Imagen cargada -->
                                 <Image Source="{Binding ImageUrl}"
@@ -131,7 +134,7 @@
                                 </VerticalStackLayout>
 
                                 <!-- Gradiente y Barra de Acciones Superpuesta -->
-                                <BoxView BackgroundColor="#A0000000" VerticalOptions="End" HeightRequest="60" />
+                                <BoxView BackgroundColor="#A0000000" VerticalOptions="End" HeightRequest="60" IsVisible="{Binding HasImage}" />
 
                                 <Grid VerticalOptions="End" Padding="10, 8" ColumnDefinitions="*, Auto">
                                     <Border Grid.Column="0"
@@ -139,7 +142,8 @@
                                             StrokeThickness="0"
                                             Background="#D0FFFFFF"
                                             Padding="8, 4"
-                                            HorizontalOptions="Start">
+                                            HorizontalOptions="Start"
+                                            IsVisible="{Binding HasImage}">
                                         <HorizontalStackLayout Spacing="4">
                                             <Label Text="{x:Static helpers:MaterialIconFont.Verified}"
                                                    Style="{StaticResource MaterialIconStyle}"
@@ -474,6 +478,34 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
+
+                        <!-- Estado Vacío cuando no hay ingredientes -->
+                        <Border IsVisible="{Binding HasNoIngredients}"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                StrokeDashArray="4,4"
+                                Background="Transparent"
+                                Padding="16, 20">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{x:Static helpers:MaterialIconFont.SoupKitchen}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="28"
+                                       TextColor="{StaticResource StitchOutline}"
+                                       HorizontalOptions="Center" />
+                                <Label Text="Aún no has agregado ingredientes"
+                                       FontFamily="Inter"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                <Label Text="Pulsa '+ Añadir Alimento' o 'Aliño Guardado' para iniciar la dosificación."
+                                       FontFamily="Inter"
+                                       FontSize="11"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{StaticResource StitchOutline}" />
+                            </VerticalStackLayout>
+                        </Border>
                     </VerticalStackLayout>
                 </Border>
 
@@ -739,6 +771,34 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
+
+                        <!-- Estado Vacío cuando no hay pasos -->
+                        <Border IsVisible="{Binding HasNoSteps}"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                StrokeDashArray="4,4"
+                                Background="Transparent"
+                                Padding="16, 20">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{x:Static helpers:MaterialIconFont.FormatListNumbered}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="28"
+                                       TextColor="{StaticResource StitchOutline}"
+                                       HorizontalOptions="Center" />
+                                <Label Text="Aún no has redactado pasos"
+                                       FontFamily="Inter"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                <Label Text="Escribe la primera instrucción a continuación y pulsa '+ Agregar Paso'."
+                                       FontFamily="Inter"
+                                       FontSize="11"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{StaticResource StitchOutline}" />
+                            </VerticalStackLayout>
+                        </Border>
 
                         <!-- Formulario para Redactar Siguiente Paso -->
                         <Border StrokeShape="RoundRectangle 12"
