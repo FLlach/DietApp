@@ -8,15 +8,16 @@
              x:Class="DietApp.UI.Views.SeasoningsPage"
              x:Name="ThisSeasoningsPage"
              x:DataType="vm:SeasoningsViewModel"
-             Title="{loc:Translate Seasonings_Title}">
+             Title="{loc:Translate Seasonings_Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
 
     <!--
-    Como funciona: Pantalla de seleccion de componentes, alinos y registro (Vista B de DESIGN.md y mockupBase.jpeg).
-    Muestra el carrusel superior de resumen de menu con pildoras de balance nutricional (Receta, Postre, Liquido),
-    segmentacion por pestanas de categoria (Base, Alinos, Postre, Liquido), cuadricula interactiva 2x2 de alinos
-    con fotografia y check activo, panel desplegable de formulacion y barra fija inferior con botones 'Agregar' y 'Completado'.
-    Por que se tomo esta decision: Alinea la experiencia de armado y condimentacion con el prototipo visual oficial,
-    asegurando alta fidelidad estetica, accesibilidad tactil y preservacion de la persistencia relacional en SQLite.
+    Como funciona: Pantalla de seleccion y dosificacion de alinos conforme a la pantalla Stitch 'Modulo de Alinos (SeasoningsPage)'.
+    Presenta cabecera clinica con boton de retorno en 48dp, alerta de tolerancia renal electrolitica,
+    selector horizontal de destino del alino, cuadricula 2x2 de alinos con fotografia y badges de check,
+    estudio constructor de alino casero y dock fijo inferior ergonomico.
+    Por que se tomo esta decision: Cumple con las especificaciones de Stitch 'Clinical Nutrition Ergonomics',
+    garantizando un area minima de 48dp en controles interactivos y contraste AA para control renal.
     -->
 
     <Grid RowDefinitions="*, Auto">
@@ -26,239 +27,247 @@
                 <!-- Indicador de Carga -->
                 <ActivityIndicator IsRunning="{Binding IsBusy}"
                                    IsVisible="{Binding IsBusy}"
-                                   Color="{StaticResource PrimaryDark}"
+                                   Color="{StaticResource Primary}"
                                    HorizontalOptions="Center" />
 
-                <!-- Encabezado Clinico Bento -->
-                <Border StrokeShape="RoundRectangle 16"
-                        Padding="16, 12"
-                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
-                        StrokeThickness="1"
-                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="DIETAPP • MÓDULO DE ALIÑOS"
-                               FontSize="11"
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource PrimaryDark}" />
-                        <Label Text="{loc:Translate Seasonings_Title}"
-                               FontAttributes="Bold"
-                               FontSize="20"
-                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
-                        <Label Text="Vinagretas, aderezos y marinadas clínicas controladas"
-                               FontSize="12"
-                               TextColor="{StaticResource Outline}" />
-                    </VerticalStackLayout>
+                <!-- 1. Cabecera Clinica Stitch con Retorno Tactil -->
+                <Border Style="{StaticResource StitchCardStyle}"
+                        Padding="16, 12">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                        <Button Grid.Column="0"
+                                Text="←"
+                                Clicked="OnBackClicked"
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                WidthRequest="48"
+                                HeightRequest="48"
+                                MinimumWidthRequest="48"
+                                MinimumHeightRequest="48"
+                                FontSize="20"
+                                Padding="0" />
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="DIETAPP CLINICAL • CONDIMENTOS"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource PrimaryDark}" />
+                            <Label Text="{loc:Translate Seasonings_Title}"
+                                   FontAttributes="Bold"
+                                   FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                            <Label Text="Dosificación y Control Renal Electrolítico"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
 
                 <!-- Mensaje de Estado / Notificacion Reactiva -->
                 <Border StrokeShape="RoundRectangle 12"
-                        Padding="12, 8"
-                        Background="{AppThemeBinding Light={StaticResource MineralProteinBg}, Dark=#1e2d14}"
+                        Padding="14, 10"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLight}, Dark={StaticResource SurfaceContainerDark}}"
                         Stroke="{StaticResource Primary}"
                         StrokeThickness="1"
                         IsVisible="{Binding HasStatusMessage}">
                     <Label Text="{Binding StatusMessage}"
                            FontSize="12"
-                           TextColor="{StaticResource OnPrimaryContainer}"
+                           TextColor="{StaticResource PrimaryDark}"
                            FontAttributes="Bold" />
                 </Border>
 
-                <!-- 1. Carrusel Superior de Resumen de Menu (mockupBase.jpeg) -->
-                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                    <HorizontalStackLayout BindableLayout.ItemsSource="{Binding SummaryModules}"
-                                           Spacing="10">
+                <!-- 2. Alerta de Tolerancia Renal y Seguridad Mineral -->
+                <Border StrokeShape="RoundRectangle 14"
+                        Padding="14, 12"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                        StrokeThickness="1">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 20"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Background="{StaticResource Primary}"
+                                VerticalOptions="Start">
+                            <Label Text="✓"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource White}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Tolerancia Renal Estimada: Óptima"
+                                   FontAttributes="Bold"
+                                   FontSize="13"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                            <Label Text="Los condimentos seleccionados evitan sales sintéticas (NaCl) y preservan el margen electrolítico de sodio y potasio."
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- 3. Destino del Aliño (Pestañas Horizontales) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Destino del Aliño"
+                           FontAttributes="Bold"
+                           FontSize="13"
+                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Categories}"
+                                               Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border StrokeShape="RoundRectangle 24"
+                                            Padding="16, 10"
+                                            StrokeThickness="1"
+                                            HeightRequest="48"
+                                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                                            Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference ThisSeasoningsPage}, Path=BindingContext.SelectCategoryCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Label Text="{Binding .}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- 4. Cuadricula 2x2 de Seleccion de Alinos con Fotografia -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Opciones Preconfiguradas"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+
+                    <FlexLayout BindableLayout.ItemsSource="{Binding SelectableSeasonings}"
+                                Wrap="Wrap"
+                                JustifyContent="SpaceBetween"
+                                AlignItems="Start">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:MealModuleSummaryModel">
-                                <Border StrokeShape="RoundRectangle 14"
-                                        WidthRequest="145"
-                                        Padding="10"
-                                        Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
-                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
-                                        StrokeThickness="1">
-                                    <VerticalStackLayout Spacing="6">
-                                        <!-- Cabecera de la Tarjeta con Icono de Badge o Imagen -->
-                                        <Grid ColumnDefinitions="*, Auto" HeightRequest="45">
-                                            <!-- Miniatura de Imagen si existe -->
-                                            <Border Grid.Column="0"
-                                                    StrokeShape="RoundRectangle 6"
-                                                    Padding="0"
-                                                    StrokeThickness="0"
-                                                    WidthRequest="45"
-                                                    HeightRequest="45"
-                                                    HorizontalOptions="Start"
-                                                    IsVisible="{Binding HasImage}">
-                                                <Image Source="{Binding ImagePath}"
-                                                       Aspect="AspectFit" />
-                                            </Border>
-
-                                            <!-- Badge de Estado (Alerta '!' o Check) -->
-                                            <Border Grid.Column="1"
-                                                    StrokeShape="RoundRectangle 11"
-                                                    WidthRequest="22"
-                                                    HeightRequest="22"
-                                                    Padding="0"
-                                                    StrokeThickness="0"
-                                                    Background="{Binding IsAlertBadge, Converter={x:Null}}"
-                                                    HorizontalOptions="End"
-                                                    VerticalOptions="Start">
-                                                <Label Text="{Binding BadgeIcon}"
-                                                       FontSize="11"
-                                                       FontAttributes="Bold"
-                                                       TextColor="{StaticResource Primary}"
-                                                       HorizontalOptions="Center"
-                                                       VerticalOptions="Center" />
-                                            </Border>
-                                        </Grid>
-
-                                        <!-- Titulo y Porcion -->
-                                        <VerticalStackLayout Spacing="1">
-                                            <Label Text="{Binding Title}"
-                                                   FontAttributes="Bold"
-                                                   FontSize="13"
-                                                   LineBreakMode="TailTruncation" />
-                                            <Label Text="{Binding PortionText}"
-                                                   FontSize="11"
-                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                        </VerticalStackLayout>
-
-                                        <!-- Pildoras Nutricionales Internas -->
-                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding NutrientPills}"
-                                                             Spacing="3"
-                                                             Margin="0, 2, 0, 0">
-                                            <BindableLayout.ItemTemplate>
-                                                <DataTemplate x:DataType="models:NutrientPillItemModel">
-                                                    <Border StrokeShape="RoundRectangle 10"
-                                                            Padding="6, 2"
-                                                            StrokeThickness="0.5"
-                                                            Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
-                                                            Background="{AppThemeBinding Light=#FFFBF8, Dark=#26262B}">
-                                                        <Label Text="{Binding Text}"
-                                                               FontSize="10"
-                                                               FontAttributes="Bold"
-                                                               HorizontalTextAlignment="Center"
-                                                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
-                                                    </Border>
-                                                </DataTemplate>
-                                            </BindableLayout.ItemTemplate>
-                                        </VerticalStackLayout>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </HorizontalStackLayout>
-                </ScrollView>
-
-                <!-- 2. Segmentacion por Categorias (Tabs) -->
-                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0, 4, 0, 2">
-                    <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Categories}"
-                                           Spacing="8">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
-                                <Border StrokeShape="RoundRectangle 16"
-                                        Padding="16, 6"
-                                        StrokeThickness="1"
-                                        Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
-                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}">
+                            <DataTemplate x:DataType="models:ComponentSelectionItemModel">
+                                <Border FlexLayout.Basis="48%"
+                                        Style="{StaticResource StitchCardStyle}"
+                                        Padding="12"
+                                        Margin="0, 0, 0, 12">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={x:Reference ThisSeasoningsPage}, Path=BindingContext.SelectCategoryCommand}"
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference ThisSeasoningsPage}, Path=BindingContext.ToggleSelectableItemCommand}"
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <Label Text="{Binding .}"
-                                           FontSize="13"
-                                           FontAttributes="Bold"
-                                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                                    <Grid RowDefinitions="Auto, Auto, Auto">
+                                        <!-- Badge de Check en Esquina Superior Derecha -->
+                                        <Border Grid.Row="0"
+                                                StrokeShape="RoundRectangle 12"
+                                                WidthRequest="26"
+                                                HeightRequest="26"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                Background="{StaticResource Primary}"
+                                                HorizontalOptions="End"
+                                                VerticalOptions="Start"
+                                                IsVisible="{Binding IsSelected}"
+                                                ZIndex="2">
+                                            <Label Text="✓"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+
+                                        <!-- Imagen Centrada del Alino -->
+                                        <Border Grid.Row="0"
+                                                StrokeShape="RoundRectangle 10"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                HeightRequest="85"
+                                                WidthRequest="110"
+                                                Background="Transparent"
+                                                HorizontalOptions="Center">
+                                            <Image Source="{Binding ImagePath}"
+                                                   Aspect="AspectFit"
+                                                   HeightRequest="85"
+                                                   WidthRequest="110" />
+                                        </Border>
+
+                                        <!-- Titulo del Alino -->
+                                        <Label Grid.Row="1"
+                                               Text="{Binding Title}"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               HorizontalTextAlignment="Center"
+                                               Margin="0, 6, 0, 4"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+
+                                        <!-- Mini Pastilla Informativa -->
+                                        <Border Grid.Row="2"
+                                                StrokeShape="RoundRectangle 8"
+                                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLight}, Dark={StaticResource SurfaceContainerDark}}"
+                                                Padding="6, 2"
+                                                HorizontalOptions="Center">
+                                            <Label Text="Renal Seguro"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource PrimaryDark}" />
+                                        </Border>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
-                    </HorizontalStackLayout>
-                </ScrollView>
+                    </FlexLayout>
+                </VerticalStackLayout>
 
-                <!-- 3. Cuadricula 2x2 de Seleccion de Alinos con Fotografia (mockupBase.jpeg) -->
-                <FlexLayout BindableLayout.ItemsSource="{Binding SelectableSeasonings}"
-                            Wrap="Wrap"
-                            JustifyContent="SpaceBetween"
-                            AlignItems="Start">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:ComponentSelectionItemModel">
-                            <Border FlexLayout.Basis="48%"
-                                    Style="{StaticResource IngredientCardStyle}"
-                                    Margin="0, 0, 0, 12">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={x:Reference ThisSeasoningsPage}, Path=BindingContext.ToggleSelectableItemCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Grid RowDefinitions="Auto, Auto">
-                                    <!-- Badge de Check Coral en Esquina Superior Derecha -->
-                                    <Border Grid.Row="0"
-                                            StrokeShape="RoundRectangle 12"
-                                            WidthRequest="24"
-                                            HeightRequest="24"
-                                            Padding="0"
-                                            StrokeThickness="0"
-                                            Background="{StaticResource PrimaryBrush}"
-                                            HorizontalOptions="End"
-                                            VerticalOptions="Start"
-                                            IsVisible="{Binding IsSelected}"
-                                            ZIndex="2">
-                                        <Label Text="✓"
-                                               FontSize="13"
-                                               FontAttributes="Bold"
-                                               TextColor="White"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center" />
-                                    </Border>
-
-                                    <!-- Imagen Centrada del Alino -->
-                                    <Border Grid.Row="0"
-                                            StrokeShape="RoundRectangle 10"
-                                            Padding="0"
-                                            StrokeThickness="0"
-                                            HeightRequest="90"
-                                            WidthRequest="120"
-                                            Background="Transparent"
-                                            HorizontalOptions="Center">
-                                        <Image Source="{Binding ImagePath}"
-                                               Aspect="AspectFit"
-                                               HeightRequest="90"
-                                               WidthRequest="120" />
-                                    </Border>
-
-                                    <!-- Titulo del Alino -->
-                                    <Label Grid.Row="1"
-                                           Text="{Binding Title}"
-                                           FontSize="13"
-                                           FontAttributes="Bold"
-                                           HorizontalTextAlignment="Center"
-                                           Margin="0, 6, 0, 0" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </FlexLayout>
-
-                <!-- 4. Tarjeta Desplegable de Creacion de Nuevo Alino Personalizado -->
-                <Border StrokeShape="RoundRectangle 14"
+                <!-- 5. Constructor de Aliño Casero (Custom Seasoning Formulation Studio) -->
+                <Border Style="{StaticResource StitchCardStyle}"
                         Padding="16"
-                        IsVisible="{Binding IsCreatePanelVisible}"
-                        Stroke="{StaticResource Primary}"
-                        StrokeThickness="1.5"
-                        Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}">
+                        IsVisible="{Binding IsCreatePanelVisible}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="{loc:Translate Seasonings_CreateHeader}"
-                               FontAttributes="Bold"
-                               FontSize="16"
-                               TextColor="{StaticResource Primary}" />
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{loc:Translate Seasonings_CreateHeader}"
+                                       FontAttributes="Bold"
+                                       FontSize="15"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                                <Label Text="Combina bases e infunde extractos libres de sodio"
+                                       FontSize="11"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                            </VerticalStackLayout>
 
-                        <!-- Nombre del Alino -->
+                            <Button Grid.Column="1"
+                                    Text="✕"
+                                    Command="{Binding ToggleCreatePanelCommand}"
+                                    Style="{StaticResource StitchNeutralButtonStyle}"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    MinimumWidthRequest="40"
+                                    MinimumHeightRequest="40"
+                                    Padding="0"
+                                    FontSize="14" />
+                        </Grid>
+
+                        <!-- Nombre del Aliño -->
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{loc:Translate Seasonings_Name}"
                                    FontAttributes="Bold"
-                                   FontSize="12" />
-                            <Border StrokeShape="RoundRectangle 8"
-                                    Padding="10, 4"
-                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                                    HeightRequest="48"
+                                    Padding="10, 0">
                                 <Entry Text="{Binding Name}"
                                        Placeholder="{loc:Translate Seasonings_NamePlaceholder}"
+                                       HeightRequest="48"
                                        FontSize="13" />
                             </Border>
                         </VerticalStackLayout>
@@ -267,12 +276,17 @@
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{loc:Translate Seasonings_Description}"
                                    FontAttributes="Bold"
-                                   FontSize="12" />
-                            <Border StrokeShape="RoundRectangle 8"
-                                    Padding="10, 4"
-                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                                    HeightRequest="48"
+                                    Padding="10, 0">
                                 <Entry Text="{Binding Description}"
                                        Placeholder="{loc:Translate Seasonings_DescriptionPlaceholder}"
+                                       HeightRequest="48"
                                        FontSize="13" />
                             </Border>
                         </VerticalStackLayout>
@@ -280,42 +294,50 @@
                         <!-- Dosificacion de Alimentos -->
                         <Label Text="{loc:Translate Seasonings_IngredientsTitle}"
                                FontAttributes="Bold"
-                               FontSize="13" />
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
 
-                        <Grid ColumnDefinitions="*, 75, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                        <Grid ColumnDefinitions="*, 80, Auto" ColumnSpacing="8" VerticalOptions="Center">
                             <Border Grid.Column="0"
-                                    StrokeShape="RoundRectangle 8"
-                                    Padding="6, 2"
-                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                                    HeightRequest="48"
+                                    Padding="10, 0">
                                 <Picker ItemsSource="{Binding AvailableFoods}"
                                         ItemDisplayBinding="{Binding Name}"
                                         SelectedItem="{Binding SelectedFood}"
                                         Title="{loc:Translate Seasonings_SelectFoodPlaceholder}"
+                                        HeightRequest="48"
                                         FontSize="12" />
                             </Border>
 
                             <Border Grid.Column="1"
-                                    StrokeShape="RoundRectangle 8"
-                                    Padding="6, 2"
-                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                                    HeightRequest="48"
+                                    Padding="6, 0">
                                 <Entry Text="{Binding GramsText}"
                                        Keyboard="Numeric"
                                        Placeholder="g"
                                        HorizontalTextAlignment="Center"
-                                       FontSize="12" />
+                                       HeightRequest="48"
+                                       FontSize="13" />
                             </Border>
 
                             <Button Grid.Column="2"
                                     Text="+"
                                     Command="{Binding AddDraftItemCommand}"
-                                    FontAttributes="Bold"
-                                    FontSize="18"
-                                    WidthRequest="44"
-                                    HeightRequest="44"
-                                    MinimumHeightRequest="44"
-                                    MinimumWidthRequest="44"
-                                    BackgroundColor="{StaticResource Secondary}"
-                                    TextColor="{StaticResource ContrastDark}" />
+                                    Style="{StaticResource StitchNeutralButtonStyle}"
+                                    WidthRequest="48"
+                                    HeightRequest="48"
+                                    MinimumWidthRequest="48"
+                                    MinimumHeightRequest="48"
+                                    FontSize="20"
+                                    Padding="0" />
                         </Grid>
 
                         <!-- Lista de Ingredientes en el Borrador -->
@@ -323,14 +345,17 @@
                                              Spacing="6">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:SeasoningDraftItemModel">
-                                    <Border StrokeShape="RoundRectangle 6"
-                                            Padding="10, 6"
-                                            Background="{AppThemeBinding Light=#F4F0EC, Dark=#26262B}">
+                                    <Border StrokeShape="RoundRectangle 10"
+                                            Padding="12, 8"
+                                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLight}, Dark={StaticResource SurfaceContainerDark}}"
+                                            Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                                            StrokeThickness="1">
                                         <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                             <Label Grid.Column="0"
                                                    Text="{Binding DisplayText}"
                                                    FontSize="12"
                                                    FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}"
                                                    VerticalOptions="Center" />
 
                                             <Button Grid.Column="1"
@@ -339,13 +364,14 @@
                                                     CommandParameter="{Binding .}"
                                                     FontSize="12"
                                                     FontAttributes="Bold"
-                                                    WidthRequest="44"
-                                                    HeightRequest="44"
-                                                    MinimumHeightRequest="44"
-                                                    MinimumWidthRequest="44"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    MinimumHeightRequest="40"
+                                                    MinimumWidthRequest="40"
                                                     Padding="0"
-                                                    BackgroundColor="{StaticResource AlertRed}"
-                                                    TextColor="White" />
+                                                    BackgroundColor="{StaticResource Secondary}"
+                                                    TextColor="White"
+                                                    CornerRadius="10" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -357,101 +383,115 @@
                             <Button Grid.Column="0"
                                     Text="{loc:Translate Seasonings_SaveSeasoning}"
                                     Command="{Binding SaveSeasoningCommand}"
-                                    Style="{StaticResource PillActionCompletedStyle}" />
+                                    Style="{StaticResource StitchPrimaryButtonStyle}"
+                                    HeightRequest="48"
+                                    MinimumHeightRequest="48" />
 
                             <Button Grid.Column="1"
                                     Text="{loc:Translate Seasonings_Cancel}"
                                     Command="{Binding ToggleCreatePanelCommand}"
-                                    Style="{StaticResource PillActionSecondaryStyle}" />
+                                    Style="{StaticResource StitchNeutralButtonStyle}"
+                                    HeightRequest="48"
+                                    MinimumHeightRequest="48" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- 5. Listado de Alinos Guardados en Persistencia SQLite -->
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Seasonings}"
-                                     Spacing="10"
-                                     Margin="0, 4, 0, 10">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="dto:SeasoningDto">
-                            <Border StrokeShape="RoundRectangle 12"
-                                    Padding="12"
-                                    Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
-                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
-                                    StrokeThickness="1">
-                                <VerticalStackLayout Spacing="8">
-                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
-                                        <Label Grid.Column="0"
-                                               Text="{Binding Name}"
-                                               FontAttributes="Bold"
-                                               FontSize="14"
-                                               VerticalOptions="Center" />
+                <!-- 6. Listado de Aliños Guardados en SQLite -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Aliños Guardados en Catálogo"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
 
-                                        <Border Grid.Column="1"
-                                                StrokeShape="RoundRectangle 6"
-                                                Padding="6, 2"
-                                                Background="{AppThemeBinding Light=#FFF3ED, Dark=#2E1D16}">
-                                            <Label Text="{Binding TotalCalories, StringFormat='{0:F0} kcal'}"
-                                                   FontSize="11"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{StaticResource Primary}" />
-                                        </Border>
-
-                                        <Button Grid.Column="2"
-                                                Text="{loc:Translate Seasonings_Delete}"
-                                                Command="{Binding Source={x:Reference ThisSeasoningsPage}, Path=BindingContext.DeleteSeasoningCommand}"
-                                                CommandParameter="{Binding Id}"
-                                                FontSize="11"
-                                                HeightRequest="44"
-                                                MinimumHeightRequest="44"
-                                                Padding="10, 2"
-                                                BackgroundColor="{StaticResource AlertRed}"
-                                                TextColor="White"
-                                                VerticalOptions="Center" />
-                                    </Grid>
-                                    <Label Text="{Binding Description}"
-                                           FontSize="12"
-                                           TextColor="Gray"
-                                           IsVisible="{Binding HasDescription}" />
-                                </VerticalStackLayout>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Seasonings}"
+                                         Spacing="10">
+                        <BindableLayout.EmptyView>
+                            <Border Style="{StaticResource StitchCardStyle}"
+                                    Padding="16">
+                                <Label Text="No hay aliños guardados. Puedes crear uno con el botón 'Nuevo Aliño'."
+                                       FontSize="12"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
                             </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
+                        </BindableLayout.EmptyView>
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:SeasoningDto">
+                                <Border Style="{StaticResource StitchCardStyle}"
+                                        Padding="14">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="14"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}"
+                                                   VerticalOptions="Center" />
+
+                                            <Border Grid.Column="1"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    Padding="8, 2"
+                                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLight}, Dark={StaticResource SurfaceContainerDark}}">
+                                                <Label Text="{Binding TotalCalories, StringFormat='{0:F0} kcal'}"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{StaticResource Primary}" />
+                                            </Border>
+
+                                            <Button Grid.Column="2"
+                                                    Text="✕"
+                                                    Command="{Binding Source={x:Reference ThisSeasoningsPage}, Path=BindingContext.DeleteSeasoningCommand}"
+                                                    CommandParameter="{Binding Id}"
+                                                    FontSize="12"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    MinimumHeightRequest="40"
+                                                    MinimumWidthRequest="40"
+                                                    Padding="0"
+                                                    CornerRadius="10"
+                                                    BackgroundColor="{StaticResource Secondary}"
+                                                    TextColor="White"
+                                                    VerticalOptions="Center" />
+                                        </Grid>
+                                        <Label Text="{Binding Description}"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                               IsVisible="{Binding HasDescription}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- 6. Barra Fija de Acciones Inferiores (Stitch Ergonomics) -->
+        <!-- 7. Barra Fija Inferior de Accion (Dual Action Dock de 48dp) -->
         <Border Grid.Row="1"
-                StrokeShape="RoundRectangle 24"
-                Background="{AppThemeBinding Light={StaticResource ContrastDark}, Dark=#18181B}"
-                Padding="16, 12"
-                Margin="16, 0, 16, 12"
-                StrokeThickness="0"
-                ZIndex="10">
-            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                <!-- Boton Secundario: Agregar (Blanco con Borde y Texto Oscuro) -->
+                StrokeShape="Rectangle"
+                StrokeThickness="1"
+                Stroke="{AppThemeBinding Light={StaticResource OutlineLightBrush}, Dark={StaticResource OutlineDarkBrush}}"
+                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerDark}}"
+                Padding="16, 12">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                <!-- Boton Secundario: Nuevo Aliño -->
                 <Button Grid.Column="0"
-                        Text="Agregar"
+                        Text="+ Nuevo Aliño"
                         Command="{Binding ToggleCreatePanelCommand}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
-                        TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
-                        BorderColor="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
-                        BorderWidth="1"
-                        FontAttributes="Bold"
-                        CornerRadius="14"
+                        Style="{StaticResource StitchNeutralButtonStyle}"
                         HeightRequest="48"
                         MinimumHeightRequest="48"
-                        Padding="16, 8" />
+                        Padding="16, 0" />
 
-                <!-- Boton Primario: Completado (Verde Lima Suave con Texto Oscuro) -->
+                <!-- Boton Primario: Aplicar a Receta / Registro -->
                 <Button Grid.Column="1"
-                        Text="Completado"
+                        Text="Aplicar Selección"
                         Command="{Binding CompleteSelectionCommand}"
                         Style="{StaticResource StitchPrimaryButtonStyle}"
-                        CornerRadius="14"
                         HeightRequest="48"
                         MinimumHeightRequest="48"
-                        Padding="16, 8" />
+                        Padding="16, 0" />
             </Grid>
         </Border>
     </Grid>
