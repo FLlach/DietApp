@@ -2,22 +2,629 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             xmlns:models="clr-namespace:DietApp.UI.Models"
+             xmlns:helpers="clr-namespace:DietApp.UI.Helpers"
              x:Class="DietApp.UI.Views.SeasoningsPage"
              x:DataType="vm:SeasoningsViewModel"
-             Title="Aliños"
+             Title="Módulo de Aliños"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light={StaticResource StitchBackground}, Dark={StaticResource StitchDarkBackground}}">
 
-    <VerticalStackLayout Padding="24" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Módulo de Aliños"
-               FontFamily="PlusJakartaSans"
-               FontSize="20"
-               FontAttributes="Bold"
-               HorizontalTextAlignment="Center" />
-        <Label Text="Pantalla en fase de reconstrucción limpia contra Stitch."
-               FontFamily="Inter"
-               FontSize="13"
-               HorizontalTextAlignment="Center"
-               TextColor="{StaticResource StitchOutline}" />
-    </VerticalStackLayout>
+    <!--
+    Como funciona: Modulo clinico de alinos y condimentos segun el prototipo Stitch 'Modulo de Alinos (SeasoningsPage)'.
+    Presenta riel horizontal de seleccion de plato destino, aviso de seguridad mineral, segmentacion por subcategorias,
+    cuadricula de alinos preconfigurados con estado de seleccion reactiva, constructor de alino casero con medidor
+    bioquimico en tiempo real y barra fija inferior de doble accion (Guardar Aliño y Aplicar a Receta/Registro).
+    Por que se tomo esta decision: Permite neutralizar la principal fuente oculta de sodio y fosfatos inorganicos
+    con retroalimentacion electrolitica instantanea.
+    -->
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. TopAppBar (Cabecera fija superior) -->
+        <Border Grid.Row="0"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                Padding="12, 10"
+                Shadow="{StaticResource StitchCardShadow}">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                <Button Grid.Column="0"
+                        Text="{x:Static helpers:MaterialIconFont.ArrowBack}"
+                        Command="{Binding BackCommand}"
+                        FontFamily="MaterialSymbols"
+                        FontSize="22"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                        Padding="0"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        CornerRadius="22"
+                        SemanticProperties.Description="Volver atrás" />
+
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="Módulo de Aliños y Condimentos"
+                           FontFamily="PlusJakartaSans"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                    <Label Text="Dosificación y Control Renal"
+                           FontFamily="Inter"
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="2"
+                        Text="{x:Static helpers:MaterialIconFont.Info}"
+                        Command="{Binding ShowInfoAlertCommand}"
+                        FontFamily="MaterialSymbols"
+                        FontSize="22"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource StitchPrimary}"
+                        Padding="0"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        CornerRadius="22"
+                        SemanticProperties.Description="Información de dosificación" />
+            </Grid>
+        </Border>
+
+        <!-- Contenido Desplazable Principal -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="14, 14, 14, 24" Spacing="16" MaximumWidthRequest="440" HorizontalOptions="Center">
+
+                <!-- 2. Destino del Aliño (Horizontal Rail) -->
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0"
+                               Text="Destino del Aliño"
+                               FontFamily="Inter"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                        <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label Text="{x:Static helpers:MaterialIconFont.SyncAlt}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource StitchPrimary}" />
+                            <Label Text="Sincronizado"
+                                   FontFamily="Inter"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource StitchPrimary}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="8"
+                                               BindableLayout.ItemsSource="{Binding TargetDishes}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:TargetDishOptionModel">
+                                    <Border StrokeShape="RoundRectangle 9999"
+                                            StrokeThickness="0"
+                                            Padding="14, 8">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeasoningsViewModel}}, Path=SelectTargetDishCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource StitchPrimary}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                            <Label Text="{Binding IconGlyph}"
+                                                   Style="{StaticResource MaterialIconStyle}"
+                                                   FontSize="18">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{StaticResource White}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding Name}"
+                                                   FontFamily="Inter"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{StaticResource White}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- 3. Mineral Safety Notice Alert Strip -->
+                <Border StrokeShape="RoundRectangle 14"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                        Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                        Padding="12, 10">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Border Grid.Column="0"
+                                WidthRequest="34"
+                                HeightRequest="34"
+                                StrokeShape="RoundRectangle 17"
+                                StrokeThickness="0"
+                                Background="#2584CC16"
+                                VerticalOptions="Start">
+                            <Label Text="{x:Static helpers:MaterialIconFont.ShieldWithHeart}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="18"
+                                   TextColor="{StaticResource StitchPrimary}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Tolerancia Renal Estimada: Óptima"
+                                   FontFamily="Inter"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                            <Label Text="Los condimentos seleccionados evitan sales sintéticas (NaCl) y preservan el margen electrolítico de sodio y potasio."
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- 4. Sub-segmentation Pill Bar (Category Filter) -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8"
+                                           BindableLayout.ItemsSource="{Binding CategoryFilters}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:SeasoningCategoryFilterModel">
+                                <Border StrokeShape="RoundRectangle 9999"
+                                        Padding="14, 8">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeasoningsViewModel}}, Path=SelectCategoryFilterCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchSurfaceContainerHigh}}" />
+                                            <Setter Property="StrokeThickness" Value="0" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}" />
+                                            <Setter Property="StrokeThickness" Value="1" />
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Label Text="{Binding Name}"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <!-- 5. Opciones Preconfiguradas (Lista / Cuadrícula de Tarjetas) -->
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0"
+                               Text="Opciones Preconfiguradas"
+                               FontFamily="PlusJakartaSans"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                        <Label Grid.Column="1"
+                               Text="4 formulaciones clínicas"
+                               FontFamily="Inter"
+                               FontSize="11"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                               VerticalOptions="Center" />
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="10"
+                                         BindableLayout.ItemsSource="{Binding DisplayedSeasonings}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:SeasoningOptionModel">
+                                <Border StrokeShape="RoundRectangle 14"
+                                        Padding="14"
+                                        Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                        Shadow="{StaticResource StitchCardShadow}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeasoningsViewModel}}, Path=SelectSeasoningCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                            <Setter Property="Stroke" Value="{StaticResource StitchPrimary}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                            <Setter Property="StrokeThickness" Value="1" />
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <VerticalStackLayout Spacing="10">
+                                        <!-- Cabecera de la Tarjeta: Badge, Título e Indicador de Selección -->
+                                        <Grid ColumnDefinitions="*, Auto">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                                <Border StrokeShape="RoundRectangle 9999"
+                                                        StrokeThickness="0"
+                                                        Background="{Binding BadgeBackgroundColor}"
+                                                        Padding="8, 2"
+                                                        HorizontalOptions="Start">
+                                                    <Label Text="{Binding BadgeText}"
+                                                           FontFamily="Inter"
+                                                           FontSize="10"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{Binding BadgeTextColor}" />
+                                                </Border>
+
+                                                <Label Text="{Binding Name}"
+                                                       FontFamily="PlusJakartaSans"
+                                                       FontSize="15"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Indicador de Selección -->
+                                            <Border Grid.Column="1"
+                                                    WidthRequest="32"
+                                                    HeightRequest="32"
+                                                    StrokeShape="RoundRectangle 16"
+                                                    VerticalOptions="Start">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource StitchPrimaryContainer}" />
+                                                        <Setter Property="StrokeThickness" Value="0" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="Background" Value="Transparent" />
+                                                        <Setter Property="StrokeThickness" Value="1" />
+                                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+
+                                                <Label FontSize="18"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       FontFamily="MaterialSymbols">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Text" Value="{x:Static helpers:MaterialIconFont.CheckCircle}" />
+                                                            <Setter Property="TextColor" Value="{StaticResource StitchOnPrimaryContainer}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                            <Setter Property="Text" Value="{x:Static helpers:MaterialIconFont.RadioButtonUnchecked}" />
+                                                            <Setter Property="TextColor" Value="{StaticResource StitchOutline}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Descripción -->
+                                        <Label Text="{Binding Description}"
+                                               FontFamily="PlusJakartaSans"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+
+                                        <!-- Cluster de Minerales Inferior -->
+                                        <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="8" VerticalOptions="Center" Margin="0, 4, 0, 0">
+                                            <BoxView Grid.ColumnSpan="3" HeightRequest="1" Color="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}" VerticalOptions="Start" Margin="0, -8, 0, 0" />
+
+                                            <Border Grid.Column="0"
+                                                    StrokeShape="RoundRectangle 9999"
+                                                    StrokeThickness="0"
+                                                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                                    Padding="8, 3">
+                                                <HorizontalStackLayout Spacing="3">
+                                                    <Label Text="Na:" FontFamily="Inter" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource StitchPrimary}" />
+                                                    <Label Text="{Binding SodiumDisplay}" FontFamily="Inter" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+
+                                            <Border Grid.Column="1"
+                                                    StrokeShape="RoundRectangle 9999"
+                                                    StrokeThickness="0"
+                                                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                                    Padding="8, 3">
+                                                <HorizontalStackLayout Spacing="3">
+                                                    <Label Text="K:" FontFamily="Inter" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource StitchSecondary}" />
+                                                    <Label Text="{Binding PotassiumDisplay}" FontFamily="Inter" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding CaloriesDisplay}"
+                                                   FontFamily="Inter"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   HorizontalTextAlignment="End"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- 6. Constructor de Aliño Casero (Custom Studio) -->
+                <Border Style="{StaticResource StitchCardBorderStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                            <Border Grid.Column="0"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="0"
+                                    Background="#2084CC16">
+                                <Label Text="{x:Static helpers:MaterialIconFont.Tune}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="20"
+                                       TextColor="{StaticResource StitchPrimary}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                <Label Text="Constructor de Aliño Casero"
+                                       FontFamily="PlusJakartaSans"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Label Text="Combina bases e infunde extractos libres de sodio"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="2"
+                                    Text="{x:Static helpers:MaterialIconFont.RestartAlt}"
+                                    Command="{Binding ResetFormulaCommand}"
+                                    FontFamily="MaterialSymbols"
+                                    FontSize="20"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource StitchOutline}"
+                                    Padding="0"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    CornerRadius="18"
+                                    SemanticProperties.Description="Limpiar fórmula" />
+                        </Grid>
+
+                        <!-- Matriz de Ingredientes Caseros con Casilla de Verificación -->
+                        <VerticalStackLayout Spacing="8"
+                                             BindableLayout.ItemsSource="{Binding CustomIngredients}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:CustomSeasoningIngredientModel">
+                                    <Border StrokeShape="RoundRectangle 10"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                            Padding="10, 8">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeasoningsViewModel}}, Path=ToggleIngredientCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                            <!-- Checkbox Visual -->
+                                            <Border Grid.Column="0"
+                                                    WidthRequest="22"
+                                                    HeightRequest="22"
+                                                    StrokeShape="RoundRectangle 6"
+                                                    VerticalOptions="Center">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsChecked}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource StitchPrimary}" />
+                                                        <Setter Property="StrokeThickness" Value="0" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsChecked}" Value="False">
+                                                        <Setter Property="Background" Value="Transparent" />
+                                                        <Setter Property="StrokeThickness" Value="1.5" />
+                                                        <Setter Property="Stroke" Value="{StaticResource StitchOutline}" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label Text="{x:Static helpers:MaterialIconFont.Check}"
+                                                       Style="{StaticResource MaterialIconStyle}"
+                                                       FontSize="14"
+                                                       TextColor="{StaticResource White}"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       IsVisible="{Binding IsChecked}" />
+                                            </Border>
+
+                                            <!-- Datos del Ingrediente -->
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Name}"
+                                                       FontFamily="Inter"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                <Label Text="{Binding Subtitle}"
+                                                       FontFamily="Inter"
+                                                       FontSize="10"
+                                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Badge de Mineral -->
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding MineralBadge}"
+                                                   FontFamily="Inter"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding MineralBadgeColor}"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <!-- Medidor Bioquímico en Tiempo Real -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <HorizontalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{x:Static helpers:MaterialIconFont.Biotech}"
+                                               Style="{StaticResource MaterialIconStyle}"
+                                               FontSize="16"
+                                               TextColor="{StaticResource StitchPrimary}" />
+                                        <Label Text="Aporte Electrolítico en Tiempo Real"
+                                               FontFamily="Inter"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                    </HorizontalStackLayout>
+                                    <Label Grid.Column="1"
+                                           Text="Dosis: 1 Ración (18g)"
+                                           FontFamily="Inter"
+                                           FontSize="10"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource StitchPrimary}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+
+                                <!-- 3 Tarjetas de Métricas -->
+                                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                                    <!-- Sodio -->
+                                    <Border Grid.Column="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                            Padding="6, 8">
+                                        <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                            <Label Text="Sodio Total" FontFamily="Inter" FontSize="10" TextColor="{StaticResource StitchOutline}" HorizontalTextAlignment="Center" />
+                                            <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                                                <Label Text="{Binding TotalSodiumText}" FontFamily="Inter" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource StitchPrimary}" />
+                                                <Label Text="mg" FontFamily="Inter" FontSize="10" VerticalOptions="End" Margin="0,0,0,1" TextColor="{StaticResource StitchOutline}" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding SodiumLimitPercentageText}" FontFamily="Inter" FontSize="9" FontAttributes="Bold" TextColor="{StaticResource StitchPrimary}" HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!-- Potasio -->
+                                    <Border Grid.Column="1"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                            Padding="6, 8">
+                                        <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                            <Label Text="Potasio Total" FontFamily="Inter" FontSize="10" TextColor="{StaticResource StitchOutline}" HorizontalTextAlignment="Center" />
+                                            <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                                                <Label Text="{Binding TotalPotassiumText}" FontFamily="Inter" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                <Label Text="mg" FontFamily="Inter" FontSize="10" VerticalOptions="End" Margin="0,0,0,1" TextColor="{StaticResource StitchOutline}" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="Nivel seguro" FontFamily="Inter" FontSize="9" TextColor="{StaticResource StitchOutline}" HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!-- Calorías -->
+                                    <Border Grid.Column="2"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                            Padding="6, 8">
+                                        <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                            <Label Text="Calorías" FontFamily="Inter" FontSize="10" TextColor="{StaticResource StitchOutline}" HorizontalTextAlignment="Center" />
+                                            <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                                                <Label Text="{Binding TotalCaloriesText}" FontFamily="Inter" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                <Label Text="kcal" FontFamily="Inter" FontSize="10" VerticalOptions="End" Margin="0,0,0,1" TextColor="{StaticResource StitchOutline}" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="Lípidos sanos" FontFamily="Inter" FontSize="9" TextColor="{StaticResource StitchOutline}" HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Micro Barra de Progreso de Presupuesto de Sodio -->
+                                <VerticalStackLayout Spacing="4">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Grid.Column="0"
+                                               Text="Presupuesto de Sodio de la comida"
+                                               FontFamily="Inter"
+                                               FontSize="10"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding SodiumBudgetText}"
+                                               FontFamily="Inter"
+                                               FontSize="10"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource StitchPrimary}" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding SodiumBudgetProgress}"
+                                                 ProgressColor="{StaticResource StitchPrimaryContainer}"
+                                                 HeightRequest="5" />
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 7. Barra Fija Inferior de Doble Acción -->
+        <Border Grid.Row="2"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                Padding="16, 10, 16, 14"
+                Shadow="{StaticResource StitchCardShadow}">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" MaximumWidthRequest="440" HorizontalOptions="Center">
+                <!-- Acción Secundaria: Guardar Aliño -->
+                <Button Grid.Column="0"
+                        Text="Guardar Aliño"
+                        Command="{Binding SaveCustomSeasoningCommand}"
+                        FontFamily="Inter"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        HeightRequest="48"
+                        Padding="14, 0"
+                        CornerRadius="12"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                        SemanticProperties.Description="Guardar fórmula de aliño casero" />
+
+                <!-- Acción Principal CTA Verde Lima -->
+                <Button Grid.Column="1"
+                        Text="Aplicar a Receta / Registro"
+                        Command="{Binding ApplyToRecipeOrMealCommand}"
+                        Style="{StaticResource StitchPrimaryButtonStyle}"
+                        HeightRequest="48"
+                        CornerRadius="12"
+                        SemanticProperties.Description="Aplicar aliño seleccionado" />
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </ContentPage>
