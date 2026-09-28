@@ -2,22 +2,681 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
+             xmlns:models="clr-namespace:DietApp.UI.Models"
+             xmlns:helpers="clr-namespace:DietApp.UI.Helpers"
              x:Class="DietApp.UI.Views.RecipeDetailPage"
              x:DataType="vm:RecipeDetailViewModel"
              Title="Ficha de Receta"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light={StaticResource StitchBackground}, Dark={StaticResource StitchDarkBackground}}">
 
-    <VerticalStackLayout Padding="24" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Ficha Detallada de Receta"
-               FontFamily="PlusJakartaSans"
-               FontSize="20"
-               FontAttributes="Bold"
-               HorizontalTextAlignment="Center" />
-        <Label Text="Pantalla en fase de reconstrucción limpia contra Stitch."
-               FontFamily="Inter"
-               FontSize="13"
-               HorizontalTextAlignment="Center"
-               TextColor="{StaticResource StitchOutline}" />
-    </VerticalStackLayout>
+    <!--
+    Como funciona: Ficha Detallada de Receta fiel al prototipo de Stitch 'Ficha de Receta (RecipeDetailPage)'.
+    Presenta hero fotografico con badges flotantes, desglose de nutrientes clave (Na, K, P), auditoria clinica
+    proactiva, cuadricula de ingredientes dosificados, matriz de los 7 minerales, pasos numerados de preparacion
+    y modulo de registro directo en el conteo diario.
+    Por que se tomo esta decision: Permite una prescripcion y consumo clinico dosificado con retroalimentacion inmediata.
+    -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12, 8, 12, 32" Spacing="16" MaximumWidthRequest="440" HorizontalOptions="Center">
+
+            <!-- 1. Hero Fotografico Superior con Contenedores Flotantes -->
+            <Border StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
+                    HeightRequest="270"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}">
+                <Grid>
+                    <!-- Imagen o Banner Representativo -->
+                    <Image Source="{Binding ImageUrl}"
+                           Aspect="AspectFill"
+                           IsVisible="{Binding HasImage}" />
+
+                    <!-- Fondo Alternativo si no hay foto -->
+                    <BoxView Color="#35416900" IsVisible="{Binding HasNoImage}" />
+
+                    <!-- Gradiente Superior e Inferior para Legibilidad -->
+                    <BoxView BackgroundColor="#40000000" VerticalOptions="Start" HeightRequest="70" />
+                    <BoxView BackgroundColor="#A0000000" VerticalOptions="End" HeightRequest="130" />
+
+                    <!-- Botones Flotantes Superiores: Cerrar 'X', Favorito y Compartir -->
+                    <Grid VerticalOptions="Start" Margin="10" ColumnDefinitions="44, *, Auto" ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                Text="{x:Static helpers:MaterialIconFont.Close}"
+                                Command="{Binding CloseCommand}"
+                                FontFamily="MaterialSymbols"
+                                FontSize="20"
+                                BackgroundColor="#CCFFFFFF"
+                                TextColor="#131B2E"
+                                Padding="0"
+                                WidthRequest="44"
+                                HeightRequest="44"
+                                CornerRadius="22"
+                                SemanticProperties.Description="Cerrar ficha" />
+
+                        <HorizontalStackLayout Grid.Column="2" Spacing="8">
+                            <Button Text="{x:Static helpers:MaterialIconFont.Bookmark}"
+                                    Command="{Binding ToggleBookmarkCommand}"
+                                    FontFamily="MaterialSymbols"
+                                    FontSize="20"
+                                    BackgroundColor="#CCFFFFFF"
+                                    TextColor="#131B2E"
+                                    Padding="0"
+                                    WidthRequest="44"
+                                    HeightRequest="44"
+                                    CornerRadius="22"
+                                    SemanticProperties.Description="Guardar en favoritos" />
+                            <Button Text="{x:Static helpers:MaterialIconFont.Share}"
+                                    Command="{Binding ShareRecipeCommand}"
+                                    FontFamily="MaterialSymbols"
+                                    FontSize="20"
+                                    BackgroundColor="#CCFFFFFF"
+                                    TextColor="#131B2E"
+                                    Padding="0"
+                                    WidthRequest="44"
+                                    HeightRequest="44"
+                                    CornerRadius="22"
+                                    SemanticProperties.Description="Compartir ficha clínica" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <!-- Barra Flotante Superpuesta en la Base con Titulo y Badge Energetico -->
+                    <VerticalStackLayout VerticalOptions="End" Margin="14, 0, 14, 12" Spacing="4">
+                        <HorizontalStackLayout Spacing="8">
+                            <Border StrokeShape="RoundRectangle 9999"
+                                    StrokeThickness="0"
+                                    Background="{StaticResource StitchPrimaryContainer}"
+                                    Padding="10, 4">
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="{x:Static helpers:MaterialIconFont.Bolt}"
+                                           Style="{StaticResource MaterialIconStyle}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource StitchOnPrimaryContainer}" />
+                                    <Label Text="{Binding EnergyBadge}"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource StitchOnPrimaryContainer}" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border StrokeShape="RoundRectangle 9999"
+                                    StrokeThickness="0"
+                                    Background="#B0FFFFFF"
+                                    Padding="8, 4">
+                                <Label Text="METABÓLICO NIVEL 1"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       FontAttributes="Bold"
+                                       TextColor="#131B2E" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding Title}"
+                               FontFamily="PlusJakartaSans"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource White}" />
+
+                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                            <Label Text="{x:Static helpers:MaterialIconFont.Schedule}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="14"
+                                   TextColor="#ACF847" />
+                            <Label Text="{Binding PrepTimeDisplay}"
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="12"
+                                   TextColor="#E0FFFFFF" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- 2. Nutrientes Clave (3 Pastillas Uniformes: Na, K, P) -->
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Grid.Column="0"
+                           Text="Nutrientes Clave"
+                           FontFamily="PlusJakartaSans"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                    <Label Grid.Column="1"
+                           Text="Límite Diario"
+                           FontFamily="Inter"
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                    <!-- Sodio -->
+                    <Border Grid.Column="0"
+                            Style="{StaticResource StitchCardBorderStyle}"
+                            Padding="8, 10">
+                        <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                            <Label Text="SODIO"
+                                   FontFamily="Inter"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                            <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                                <Label Text="{Binding SodiumMg}"
+                                       FontFamily="Inter"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Label Text="mg"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       VerticalOptions="End"
+                                       Margin="0,0,0,2"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                            </HorizontalStackLayout>
+                            <ProgressBar Progress="{Binding SodiumProgress}"
+                                         ProgressColor="{StaticResource StitchPrimaryContainer}"
+                                         HeightRequest="5" />
+                            <Label Text="{Binding SodiumPctText}"
+                                   FontFamily="Inter"
+                                   FontSize="9"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Potasio (Alerta Coral si es elevado) -->
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1"
+                            Stroke="{StaticResource StitchClinicalCoral}"
+                            Background="#15EF713F"
+                            Padding="8, 10">
+                        <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                            <Label Text="POTASIO"
+                                   FontFamily="Inter"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{StaticResource StitchSecondary}" />
+                            <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                                <Label Text="{Binding PotassiumMg}"
+                                       FontFamily="Inter"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource StitchSecondary}" />
+                                <Label Text="mg"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       VerticalOptions="End"
+                                       Margin="0,0,0,2"
+                                       TextColor="{StaticResource StitchSecondary}" />
+                            </HorizontalStackLayout>
+                            <ProgressBar Progress="{Binding PotassiumProgress}"
+                                         ProgressColor="{StaticResource StitchSecondaryContainer}"
+                                         HeightRequest="5" />
+                            <Label Text="{Binding PotassiumPctText}"
+                                   FontFamily="Inter"
+                                   FontSize="9"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{StaticResource StitchSecondary}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Fosforo -->
+                    <Border Grid.Column="2"
+                            Style="{StaticResource StitchCardBorderStyle}"
+                            Padding="8, 10">
+                        <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                            <Label Text="FÓSFORO"
+                                   FontFamily="Inter"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                            <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                                <Label Text="{Binding PhosphorusMg}"
+                                       FontFamily="Inter"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Label Text="mg"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       VerticalOptions="End"
+                                       Margin="0,0,0,2"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                            </HorizontalStackLayout>
+                            <ProgressBar Progress="{Binding PhosphorusProgress}"
+                                         ProgressColor="{StaticResource StitchPrimaryContainer}"
+                                         HeightRequest="5" />
+                            <Label Text="{Binding PhosphorusPctText}"
+                                   FontFamily="Inter"
+                                   FontSize="9"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- 3. Banner de Auditoria Clinica Proactiva -->
+            <Border StrokeShape="RoundRectangle 14"
+                    StrokeThickness="1"
+                    Stroke="{StaticResource StitchPrimary}"
+                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                    Padding="0">
+                <Grid ColumnDefinitions="5, *">
+                    <BoxView Grid.Column="0" Color="{StaticResource StitchPrimary}" />
+                    <Grid Grid.Column="1" ColumnDefinitions="Auto, *" Padding="12, 10" ColumnSpacing="10" VerticalOptions="Center">
+                        <Border Grid.Column="0"
+                                WidthRequest="32"
+                                HeightRequest="32"
+                                StrokeShape="RoundRectangle 16"
+                                StrokeThickness="0"
+                                Background="{StaticResource StitchPrimaryContainer}"
+                                VerticalOptions="Start">
+                            <Label Text="{x:Static helpers:MaterialIconFont.VerifiedUser}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="18"
+                                   TextColor="{StaticResource StitchOnPrimaryContainer}" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Auditoría Clínica Proactiva"
+                                   FontFamily="Inter"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                            <Label Text="{Binding ClinicalAuditText}"
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- 4. Cuadricula de Ingredientes Dosificados (2 Columnas) -->
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1">
+                        <Label Text="Ingredientes Dosificados"
+                               FontFamily="PlusJakartaSans"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                        <Label Text="Para 1 ración exacta"
+                               FontFamily="Inter"
+                               FontSize="11"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                    </VerticalStackLayout>
+
+                    <!-- Selector tactil para ordenar por aporte mineral -->
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                            Padding="8, 4">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleSortIngredientsCommand}" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                            <Label Text="{x:Static helpers:MaterialIconFont.FilterList}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource StitchPrimary}" />
+                            <Label Text="{Binding SortButtonText}"
+                                   FontFamily="Inter"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+
+                <FlexLayout BindableLayout.ItemsSource="{Binding IngredientsList}"
+                            Wrap="Wrap"
+                            JustifyContent="SpaceBetween">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:RecipeIngredientDisplayModel">
+                            <Border Style="{StaticResource StitchCardBorderStyle}"
+                                    Padding="10"
+                                    Margin="0, 0, 0, 8"
+                                    FlexLayout.Basis="48%">
+                                <Grid RowDefinitions="Auto, Auto, Auto">
+                                    <!-- Icono y Gramaje -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="Auto, *">
+                                        <Border Grid.Column="0"
+                                                WidthRequest="28"
+                                                HeightRequest="28"
+                                                StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="0"
+                                                Background="#2084CC16"
+                                                Padding="0">
+                                            <Label Text="{Binding IconGlyph}"
+                                                   Style="{StaticResource MaterialIconStyle}"
+                                                   FontSize="15"
+                                                   TextColor="{StaticResource StitchPrimary}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                        <Border Grid.Column="1"
+                                                HorizontalOptions="End"
+                                                StrokeShape="RoundRectangle 9999"
+                                                StrokeThickness="0"
+                                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                                                Padding="8, 2">
+                                            <Label Text="{Binding GramsDisplay}"
+                                                   FontFamily="Inter"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Nombre y Subtítulo -->
+                                    <VerticalStackLayout Grid.Row="1" Margin="0, 8, 0, 6" Spacing="2">
+                                        <Label Text="{Binding Name}"
+                                               FontFamily="PlusJakartaSans"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                        <Label Text="{Binding Subtitle}"
+                                               FontFamily="Inter"
+                                               FontSize="10"
+                                               LineBreakMode="TailTruncation"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Divisor y 2 Minerales -->
+                                    <Grid Grid.Row="2" ColumnDefinitions="*, *" Padding="0, 6, 0, 0">
+                                        <BoxView Grid.ColumnSpan="2" HeightRequest="1" Color="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}" VerticalOptions="Start" Margin="0, -6, 0, 0" />
+                                        <Label Grid.Column="0"
+                                               Text="{Binding MineralPreview1}"
+                                               FontFamily="Inter"
+                                               FontSize="10"
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding MineralColor1}" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding MineralPreview2}"
+                                               FontFamily="Inter"
+                                               FontSize="10"
+                                               FontAttributes="Bold"
+                                               HorizontalTextAlignment="End"
+                                               TextColor="{Binding MineralColor2}" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </VerticalStackLayout>
+
+            <!-- 5. Resumen de los 7 Minerales Clinicos por Porcion -->
+            <Border Style="{StaticResource StitchCardBorderStyle}" Padding="14">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                            <Label Text="{x:Static helpers:MaterialIconFont.Science}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="18"
+                                   TextColor="{StaticResource StitchPrimary}" />
+                            <Label Text="Los 7 Minerales Clínicos"
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                        </HorizontalStackLayout>
+                        <Label Grid.Column="1"
+                               Text="mg / porción"
+                               FontFamily="Inter"
+                               FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                               VerticalOptions="Center" />
+                    </Grid>
+
+                    <FlexLayout BindableLayout.ItemsSource="{Binding SevenMinerals}"
+                                Wrap="Wrap"
+                                AlignItems="Center">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:MealMineralChipModel">
+                                <Border StrokeShape="RoundRectangle 9999"
+                                        Stroke="{Binding BorderColor}"
+                                        StrokeThickness="1"
+                                        Background="{Binding BackgroundColor}"
+                                        Padding="8, 3"
+                                        Margin="0, 3, 6, 3">
+                                    <HorizontalStackLayout Spacing="4">
+                                        <Label Text="{Binding Symbol}"
+                                               FontFamily="Inter"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding TextColor}" />
+                                        <Label Text="{Binding AmountWithUnit}"
+                                               FontFamily="Inter"
+                                               FontSize="11"
+                                               TextColor="{Binding TextColor}" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- 6. Pasos de Elaboracion -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Pasos de Elaboración"
+                       FontFamily="PlusJakartaSans"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+
+                <VerticalStackLayout Spacing="8"
+                                     BindableLayout.ItemsSource="{Binding StepsList}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:RecipeStepDisplayModel">
+                            <Border Style="{StaticResource StitchCardBorderStyle}" Padding="12, 10">
+                                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+                                    <Border Grid.Column="0"
+                                            WidthRequest="26"
+                                            HeightRequest="26"
+                                            StrokeShape="RoundRectangle 13"
+                                            StrokeThickness="0"
+                                            Background="{StaticResource StitchPrimary}"
+                                            VerticalOptions="Start">
+                                        <Label Text="{Binding StepNumber}"
+                                               FontFamily="Inter"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"
+                                               TextColor="{StaticResource White}" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Title}"
+                                               FontFamily="PlusJakartaSans"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                        <Label Text="{Binding Instruction}"
+                                               FontFamily="PlusJakartaSans"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- 7. Modulo de Registro en Ingesta Diaria -->
+            <Border Style="{StaticResource StitchCardBorderStyle}" Padding="16">
+                <VerticalStackLayout Spacing="14">
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <Label Text="{x:Static helpers:MaterialIconFont.PlaylistAddCheck}"
+                               Style="{StaticResource MaterialIconStyle}"
+                               FontSize="22"
+                               TextColor="{StaticResource StitchPrimary}" />
+                        <Label Text="Registro de Ingesta Diaria"
+                               FontFamily="PlusJakartaSans"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                    </HorizontalStackLayout>
+
+                    <!-- Selectores de Fecha y Momento con Soporte Tactil Nativo -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                        <!-- Selector de Fecha -->
+                        <Border Grid.Column="0"
+                                Style="{StaticResource StitchCardBorderStyle}"
+                                Padding="10, 8">
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" VerticalOptions="Center">
+                                <Label Grid.Column="0"
+                                       Text="{x:Static helpers:MaterialIconFont.CalendarToday}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="18"
+                                       TextColor="{StaticResource StitchPrimary}"
+                                       VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                    <Label Text="Fecha"
+                                           FontFamily="Inter"
+                                           FontSize="10"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                    <Label Text="{Binding FormattedDateDisplay}"
+                                           FontFamily="Inter"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2"
+                                       Text="{x:Static helpers:MaterialIconFont.ExpandMore}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                       VerticalOptions="Center" />
+                                <!-- DatePicker transparente para disparar selector nativo al tocar -->
+                                <DatePicker Grid.ColumnSpan="3"
+                                            Date="{Binding SelectedDate, Mode=TwoWay}"
+                                            Opacity="0.01" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Selector de Momento -->
+                        <Border Grid.Column="1"
+                                Style="{StaticResource StitchCardBorderStyle}"
+                                Padding="10, 8">
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" VerticalOptions="Center">
+                                <Label Grid.Column="0"
+                                       Text="{x:Static helpers:MaterialIconFont.LunchDining}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="18"
+                                       TextColor="{StaticResource StitchTertiary}"
+                                       VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                    <Label Text="Momento"
+                                           FontFamily="Inter"
+                                           FontSize="10"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                    <Label Text="{Binding SelectedMealTypeName}"
+                                           FontFamily="Inter"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2"
+                                       Text="{x:Static helpers:MaterialIconFont.ExpandMore}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                       VerticalOptions="Center" />
+                                <!-- Picker transparente para disparar dialogo nativo de momento -->
+                                <Picker Grid.ColumnSpan="3"
+                                        ItemsSource="{Binding MealTypeOptions}"
+                                        SelectedIndex="{Binding SelectedMealTypeIndex, Mode=TwoWay}"
+                                        Opacity="0.01" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- Stepper de Raciones -->
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                            <Label Text="{x:Static helpers:MaterialIconFont.RoomService}"
+                                   Style="{StaticResource MaterialIconStyle}"
+                                   FontSize="20"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
+                                   VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="1" VerticalOptions="Center">
+                                <Label Text="Raciones"
+                                       FontFamily="Inter"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Label Text="Calcula minerales proporcionales"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <!-- Stepper -->
+                        <Border Grid.Column="1"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                Padding="4">
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Button Text="{x:Static helpers:MaterialIconFont.Remove}"
+                                        Command="{Binding DecreaseServingsCommand}"
+                                        FontFamily="MaterialSymbols"
+                                        FontSize="16"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="8"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                        Padding="0" />
+
+                                <Label Text="{Binding ServingsToLog, StringFormat='{0:0.#}'}"
+                                       FontFamily="Inter"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                       Margin="6, 0" />
+
+                                <Button Text="{x:Static helpers:MaterialIconFont.Add}"
+                                        Command="{Binding IncreaseServingsCommand}"
+                                        FontFamily="MaterialSymbols"
+                                        FontSize="16"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="8"
+                                        BackgroundColor="{StaticResource StitchPrimaryContainer}"
+                                        TextColor="{StaticResource StitchOnPrimaryContainer}"
+                                        Padding="0" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Boton de Accion Principal Verde Lima -->
+                    <Button Text="+ Registrar Consumo"
+                            Command="{Binding RecordConsumptionCommand}"
+                            Style="{StaticResource StitchPrimaryButtonStyle}"
+                            HeightRequest="48"
+                            CornerRadius="14"
+                            SemanticProperties.Description="Registrar consumo en el conteo diario" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

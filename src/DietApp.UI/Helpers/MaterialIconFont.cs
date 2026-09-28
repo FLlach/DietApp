@@ -63,4 +63,13 @@ public static class MaterialIconFont
     public const string Nephrology = "\ue8d4";
     public const string Cardiology = "\ue8d4";
     public const string Healing = "\ue9f9";
+    public const string VerifiedUser = "\ue8e8";
+    public const string FilterList = "\ue152";
+    public const string RoomService = "\uea56";
+    public const string PlaylistAddCheck = "\ue065";
+    public const string LunchDining = "\uea61";
+    public const string ExpandMore = "\ue5cf";
+    public const string AddCircle = "\ue147";
+    public const string Bookmark = "\ue866";
+    public const string Share = "\ue80d";
 }
