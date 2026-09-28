@@ -72,4 +72,18 @@ public static class MaterialIconFont
     public const string AddCircle = "\ue147";
     public const string Bookmark = "\ue866";
     public const string Share = "\ue80d";
+    public const string PhotoCamera = "\ue412";
+    public const string Collections = "\ue3b6";
+    public const string Verified = "\ueef6";
+    public const string Timer = "\ue425";
+    public const string Blender = "\uefe3";
+    public const string Analytics = "\uef3e";
+    public const string Shield = "\ue8e8";
+    public const string FormatListNumbered = "\ue23b";
+    public const string MoreVert = "\ue5d4";
+    public const string EditNote = "\ue745";
+    public const string Draft = "\ue79c";
+    public const string WaterDrop = "\ue798";
+    public const string Cloud = "\ue2bd";
+    public const string SetMeal = "\ue56c";
 }
