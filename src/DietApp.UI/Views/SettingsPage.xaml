@@ -6,265 +6,253 @@
              xmlns:models="clr-namespace:DietApp.UI.Models"
              x:Class="DietApp.UI.Views.SettingsPage"
              x:DataType="vm:SettingsViewModel"
-             Title="{loc:Translate Settings_Title}">
+             Title="{loc:Translate Settings_Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceWarm}, Dark={StaticResource Black}}">
 
     <!--
-    Como funciona: Pantalla de configuracion de la aplicacion que permite seleccionar interactivamente
-    el idioma preferido entre Espanol e Ingles.
-    Por que se tomo esta decision: Brinda al usuario una forma visual, intuitiva y persistente de alternar
-    el idioma, impactando de forma inmediata en las pestanas, titulos, etiquetas, minerales y comidas.
+    Como funciona: Modulo de configuracion y ajustes basado en el diseno Stitch 'Clinical Nutrition Ergonomics'.
+    Organiza mediante tarjetas Bento las preferencias de interfaz (idioma y temas visuales), los limites
+    clinicos de los 7 minerales criticos (con umbral preventivo porcentual) y los metadatos del sistema.
+    Por que se tomo esta decision: Permite una personalizacion clinica inmediata con objetivos tactiles
+    de 48dp y confirmaciones en tiempo real para pacientes y dietistas.
     -->
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
-            <!-- Encabezado de la pantalla -->
-            <Label Text="{loc:Translate Settings_Title}"
-                   FontAttributes="Bold"
-                   FontSize="20" />
+            <!-- 1. Encabezado de la Pantalla -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16, 12"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="DIETAPP • PARÁMETROS Y ALERTAS"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryDark}" />
+                    <Label Text="{loc:Translate Settings_Title}"
+                           FontAttributes="Bold"
+                           FontSize="20"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                    <Label Text="Configuración metabólica, idioma y temas"
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Tarjeta de Seleccion de Idioma -->
-            <Border StrokeShape="RoundRectangle 12"
+            <!-- 2. Bento: Preferencias de Interfaz (Idioma y Tema) -->
+            <Border StrokeShape="RoundRectangle 16"
                     Padding="16"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="14">
                     <Label Text="{loc:Translate Settings_LanguageTitle}"
                            FontAttributes="Bold"
-                           FontSize="16" />
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
                     <Label Text="{loc:Translate Settings_LanguageSubtitle}"
-                           FontSize="13"
-                           TextColor="Gray" />
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
 
-                    <!-- Opciones de Idioma -->
-                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0, 4, 0, 0">
+                    <!-- Opciones de Idioma con estética Stitch (48dp touch targets) -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                         <!-- Opcion Espanol -->
                         <Border Grid.Column="0"
-                                StrokeShape="RoundRectangle 10"
+                                StrokeShape="RoundRectangle 14"
                                 Padding="12"
                                 Stroke="{Binding SpanishBorderColor}"
                                 StrokeThickness="{Binding SpanishBorderThickness}"
-                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#1A1A22}">
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="ES"
                                        FontAttributes="Bold"
-                                       FontSize="22"
+                                       FontSize="20"
                                        HorizontalTextAlignment="Center"
-                                       TextColor="{AppThemeBinding Light=#2980B9, Dark=#3498DB}" />
+                                       TextColor="{StaticResource PrimaryDark}" />
                                 <Label Text="{loc:Translate Settings_Spanish}"
                                        FontAttributes="Bold"
                                        FontSize="14"
-                                       HorizontalTextAlignment="Center" />
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 <Button Text="{loc:Translate Common_Select}"
                                         Command="{Binding SelectSpanishCommand}"
-                                        FontSize="12"
-                                        Padding="12, 6"
+                                        Style="{StaticResource StitchPrimaryButtonStyle}"
                                         HeightRequest="44"
                                         MinimumHeightRequest="44"
-                                        MinimumWidthRequest="44"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                                        TextColor="White" />
+                                        Padding="14, 0" />
                             </VerticalStackLayout>
                         </Border>
 
                         <!-- Opcion Ingles -->
                         <Border Grid.Column="1"
-                                StrokeShape="RoundRectangle 10"
+                                StrokeShape="RoundRectangle 14"
                                 Padding="12"
                                 Stroke="{Binding EnglishBorderColor}"
                                 StrokeThickness="{Binding EnglishBorderThickness}"
-                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#1A1A22}">
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="EN"
                                        FontAttributes="Bold"
-                                       FontSize="22"
+                                       FontSize="20"
                                        HorizontalTextAlignment="Center"
-                                       TextColor="{AppThemeBinding Light={StaticResource SuccessGreen}, Dark={StaticResource SuccessGreenDark}}" />
+                                       TextColor="{StaticResource PrimaryDark}" />
                                 <Label Text="{loc:Translate Settings_English}"
                                        FontAttributes="Bold"
                                        FontSize="14"
-                                       HorizontalTextAlignment="Center" />
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 <Button Text="{loc:Translate Common_Select}"
                                         Command="{Binding SelectEnglishCommand}"
-                                        FontSize="12"
-                                        Padding="12, 6"
+                                        Style="{StaticResource StitchNeutralButtonStyle}"
                                         HeightRequest="44"
                                         MinimumHeightRequest="44"
-                                        MinimumWidthRequest="44"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource SuccessGreen}, Dark={StaticResource SuccessGreenDark}}"
-                                        TextColor="White" />
+                                        Padding="14, 0" />
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
 
-                    <!-- Mensaje de estado al cambiar idioma -->
                     <Label Text="{Binding StatusMessage}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}"
+                           TextColor="{StaticResource PrimaryDark}"
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Tarjeta de Seleccion de Tema Visual (Modo Claro / Modo Oscuro / Sistema) -->
-            <Border StrokeShape="RoundRectangle 12"
+            <!-- 3. Bento: Seleccion de Tema Visual -->
+            <Border StrokeShape="RoundRectangle 16"
                     Padding="16"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="14">
                     <Label Text="{loc:Translate Settings_ThemeTitle}"
                            FontAttributes="Bold"
-                           FontSize="16" />
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
                     <Label Text="{loc:Translate Settings_ThemeSubtitle}"
-                           FontSize="13"
-                           TextColor="Gray" />
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
 
-                    <!-- Opciones de Tema Visual -->
-                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8" Margin="0, 4, 0, 0">
+                    <!-- Opciones de Tema Visual: Claro, Oscuro, Sistema -->
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
                         <!-- Opcion Modo Claro -->
                         <Border Grid.Column="0"
-                                StrokeShape="RoundRectangle 10"
+                                StrokeShape="RoundRectangle 12"
                                 Padding="8, 12"
                                 Stroke="{Binding LightBorderColor}"
                                 StrokeThickness="{Binding LightBorderThickness}"
-                                Background="{AppThemeBinding Light=#FFFBF8, Dark=#1E1E24}">
-                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                <Border StrokeShape="RoundRectangle 6"
-                                        Padding="6, 3"
-                                        Background="#FFF4EE"
-                                        Stroke="{StaticResource Primary}"
-                                        StrokeThickness="1"
-                                        HorizontalOptions="Center">
-                                    <Label Text="CLARO"
-                                           FontAttributes="Bold"
-                                           FontSize="11"
-                                           TextColor="{StaticResource Primary}" />
-                                </Border>
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#1E1E24}">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="CLARO"
+                                       FontAttributes="Bold"
+                                       FontSize="11"
+                                       TextColor="{StaticResource PrimaryDark}"
+                                       HorizontalTextAlignment="Center" />
                                 <Label Text="{loc:Translate Settings_ThemeLight}"
                                        FontAttributes="Bold"
-                                       FontSize="13"
-                                       HorizontalTextAlignment="Center" />
-                                <Label Text="{loc:Translate Settings_ThemeLightDesc}"
-                                       FontSize="10"
-                                       TextColor="Gray"
-                                       HorizontalTextAlignment="Center" />
+                                       FontSize="12"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 <Button Text="{loc:Translate Common_Select}"
                                         Command="{Binding SelectLightCommand}"
-                                        FontSize="11"
-                                        Padding="8, 4"
-                                        HeightRequest="44"
-                                        MinimumHeightRequest="44"
-                                        MinimumWidthRequest="44"
-                                        BackgroundColor="{StaticResource Primary}"
-                                        TextColor="White" />
+                                        Style="{StaticResource StitchPrimaryButtonStyle}"
+                                        HeightRequest="40"
+                                        MinimumHeightRequest="40"
+                                        Padding="8, 0"
+                                        FontSize="11" />
                             </VerticalStackLayout>
                         </Border>
 
                         <!-- Opcion Modo Oscuro -->
                         <Border Grid.Column="1"
-                                StrokeShape="RoundRectangle 10"
+                                StrokeShape="RoundRectangle 12"
                                 Padding="8, 12"
                                 Stroke="{Binding DarkBorderColor}"
                                 StrokeThickness="{Binding DarkBorderThickness}"
-                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
-                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                <Border StrokeShape="RoundRectangle 6"
-                                        Padding="6, 3"
-                                        Background="#0C0C0C"
-                                        Stroke="{StaticResource Secondary}"
-                                        StrokeThickness="1"
-                                        HorizontalOptions="Center">
-                                    <Label Text="OSCURO"
-                                           FontAttributes="Bold"
-                                           FontSize="11"
-                                           TextColor="{StaticResource Secondary}" />
-                                </Border>
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#1A1A22}">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="OSCURO"
+                                       FontAttributes="Bold"
+                                       FontSize="11"
+                                       TextColor="{StaticResource Secondary}"
+                                       HorizontalTextAlignment="Center" />
                                 <Label Text="{loc:Translate Settings_ThemeDark}"
                                        FontAttributes="Bold"
-                                       FontSize="13"
-                                       HorizontalTextAlignment="Center" />
-                                <Label Text="{loc:Translate Settings_ThemeDarkDesc}"
-                                       FontSize="10"
-                                       TextColor="Gray"
-                                       HorizontalTextAlignment="Center" />
+                                       FontSize="12"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 <Button Text="{loc:Translate Common_Select}"
                                         Command="{Binding SelectDarkCommand}"
-                                        FontSize="11"
-                                        Padding="8, 4"
-                                        HeightRequest="44"
-                                        MinimumHeightRequest="44"
-                                        MinimumWidthRequest="44"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource CardBackgroundDark}}"
-                                        BorderColor="{StaticResource Secondary}"
-                                        BorderWidth="1"
-                                        TextColor="{StaticResource Secondary}" />
+                                        Style="{StaticResource StitchNeutralButtonStyle}"
+                                        HeightRequest="40"
+                                        MinimumHeightRequest="40"
+                                        Padding="8, 0"
+                                        FontSize="11" />
                             </VerticalStackLayout>
                         </Border>
 
                         <!-- Opcion Sistema -->
                         <Border Grid.Column="2"
-                                StrokeShape="RoundRectangle 10"
+                                StrokeShape="RoundRectangle 12"
                                 Padding="8, 12"
                                 Stroke="{Binding SystemBorderColor}"
                                 StrokeThickness="{Binding SystemBorderThickness}"
-                                Background="{AppThemeBinding Light=#F4F6F7, Dark=#1A1A22}">
-                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                <Border StrokeShape="RoundRectangle 6"
-                                        Padding="6, 3"
-                                        Background="{StaticResource Gray500}"
-                                        HorizontalOptions="Center">
-                                    <Label Text="AUTO"
-                                           FontAttributes="Bold"
-                                           FontSize="11"
-                                           TextColor="White" />
-                                </Border>
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#1A1A22}">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="AUTO"
+                                       FontAttributes="Bold"
+                                       FontSize="11"
+                                       TextColor="{StaticResource Outline}"
+                                       HorizontalTextAlignment="Center" />
                                 <Label Text="{loc:Translate Settings_ThemeSystem}"
                                        FontAttributes="Bold"
-                                       FontSize="13"
-                                       HorizontalTextAlignment="Center" />
-                                <Label Text="{loc:Translate Settings_ThemeSystemDesc}"
-                                       FontSize="10"
-                                       TextColor="Gray"
-                                       HorizontalTextAlignment="Center" />
+                                       FontSize="12"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                 <Button Text="{loc:Translate Common_Select}"
                                         Command="{Binding SelectSystemCommand}"
-                                        FontSize="11"
-                                        Padding="8, 4"
-                                        HeightRequest="44"
-                                        MinimumHeightRequest="44"
-                                        MinimumWidthRequest="44"
-                                        BackgroundColor="{StaticResource Gray600}"
-                                        TextColor="White" />
+                                        Style="{StaticResource StitchNeutralButtonStyle}"
+                                        HeightRequest="40"
+                                        MinimumHeightRequest="40"
+                                        Padding="8, 0"
+                                        FontSize="11" />
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
 
-                    <!-- Mensaje de estado al cambiar tema -->
                     <Label Text="{Binding ThemeStatusMessage}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}"
+                           TextColor="{StaticResource PrimaryDark}"
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Tarjeta de Alertas y Limites de Minerales -->
-            <Border StrokeShape="RoundRectangle 12"
+            <!-- 4. Bento: Parametros Clinicos y Limites de Minerales -->
+            <Border StrokeShape="RoundRectangle 16"
                     Padding="16"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="14">
                     <Label Text="{loc:Translate Settings_MineralAlertsTitle}"
                            FontAttributes="Bold"
-                           FontSize="16" />
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
                     <Label Text="{loc:Translate Settings_MineralAlertsSubtitle}"
-                           FontSize="13"
-                           TextColor="Gray" />
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
 
-                    <!-- Configuracion de Umbral Porcentual de Aviso Preventivo -->
-                    <Border StrokeShape="RoundRectangle 10"
-                            Padding="12"
+                    <!-- Configuracion de Umbral Porcentual Preventivo -->
+                    <Border StrokeShape="RoundRectangle 14"
+                            Padding="14"
                             Background="{AppThemeBinding Light=#FEF9E7, Dark=#262115}"
-                            Stroke="{AppThemeBinding Light=#F9E79F, Dark=#564A23}"
+                            Stroke="{StaticResource WarningAmber}"
                             StrokeThickness="1">
                         <VerticalStackLayout Spacing="8">
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
@@ -272,12 +260,13 @@
                                        Text="{loc:Translate Settings_WarningThresholdTitle}"
                                        FontAttributes="Bold"
                                        FontSize="13"
+                                       TextColor="{StaticResource WarningAmber}"
                                        VerticalOptions="Center" />
 
                                 <Border Grid.Column="1"
-                                        StrokeShape="RoundRectangle 6"
+                                        StrokeShape="RoundRectangle 9999"
                                         Padding="10, 4"
-                                        Background="{AppThemeBinding Light=#F39C12, Dark=#D68910}">
+                                        Background="{StaticResource WarningAmber}">
                                     <Label Text="{Binding WarningPercentageDisplay}"
                                            FontAttributes="Bold"
                                            FontSize="13"
@@ -287,7 +276,7 @@
 
                             <Label Text="{loc:Translate Settings_WarningThresholdSubtitle}"
                                    FontSize="12"
-                                   TextColor="Gray" />
+                                   TextColor="{StaticResource Outline}" />
 
                             <Slider Minimum="50"
                                     Maximum="95"
@@ -303,38 +292,43 @@
                                          Margin="0, 4, 0, 0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:MineralAlertConfigModel">
-                                <Border StrokeShape="RoundRectangle 8"
-                                        Padding="10, 8"
-                                        Background="{AppThemeBinding Light=#F8F9F9, Dark=#1A1A22}">
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Padding="12, 10"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#1A1A22}"
+                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                        StrokeThickness="1">
                                     <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
-                                        <!-- Nombre del Mineral -->
                                         <Label Grid.Column="0"
                                                Text="{Binding MineralName}"
                                                FontAttributes="Bold"
                                                FontSize="14"
+                                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
                                                VerticalOptions="Center" />
 
-                                        <!-- Campo de Limite en mg -->
                                         <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
-                                            <Border StrokeShape="RoundRectangle 6"
-                                                    Padding="6, 0"
-                                                    WidthRequest="80"
-                                                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#2C3E50}">
+                                            <Border StrokeShape="RoundRectangle 10"
+                                                    Padding="8, 0"
+                                                    WidthRequest="85"
+                                                    Stroke="{StaticResource BorderWarmLight}"
+                                                    StrokeThickness="1"
+                                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark=#2C3E50}">
                                                 <Entry Text="{Binding ThresholdText}"
                                                        Keyboard="Numeric"
                                                        Placeholder="0"
                                                        HorizontalTextAlignment="End"
+                                                       HeightRequest="44"
                                                        FontSize="13" />
                                             </Border>
                                             <Label Text="{Binding Unit}"
                                                    FontSize="12"
-                                                   TextColor="Gray"
+                                                   TextColor="{StaticResource Outline}"
                                                    VerticalOptions="Center" />
                                         </HorizontalStackLayout>
 
-                                        <!-- Conmutador Activar/Desactivar -->
                                         <Switch Grid.Column="2"
                                                 IsToggled="{Binding IsEnabled}"
+                                                OnColor="{StaticResource Primary}"
+                                                ThumbColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDark}}"
                                                 VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
@@ -343,53 +337,54 @@
                     </VerticalStackLayout>
 
                     <!-- Botones de Accion -->
-                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0, 6, 0, 0">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0, 6, 0, 0">
                         <Button Grid.Column="0"
                                 Text="{loc:Translate Settings_MineralAlertsSave}"
                                 Command="{Binding SaveAlertsCommand}"
-                                FontAttributes="Bold"
-                                HeightRequest="44"
-                                FontSize="12"
-                                BackgroundColor="{StaticResource Primary}"
-                                TextColor="White" />
+                                Style="{StaticResource StitchPrimaryButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                FontSize="13" />
 
                         <Button Grid.Column="1"
                                 Text="{loc:Translate Settings_MineralAlertsReset}"
                                 Command="{Binding ResetAlertsCommand}"
-                                HeightRequest="44"
-                                FontSize="12"
-                                BackgroundColor="{StaticResource AlertRed}"
-                                TextColor="White" />
+                                Style="{StaticResource StitchSecondaryButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                FontSize="13" />
                     </Grid>
 
-                    <!-- Mensaje de Estado de Alertas -->
                     <Label Text="{Binding AlertsStatusMessage}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}"
+                           TextColor="{StaticResource PrimaryDark}"
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Tarjeta Informativa de la Aplicacion -->
-            <Border StrokeShape="RoundRectangle 12"
+            <!-- 5. Tarjeta Informativa de la Aplicacion -->
+            <Border StrokeShape="RoundRectangle 16"
                     Padding="16"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{loc:Translate Settings_AboutTitle}"
                            FontAttributes="Bold"
-                           FontSize="15" />
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                     <Label Text="{loc:Translate Settings_AboutDescription}"
-                           FontSize="13"
-                           TextColor="Gray" />
-                    <BoxView HeightRequest="1" Color="{StaticResource Gray300}" Margin="0, 4" />
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}" Margin="0, 4" />
                     <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
-                        <Label Grid.Column="0" Text="Base de Datos:" FontAttributes="Bold" FontSize="12" />
-                        <Label Grid.Column="1" Text="SQLite (USDA FoodData Central Foundation Foods)" FontSize="12" TextColor="Gray" />
+                        <Label Grid.Column="0" Text="Base de Datos:" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource PrimaryDark}" />
+                        <Label Grid.Column="1" Text="SQLite (USDA FoodData Central Foundation Foods)" FontSize="12" TextColor="{StaticResource Outline}" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
-                        <Label Grid.Column="0" Text="Version:" FontAttributes="Bold" FontSize="12" />
-                        <Label Grid.Column="1" Text="1.0.0 (.NET 10 MAUI)" FontSize="12" TextColor="Gray" />
+                        <Label Grid.Column="0" Text="Framework:" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource PrimaryDark}" />
+                        <Label Grid.Column="1" Text=".NET 10 MAUI (Android API 21-35 / Multiplataforma)" FontSize="12" TextColor="{StaticResource Outline}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
