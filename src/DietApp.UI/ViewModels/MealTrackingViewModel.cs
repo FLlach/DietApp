@@ -21,15 +21,21 @@ public partial class MealTrackingViewModel : ObservableObject
 {
     private readonly IMealTrackingService _mealTrackingService;
     private readonly IMineralAlertService _mineralAlertService;
+    private readonly IProteinGoalService _proteinGoalService;
 
     public MealTrackingViewModel(
         IMealTrackingService mealTrackingService,
-        IMineralAlertService mineralAlertService)
+        IMineralAlertService mineralAlertService,
+        IProteinGoalService proteinGoalService)
     {
         _mealTrackingService = mealTrackingService;
         _mineralAlertService = mineralAlertService;
+        _proteinGoalService = proteinGoalService;
+
+        _proteinGoalService.ProteinGoalChanged += OnProteinGoalChanged;
 
         UpdateDateLabels();
+        UpdateProteinGoalProperties();
     }
 
     [ObservableProperty]
@@ -46,6 +52,18 @@ public partial class MealTrackingViewModel : ObservableObject
 
     [ObservableProperty]
     private double _totalProteinGrams;
+
+    [ObservableProperty]
+    private double _dailyProteinGoalGrams = 60.0;
+
+    [ObservableProperty]
+    private bool _isProteinGoalEnabled = true;
+
+    [ObservableProperty]
+    private string _formattedProteinStatus = "0 / 60 g";
+
+    [ObservableProperty]
+    private double _proteinGoalProgressFraction;
 
     [ObservableProperty]
     private double _planCompletionPercentage;
@@ -166,6 +184,8 @@ public partial class MealTrackingViewModel : ObservableObject
 
             TotalProteinGrams = Math.Round(protein, 1);
             TotalCalories = Math.Round(meals.Sum(m => m.TotalCalories), 0);
+
+            UpdateProteinGoalProperties();
 
             // Calcular porcentaje del plan (meta base estimada: 60g proteina o 1850 kcal)
             double targetCalories = 1850;
@@ -443,5 +463,27 @@ public partial class MealTrackingViewModel : ObservableObject
         }
 
         return chips;
+    }
+
+    private void OnProteinGoalChanged(object? sender, EventArgs e)
+    {
+        UpdateProteinGoalProperties();
+    }
+
+    private void UpdateProteinGoalProperties()
+    {
+        DailyProteinGoalGrams = _proteinGoalService.DailyProteinGoalGrams;
+        IsProteinGoalEnabled = _proteinGoalService.IsProteinGoalEnabled;
+
+        if (IsProteinGoalEnabled && DailyProteinGoalGrams > 0)
+        {
+            FormattedProteinStatus = $"{TotalProteinGrams:0.#} / {DailyProteinGoalGrams:0.#} g";
+            ProteinGoalProgressFraction = Math.Min(1.0, TotalProteinGrams / DailyProteinGoalGrams);
+        }
+        else
+        {
+            FormattedProteinStatus = $"{TotalProteinGrams:0.#} g";
+            ProteinGoalProgressFraction = 0.0;
+        }
     }
 }

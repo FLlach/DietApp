@@ -520,7 +520,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- 2.3 Limites Maximos de los 7 Minerales Criticos (Bento 3) -->
+                <!-- 2.3 Limites Clinicos y Metas Nutricionales (Bento 3) -->
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto" Padding="2, 0">
                         <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
@@ -528,14 +528,14 @@
                                    Style="{StaticResource MaterialIconStyle}"
                                    FontSize="18"
                                    TextColor="{StaticResource StitchPrimary}" />
-                            <Label Text="Límites Máximos de Minerales"
+                            <Label Text="Límites Clínicos y Metas Nutricionales"
                                    FontFamily="PlusJakartaSans"
                                    FontSize="15"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                         </HorizontalStackLayout>
                         <Label Grid.Column="1"
-                               Text="7 Marcadores"
+                               Text="Proteína y 7 Minerales"
                                FontFamily="Inter"
                                FontSize="11"
                                TextColor="{StaticResource StitchOutline}"
@@ -543,6 +543,32 @@
                     </Grid>
 
                     <VerticalStackLayout Spacing="10">
+
+                        <!-- 0. Meta Diaria de Proteina (PROT) -->
+                        <Border Style="{StaticResource StitchCardBorderStyle}" Padding="12" StrokeShape="RoundRectangle 14">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                    <Border Grid.Column="0" StrokeShape="RoundRectangle 8" StrokeThickness="0" Background="{StaticResource MineralProteinContainer}" WidthRequest="36" HeightRequest="36" VerticalOptions="Center">
+                                        <Label Text="PROT" FontFamily="Inter" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource MineralProteinText}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="Meta de Proteína" FontFamily="Inter" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                        <Label Text="Balance Nitrogenado • KDOQI (0.6 - 0.8 g/kg)" FontFamily="Inter" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource StitchPrimary}" />
+                                    </VerticalStackLayout>
+                                    <Switch Grid.Column="2" IsToggled="{Binding IsProteinGoalEnabled, Mode=TwoWay}" OnColor="{StaticResource StitchPrimaryContainer}" ThumbColor="{StaticResource StitchPrimary}" VerticalOptions="Center" />
+                                </Grid>
+                                <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                    <Label Grid.Column="0" Text="Meta Diaria Recomendada:" FontFamily="Inter" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" VerticalOptions="Center" />
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                        <Border StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}" Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}" HeightRequest="36" WidthRequest="80" Padding="6, 0">
+                                            <Entry Text="{Binding ProteinGoalGramsText, Mode=TwoWay}" Keyboard="Numeric" FontFamily="Inter" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" HorizontalTextAlignment="End" BackgroundColor="Transparent" VerticalOptions="Center" />
+                                        </Border>
+                                        <Label Text="g" FontFamily="Inter" FontSize="11" TextColor="{StaticResource StitchOutline}" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
 
                         <!-- 1. Potasio (K) -->
                         <Border Style="{StaticResource StitchCardBorderStyle}" Padding="12" StrokeShape="RoundRectangle 14">

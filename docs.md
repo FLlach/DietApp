@@ -61,6 +61,7 @@ Orquesta los casos de uso del sistema:
 * **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales.
 * **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales. Soporta registro combinado de alimentos y recetas (`RecordMealWithMixedItemsAsync`) y registro rapido de recetas consumidas (`RecordRecipeInMealAsync`).
 * **`Services/RecipeService.cs`**: Casos de uso de creacion, consulta y busqueda de recetas culinarias.
+* **`Services/IProteinGoalStorage.cs` y `Services/IProteinGoalService.cs` (`ProteinGoalService.cs`)**: Gestion, validacion y notificacion reactiva de la meta diaria de proteina en gramos para balance nitrogenado y control en enfermedad renal cronica.
 
 ---
 
@@ -92,7 +93,7 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, cumplimiento porcentual dinamico del plan diario (iniciado en 0% al no haber ingestas y recalculado reactivamente con cada comida registrada), banner reactivo de advertencias si se superan los limites maximos fijados por el usuario, detalle por comida y boton de accion rapida "+ Registrar Comida".
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de los 7 minerales por porcion organizados en 2 columnas con solo simbolo quimico para legibilidad movil, y apartado integrado para gestionar y abrir los **Alinos y Marinadas** (`SeasoningsPage`).
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales y boton de accion "+ Nuevo Alimento".
-    4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles) y configuracion personalizada de limites maximos diarios de minerales con activacion de alertas.
+    4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles), selector de tema visual (Claro / Oscuro / Sistema), configuracion de la meta diaria cuantitativa de proteina (en gramos), calibracion del umbral preventivo y limites maximos diarios de minerales con activacion de alertas.
   * Rutas registradas:
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel de los 7 minerales clinicos por porcion en cuadricula de 2 columnas con simbolo quimico, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Compositor clinico de recetas con inicializacion limpia (formulario vacio con estados vacios para ingredientes, pasos y fotografia), dosificacion en tiempo real de alimentos y alinos, y proyecciones instantaneas de nutrientes por porcion.
@@ -370,7 +371,7 @@ La interfaz grafica de usuario de DietApp fue reconstruida desde cero para aline
 6. **`SeasoningsPage` (Modulo de Alinos)**: Riel horizontal de platos diana, tira de advertencia de seguridad de sodio, filtros por categoria, 4 alinos preconfigurados y estudio de formulacion personalizada con medidor bioquimico instantaneo.
 7. **`FoodCatalogPage` (Catalogo de Alimentos)**: Buscador clinico, filtro avanzado por rangos minimos y maximos de minerales (mg), presintonias clinicas frecuentes en riel horizontal y tarjetas de alimentos con desglose de los 7 minerales y distincion coral para alertas de potasio.
 8. **`AddFoodPage` (Alta de Alimento)**: Formulario modal con selector de imagen/icono, datos generales, porcion de referencia dividida, macronutrientes, matriz cuantitativa de los 7 minerales diana, selector de dieta renal KDOQI, pastillas de advertencia y notas dietoterapeuticas.
-9. **`SettingsPage` (Ajustes y Configuracion)**: Preferencias bilingues (Espanol/Ingles), selector de tema (Claro/Oscuro/Sistema), barra deslizadora interactiva para calibrar el umbral preventivo de alerta (50% a 95%), interruptores y limites diarios para los 7 minerales, boton de restauracion a estandares KDOQI/USDA y auditoria tecnica de la base SQLite.
+9. **`SettingsPage` (Ajustes y Configuracion)**: Preferencias bilingues (Espanol/Ingles), selector de tema (Claro/Oscuro/Sistema), barra deslizadora interactiva para calibrar el umbral preventivo de alerta (50% a 95%), administracion interactiva de la meta diaria de proteina (en gramos) con interruptor de activacion y valor cuantitativo ajustable, interruptores y limites diarios para los 7 minerales, boton de restauracion a estandares KDOQI/USDA y auditoria tecnica de la base SQLite.
 
 ### 11.2. Resolucion de Restricciones Tecnicas entre Stitch HTML/CSS y .NET MAUI
 * **Virtualizacion y Prevencion de Congelamiento en Catálogo Extenso (`FoodCatalogPage`)**:
@@ -383,4 +384,22 @@ La interfaz grafica de usuario de DietApp fue reconstruida desde cero para aline
 * **Propiedad Padding en Controles Entry**: El analizador XAML de MAUI rechaza la propiedad `Padding` directamente en controles `Entry`. Se resolvio encapsulando cada campo de entrada dentro de un contenedor `Border` estilizado con `StrokeShape="RoundRectangle 8"`, fondo contrastado y `Padding` interno, manteniendo el `Entry` con fondo transparente (`BackgroundColor="Transparent"`).
 * **Ausencia de Selectores Nativos Molestos**: Para preservar la estetica de tarjeta moderna de Stitch sin perder la ergonomia de selectores de fecha o desplegables nativos en dispositivos moviles, se utilizaron controles nativos superpuestos con opacidad minima o `Picker` estilizados integrados en cuadriculas con icono vectorizado indicador.
 * **Resolucion de Recursos Estaticos y Convertidores Globales**: El inflador de XAML en Android requiere que todos los tokens referenciados mediante `StaticResource` esten explicitamente presentes en el diccionario de recursos consolidado. Se incorporaron los tokens faltantes para contenedores oscuros (`StitchDarkSurfaceContainerLow`, `StitchDarkSurfaceContainerHigh`), contraste de texto sobre elementos fijos (`StitchOnSecondaryFixed`, `StitchOnTertiaryFixed`), el recurso de sombra `StitchCardShadow` y el convertidor `InvertedBoolConverter` registrado a nivel global en `App.xaml`.
-* **Cumplimiento Estricto de Cero Emojis**: Todos los iconos de la interfaz grafica fueron implementados mediante glifos vectoriales nitidos de Material Symbols Outlined a traves de la clase estatica [MaterialIconFont.cs](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/Helpers/MaterialIconFont.cs).
+* **Cumplimiento Estricto de Cero Emojis**: Todos los iconos de la interfaz grafica fueron implementados mediante glifos vectoriales nitidos de Material Symbols Outlined a traves de la clase estatica [MaterialIconFont.cs](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/Helpers/MaterialIconFont.cs).
+
+---
+
+## 12. Sistema de Metas Nutricionales y Meta Diaria de Proteina
+
+### 12.1. Requerimiento Clinico
+En el tratamiento nutricional de pacientes con enfermedad renal cronica (ERC / CKD) segun las directrices KDOQI 2024, el control cuantitativo de la ingesta de proteina (habitualmente fijado en rangos de 0.6 a 0.8 g/kg/dia para estadios 3 a 5 sin dialisis) resulta tan determinante para preservar la tasa de filtracion glomerular como el control de fosforo y potasio.
+
+### 12.2. Arquitectura de la Solucion (DDD)
+* **Abstraccion de Almacenamiento (`IProteinGoalStorage`)**: Definida en `DietApp.Application.Services` para desacoplar el mecanismo de persistencia nativo de la capa de aplicacion.
+* **Implementacion con Preferences (`MauiPreferencesProteinGoalStorage`)**: Definida en `DietApp.UI.Services`, almacena la meta diaria en gramos y su estado de habilitacion de forma persistente entre sesiones del usuario.
+* **Servicio de Aplicacion (`IProteinGoalService` / `ProteinGoalService`)**: Centraliza la cifra meta (por defecto 60 g/dia), la activacion del objetivo, la restauracion a valores de referencia KDOQI y la emision de eventos `ProteinGoalChanged` para sincronizacion reactiva.
+* **Integracion en Pantalla de Ajustes (`SettingsViewModel` y `SettingsPage.xaml`)**:
+  * Incorpora tarjeta bento con distintivo verde lima `PROT` (`MineralProteinContainer` y `MineralProteinText`), titulo formal, subtitulo KDOQI, interruptor de activacion y campo numerico en gramos.
+  * Se guarda de forma unificada al accionar "Guardar Limites Clinicos" y se restablece con "Restablecer Valores por Defecto".
+* **Consumo Dinamico en Vistas**:
+  * **Conteo Diario (`MealTrackingViewModel` / `MealTrackingPage.xaml`)**: El badge "Meta Proteica" refleja reactivamente la relacion de consumo contra el objetivo (ejemplo: `45.2 / 60 g` o `45.2 g` si la meta esta deshabilitada).
+  * **Compositor de Comidas (`AddMealViewModel`)**: Calcula el porcentaje de cobertura proteica proactiva utilizando la meta configurada en lugar de valores fijos arbitrarios.

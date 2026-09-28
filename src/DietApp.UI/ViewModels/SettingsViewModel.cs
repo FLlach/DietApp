@@ -13,21 +13,24 @@ namespace DietApp.UI.ViewModels;
 /// con barra deslizadora (50% a 95%), limites diarios cuantitativos de los 7 minerales diana (K, P, Na, Ca, Mg, Fe, Zn)
 /// con interruptores individuales de activacion, restauracion a directrices KDOQI/USDA y auditoria de la base local.
 /// Por que se tomo esta decision: Centraliza en la capa de presentacion la configuracion del paciente
-/// garantizando sincronizacion en tiempo real con ILocalizationService, IThemeService e IMineralAlertService.
+/// garantizando sincronizacion en tiempo real con ILocalizationService, IThemeService, IMineralAlertService e IProteinGoalService.
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly ILocalizationService _localizationService;
     private readonly IMineralAlertService _mineralAlertService;
+    private readonly IProteinGoalService _proteinGoalService;
     private readonly IThemeService _themeService;
 
     public SettingsViewModel(
         ILocalizationService localizationService,
         IMineralAlertService mineralAlertService,
+        IProteinGoalService proteinGoalService,
         IThemeService themeService)
     {
         _localizationService = localizationService;
         _mineralAlertService = mineralAlertService;
+        _proteinGoalService = proteinGoalService;
         _themeService = themeService;
 
         LoadSettings();
@@ -60,7 +63,14 @@ public partial class SettingsViewModel : ObservableObject
 
     public string WarningThresholdDisplay => $"{WarningThresholdPercent:F0}";
 
-    // 4. Limites de los 7 Minerales Criticos
+    // 4. Meta de Proteina y Limites de Minerales
+    [ObservableProperty]
+    private bool _isProteinGoalEnabled = true;
+
+    [ObservableProperty]
+    private string _proteinGoalGramsText = "60";
+
+    // Limites de los 7 Minerales Criticos
     [ObservableProperty]
     private bool _isPotassiumEnabled = true;
 
@@ -125,6 +135,10 @@ public partial class SettingsViewModel : ObservableObject
         // Cargar Umbral de Alerta
         double wp = _mineralAlertService.WarningPercentage;
         WarningThresholdPercent = wp >= 50.0 && wp <= 95.0 ? wp : 80.0;
+
+        // Cargar Meta de Proteina
+        IsProteinGoalEnabled = _proteinGoalService.IsProteinGoalEnabled;
+        ProteinGoalGramsText = _proteinGoalService.DailyProteinGoalGrams.ToString("F0", CultureInfo.InvariantCulture);
 
         // Cargar Limites de Minerales
         var thresholds = _mineralAlertService.GetThresholds();
@@ -242,6 +256,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
+            // Guardar Meta de Proteina
+            if (double.TryParse(ProteinGoalGramsText, NumberStyles.Any, CultureInfo.InvariantCulture, out var protein) && protein >= 0)
+            {
+                _proteinGoalService.SetDailyProteinGoal(protein, IsProteinGoalEnabled);
+            }
+
             // Guardar Umbral Preventivo
             _mineralAlertService.SetWarningPercentage(WarningThresholdPercent);
 
@@ -285,6 +305,10 @@ public partial class SettingsViewModel : ObservableObject
 
         if (confirm)
         {
+            _proteinGoalService.ResetToDefault();
+            IsProteinGoalEnabled = true;
+            ProteinGoalGramsText = "60";
+
             WarningThresholdPercent = 80.0;
 
             IsPotassiumEnabled = true;
@@ -330,6 +354,7 @@ public partial class SettingsViewModel : ObservableObject
         if (Shell.Current != null)
         {
             string guide = "Directrices Clínicas de Referencia:\n\n" +
+                           "• Proteína: 0.6 - 0.8 g/kg/día (aprox. 50 - 70 g/día según estadio y directrices KDOQI 2024)\n" +
                            "• Potasio: Máximo 2000 mg/día (Estadios 3-5 ERC)\n" +
                            "• Fósforo: 800 - 1000 mg/día con relación P/Proteína óptima\n" +
                            "• Sodio: < 1500 - 2000 mg/día para control tensional y volemia\n" +

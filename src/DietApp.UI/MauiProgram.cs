@@ -74,6 +74,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<IMineralAlertStorage, MauiPreferencesMineralAlertStorage>();
         builder.Services.AddSingleton<IMineralAlertService, MineralAlertService>();
 
+        // Metas Nutricionales y Proteina
+        builder.Services.AddSingleton<IProteinGoalStorage, MauiPreferencesProteinGoalStorage>();
+        builder.Services.AddSingleton<IProteinGoalService, ProteinGoalService>();
+
         // Gestion de Tema Visual (Modo Claro, Modo Oscuro, Sistema)
         builder.Services.AddSingleton<IThemeService, AppThemeService>();
 

@@ -271,7 +271,7 @@
                                                FontAttributes="Bold"
                                                HorizontalTextAlignment="Center"
                                                TextColor="{StaticResource StitchOnPrimaryContainer}" />
-                                        <Label Text="{Binding TotalProteinGrams, StringFormat='{0:0.#} g'}"
+                                        <Label Text="{Binding FormattedProteinStatus}"
                                                FontFamily="Inter"
                                                FontSize="13"
                                                FontAttributes="Bold"

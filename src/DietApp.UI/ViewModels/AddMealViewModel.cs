@@ -22,6 +22,7 @@ public partial class AddMealViewModel : ObservableObject
     private readonly IMealTrackingService _mealTrackingService;
     private readonly IFoodCatalogService _catalogService;
     private readonly IRecipeService _recipeService;
+    private readonly IProteinGoalService _proteinGoalService;
 
     private List<FoodItemDto> _cachedFoods = new();
     private List<RecipeDto> _cachedRecipes = new();
@@ -29,11 +30,13 @@ public partial class AddMealViewModel : ObservableObject
     public AddMealViewModel(
         IMealTrackingService mealTrackingService,
         IFoodCatalogService catalogService,
-        IRecipeService recipeService)
+        IRecipeService recipeService,
+        IProteinGoalService proteinGoalService)
     {
         _mealTrackingService = mealTrackingService;
         _catalogService = catalogService;
         _recipeService = recipeService;
+        _proteinGoalService = proteinGoalService;
 
         SetMealType(MealType.Lunch);
         UpdateFormattedDateTime();
@@ -424,9 +427,11 @@ public partial class AddMealViewModel : ObservableObject
         ProjectedCalories = Math.Round(cal, 0);
         ProjectedProtein = Math.Round(prot, 1);
 
-        // Metas referenciales del prototipo Stitch (2000 kcal, 75g proteina)
+        // Metas nutricionales diarias
         double targetCalories = 2000;
-        double targetProtein = 75;
+        double targetProtein = _proteinGoalService.IsProteinGoalEnabled && _proteinGoalService.DailyProteinGoalGrams > 0
+            ? _proteinGoalService.DailyProteinGoalGrams
+            : 60.0;
 
         double calPct = targetCalories > 0 ? (ProjectedCalories / targetCalories) * 100 : 0;
         CaloriesProgress = Math.Min(1.0, calPct / 100.0);
@@ -434,7 +439,7 @@ public partial class AddMealViewModel : ObservableObject
 
         double protPct = targetProtein > 0 ? (ProjectedProtein / targetProtein) * 100 : 0;
         ProteinProgress = Math.Min(1.0, protPct / 100.0);
-        FormattedProteinTarget = $"{Math.Round(protPct, 0)}% meta diaria (75g)";
+        FormattedProteinTarget = $"{Math.Round(protPct, 0)}% meta diaria ({targetProtein:0.#}g)";
 
         // Minerales
         PotassiumMg = minerals.TryGetValue(MineralType.Potassium, out var k) ? Math.Round(k, 1) : 0;
