@@ -29,8 +29,8 @@ public partial class SettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(EnglishBorderThickness))]
     public partial bool IsEnglishSelected { get; set; }
 
-    public Color SpanishBorderColor => IsSpanishSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
-    public Color EnglishBorderColor => IsEnglishSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
+    public Color SpanishBorderColor => IsSpanishSelected ? Color.FromArgb("#84cc16") : Color.FromArgb("#CBD5E1");
+    public Color EnglishBorderColor => IsEnglishSelected ? Color.FromArgb("#84cc16") : Color.FromArgb("#CBD5E1");
 
     public double SpanishBorderThickness => IsSpanishSelected ? 2.5 : 1.0;
     public double EnglishBorderThickness => IsEnglishSelected ? 2.5 : 1.0;
@@ -50,9 +50,9 @@ public partial class SettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(SystemBorderThickness))]
     public partial bool IsSystemSelected { get; set; }
 
-    public Color LightBorderColor => IsLightSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
-    public Color DarkBorderColor => IsDarkSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
-    public Color SystemBorderColor => IsSystemSelected ? Color.FromArgb("#ef713f") : Color.FromArgb("#CBD5E1");
+    public Color LightBorderColor => IsLightSelected ? Color.FromArgb("#84cc16") : Color.FromArgb("#CBD5E1");
+    public Color DarkBorderColor => IsDarkSelected ? Color.FromArgb("#84cc16") : Color.FromArgb("#CBD5E1");
+    public Color SystemBorderColor => IsSystemSelected ? Color.FromArgb("#84cc16") : Color.FromArgb("#CBD5E1");
 
     public double LightBorderThickness => IsLightSelected ? 2.5 : 1.0;
     public double DarkBorderThickness => IsDarkSelected ? 2.5 : 1.0;
