@@ -313,7 +313,7 @@
                                             <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLowest}}" />
                                         </DataTrigger>
                                     </Border.Triggers>
-                                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
                                         <Label Text="{x:Static helpers:MaterialIconFont.LightMode}"
                                                Style="{StaticResource MaterialIconStyle}"
                                                FontSize="20"
@@ -325,6 +325,13 @@
                                                FontAttributes="Bold"
                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
                                                HorizontalOptions="Center" />
+                                        <Label Text="Activo"
+                                               FontFamily="Inter"
+                                               FontSize="9"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource StitchPrimary}"
+                                               HorizontalOptions="Center"
+                                               IsVisible="{Binding IsLightThemeSelected}" />
                                     </VerticalStackLayout>
                                 </Border>
 
@@ -347,7 +354,7 @@
                                             <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLowest}}" />
                                         </DataTrigger>
                                     </Border.Triggers>
-                                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
                                         <Label Text="{x:Static helpers:MaterialIconFont.DarkMode}"
                                                Style="{StaticResource MaterialIconStyle}"
                                                FontSize="20"
@@ -358,6 +365,11 @@
                                                FontSize="11"
                                                FontAttributes="Bold"
                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="OLED"
+                                               FontFamily="Inter"
+                                               FontSize="9"
+                                               TextColor="{StaticResource StitchOutline}"
                                                HorizontalOptions="Center" />
                                     </VerticalStackLayout>
                                 </Border>
@@ -381,7 +393,7 @@
                                             <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLowest}}" />
                                         </DataTrigger>
                                     </Border.Triggers>
-                                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
                                         <Label Text="{x:Static helpers:MaterialIconFont.Devices}"
                                                Style="{StaticResource MaterialIconStyle}"
                                                FontSize="20"
@@ -392,6 +404,11 @@
                                                FontSize="11"
                                                FontAttributes="Bold"
                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="Auto"
+                                               FontFamily="Inter"
+                                               FontSize="9"
+                                               TextColor="{StaticResource StitchOutline}"
                                                HorizontalOptions="Center" />
                                     </VerticalStackLayout>
                                 </Border>
@@ -713,26 +730,51 @@
 
                     <!-- Botonera de Accion Clinica -->
                     <VerticalStackLayout Spacing="8" Margin="0, 4, 0, 0">
-                        <Button Text="Guardar Límites Clínicos"
-                                Command="{Binding SaveClinicalLimitsCommand}"
-                                FontFamily="Inter"
-                                FontSize="13"
-                                FontAttributes="Bold"
+                        <Border StrokeShape="RoundRectangle 14"
+                                StrokeThickness="0"
+                                Background="{StaticResource StitchPrimaryContainer}"
                                 HeightRequest="48"
-                                CornerRadius="12"
-                                BackgroundColor="{StaticResource StitchPrimaryContainer}"
-                                TextColor="{StaticResource StitchOnPrimaryContainer}" />
+                                Padding="16, 0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SaveClinicalLimitsCommand}" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{x:Static helpers:MaterialIconFont.Save}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="20"
+                                       TextColor="{StaticResource StitchOnPrimaryContainer}"
+                                       VerticalOptions="Center" />
+                                <Label Text="Guardar Límites Clínicos"
+                                       FontFamily="Inter"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource StitchOnPrimaryContainer}"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
 
-                        <Button Text="Restablecer Valores por Defecto (Guía Clínica USDA)"
-                                Command="{Binding ResetDefaultsCommand}"
-                                FontFamily="Inter"
-                                FontSize="12"
+                        <Border StrokeShape="RoundRectangle 14"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                 HeightRequest="44"
-                                CornerRadius="12"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
-                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
-                                BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                                BorderWidth="1" />
+                                Padding="16, 0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ResetDefaultsCommand}" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{x:Static helpers:MaterialIconFont.RestartAlt}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="18"
+                                       TextColor="{StaticResource StitchOutline}"
+                                       VerticalOptions="Center" />
+                                <Label Text="Restablecer Valores por Defecto (Guía Clínica USDA)"
+                                       FontFamily="Inter"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
