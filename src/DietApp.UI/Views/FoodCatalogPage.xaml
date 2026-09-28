@@ -6,95 +6,178 @@
              xmlns:loc="clr-namespace:DietApp.UI.Localization"
              x:Class="DietApp.UI.Views.FoodCatalogPage"
              x:DataType="vm:FoodCatalogViewModel"
-             Title="{loc:Translate FoodCatalog_Title}">
+             Title="{loc:Translate FoodCatalog_Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceWarm}, Dark={StaticResource Black}}">
 
     <!--
-    Como funciona: Vista que permite consultar alimentos y aplicar filtros avanzados
-    por concentracion de minerales (fosforo, potasio, sodio, etc.) y texto.
-    Por que se tomo esta decision: Responde a la necesidad central del usuario de poder
-    filtrar de forma efectiva alimentos segun su aporte mineral antes de incluirlos en comidas.
+    Como funciona: Catalogo clinico de alimentos basado en el diseno Stitch 'Clinical Nutrition Ergonomics'.
+    Permite consultar 363+ alimentos fundacionales de USDA FoodData Central con busqueda rapida,
+    filtros parametricos por rangos cuantitativos de minerales (min/max mg), ordenamiento por proteina
+    y presentacion en tarjetas Bento con pastillas nutricionales.
+    Por que se tomo esta decision: Permite una localizacion instantanea de ingredientes idoneos
+    para dietas renales y restricciones metabolicas con objetivos tactiles de 48dp.
     -->
 
     <Grid RowDefinitions="Auto, *">
-        <!-- Panel de Filtro de Minerales -->
+        <!-- 1. Panel Clinico de Busqueda y Filtro de Minerales -->
         <Border Grid.Row="0"
-                Margin="12"
-                Padding="14"
-                StrokeShape="RoundRectangle 12"
+                Margin="16, 12, 16, 8"
+                Padding="16"
+                StrokeShape="RoundRectangle 16"
                 Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
                 StrokeThickness="1"
-                Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}">
-            <VerticalStackLayout Spacing="10">
-                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                    <Label Grid.Column="0"
-                           Text="{loc:Translate FoodCatalog_FilterTitle}"
-                           FontAttributes="Bold"
-                           FontSize="16"
-                           VerticalOptions="Center" />
+                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="DIETAPP • BASE DE DATOS USDA"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryDark}" />
+                        <Label Text="{loc:Translate FoodCatalog_Title}"
+                               FontAttributes="Bold"
+                               FontSize="20"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                        <Label Text="Base de Datos Clínica USDA / Local"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                    </VerticalStackLayout>
 
                     <Button Grid.Column="1"
                             Text="{loc:Translate FoodCatalog_NewFood}"
                             Command="{Binding NavigateToAddFoodCommand}"
-                            FontAttributes="Bold"
-                            FontSize="12"
-                            HeightRequest="44"
-                            MinimumHeightRequest="44"
-                            Padding="12, 0"
+                            Style="{StaticResource StitchPrimaryButtonStyle}"
+                            HeightRequest="48"
+                            MinimumHeightRequest="48"
+                            Padding="16, 0"
                             VerticalOptions="Center" />
                 </Grid>
 
-                <!-- Buscador de texto -->
-                <SearchBar Placeholder="{loc:Translate FoodCatalog_SearchName}"
-                           Text="{Binding SearchText}"
-                           SearchCommand="{Binding ApplyFilterCommand}" />
+                <!-- Buscador Clinico de Texto -->
+                <Border StrokeShape="RoundRectangle 14"
+                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                        StrokeThickness="1"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                        Padding="4, 0">
+                    <SearchBar Placeholder="{loc:Translate FoodCatalog_SearchName}"
+                               Text="{Binding SearchText}"
+                               SearchCommand="{Binding ApplyFilterCommand}"
+                               BackgroundColor="Transparent"
+                               CancelButtonColor="{StaticResource PrimaryDark}"
+                               HeightRequest="48" />
+                </Border>
 
-                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
-                    <!-- Selector de Mineral / Nutriente -->
-                    <VerticalStackLayout Grid.Column="0">
-                        <Label Text="{loc:Translate FoodCatalog_Mineral}" FontSize="12" TextColor="Gray" />
-                        <Picker ItemsSource="{Binding MineralOptions}"
-                                SelectedItem="{Binding SelectedMineralName}" />
+                <!-- Panel Parametrico de Rango de Minerales -->
+                <Border StrokeShape="RoundRectangle 14"
+                        Padding="12"
+                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                        StrokeThickness="1"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Filtro Paramétrico Nutricional"
+                               FontAttributes="Bold"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+
+                        <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                            <!-- Selector de Mineral / Compuesto -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{loc:Translate FoodCatalog_Mineral}"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Outline}" />
+                                <Border StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource BorderWarmLight}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark=#2a2a35}"
+                                        Padding="6, 0">
+                                    <Picker ItemsSource="{Binding MineralOptions}"
+                                            SelectedItem="{Binding SelectedMineralName}"
+                                            HeightRequest="44"
+                                            FontSize="12" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Minimo en mg/g -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="{loc:Translate FoodCatalog_MinMg}"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Outline}" />
+                                <Border StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource BorderWarmLight}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark=#2a2a35}"
+                                        Padding="6, 0">
+                                    <Entry Placeholder="0"
+                                           Keyboard="Numeric"
+                                           Text="{Binding MinimumMilligramsText}"
+                                           HeightRequest="44"
+                                           FontSize="13" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Maximo en mg/g -->
+                            <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                <Label Text="{loc:Translate FoodCatalog_MaxMg}"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Outline}" />
+                                <Border StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource BorderWarmLight}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark=#2a2a35}"
+                                        Padding="6, 0">
+                                    <Entry Placeholder="Max"
+                                           Keyboard="Numeric"
+                                           Text="{Binding MaximumMilligramsText}"
+                                           HeightRequest="44"
+                                           FontSize="13" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Selector de Ordenamiento -->
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate FoodCatalog_SortTitle}"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Outline}"
+                                   VerticalOptions="Center" />
+                            <Border Grid.Column="1"
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="{StaticResource BorderWarmLight}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark=#2a2a35}"
+                                    Padding="6, 0">
+                                <Picker ItemsSource="{Binding SortOptions}"
+                                        SelectedItem="{Binding SelectedSortOption}"
+                                        HeightRequest="44"
+                                        FontSize="12" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Botones de Accion de Filtro -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Button Grid.Column="0"
+                                    Text="{loc:Translate FoodCatalog_ResetFilters}"
+                                    Command="{Binding ClearFilterCommand}"
+                                    Style="{StaticResource StitchNeutralButtonStyle}"
+                                    HeightRequest="44"
+                                    MinimumHeightRequest="44"
+                                    FontSize="13" />
+
+                            <Button Grid.Column="1"
+                                    Text="{loc:Translate FoodCatalog_ApplyFilters}"
+                                    Command="{Binding ApplyFilterCommand}"
+                                    Style="{StaticResource StitchPrimaryButtonStyle}"
+                                    HeightRequest="44"
+                                    MinimumHeightRequest="44"
+                                    FontSize="13" />
+                        </Grid>
                     </VerticalStackLayout>
-
-                    <!-- Minimo -->
-                    <VerticalStackLayout Grid.Column="1">
-                        <Label Text="{loc:Translate FoodCatalog_MinMg}" FontSize="12" TextColor="Gray" />
-                        <Entry Placeholder="0"
-                               Keyboard="Numeric"
-                               Text="{Binding MinimumMilligramsText}" />
-                    </VerticalStackLayout>
-
-                    <!-- Maximo -->
-                    <VerticalStackLayout Grid.Column="2">
-                        <Label Text="{loc:Translate FoodCatalog_MaxMg}" FontSize="12" TextColor="Gray" />
-                        <Entry Placeholder="Max"
-                               Keyboard="Numeric"
-                               Text="{Binding MaximumMilligramsText}" />
-                    </VerticalStackLayout>
-                </Grid>
-
-                <!-- Selector de Ordenamiento -->
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
-                    <Label Grid.Column="0"
-                           Text="{loc:Translate FoodCatalog_SortTitle}"
-                           FontSize="12"
-                           TextColor="Gray"
-                           VerticalOptions="Center" />
-                    <Picker Grid.Column="1"
-                            ItemsSource="{Binding SortOptions}"
-                            SelectedItem="{Binding SelectedSortOption}" />
-                </Grid>
-
-                <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
-                    <Button Text="{loc:Translate FoodCatalog_ResetFilters}"
-                            Command="{Binding ClearFilterCommand}"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#495057, Dark=#DEE2E6}" />
-
-                    <Button Text="{loc:Translate FoodCatalog_ApplyFilters}"
-                            Command="{Binding ApplyFilterCommand}"
-                            FontAttributes="Bold" />
-                </HorizontalStackLayout>
+                </Border>
             </VerticalStackLayout>
         </Border>
 
@@ -102,70 +185,88 @@
         <ActivityIndicator Grid.Row="1"
                            IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
-                           Color="{StaticResource Primary}"
+                           Color="{StaticResource PrimaryDark}"
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-        <!-- Lista de Alimentos con perfil de minerales -->
+        <!-- 2. Lista de Alimentos con Perfil Nutricional -->
         <CollectionView Grid.Row="1"
                         ItemsSource="{Binding Foods}"
-                        Margin="12,0,12,12">
+                        Margin="16, 4, 16, 16">
             <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center"
-                                     VerticalOptions="Center"
-                                     Spacing="12"
-                                     Padding="30">
-                    <Label Text="{loc:Translate FoodCatalog_Empty}"
-                           HorizontalTextAlignment="Center"
-                           TextColor="Gray"
-                           FontSize="15" />
-                </VerticalStackLayout>
+                <Border StrokeShape="RoundRectangle 16"
+                        Padding="28"
+                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                        StrokeThickness="1"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                        <Label Text="{loc:Translate FoodCatalog_Empty}"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{StaticResource Outline}"
+                               FontSize="14" />
+                        <Button Text="{loc:Translate FoodCatalog_ResetFilters}"
+                                Command="{Binding ClearFilterCommand}"
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="dto:FoodItemDto">
-                    <Border Margin="0, 0, 0, 10"
-                            Padding="14"
-                            StrokeShape="RoundRectangle 10"
+                    <Border Margin="0, 0, 0, 12"
+                            Padding="16"
+                            StrokeShape="RoundRectangle 16"
                             Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
                             StrokeThickness="1"
-                            Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}">
-                        <VerticalStackLayout Spacing="6">
-                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                        <VerticalStackLayout Spacing="8">
+                            <!-- Cabecera de Alimento con Badge de Proteina -->
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                                 <Label Grid.Column="0"
                                        Text="{Binding Name}"
                                        FontAttributes="Bold"
-                                       FontSize="17"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
                                        VerticalOptions="Center" />
 
                                 <Border Grid.Column="1"
-                                        Padding="8, 3"
-                                        StrokeShape="RoundRectangle 6"
-                                        Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                        Padding="10, 4"
+                                        StrokeShape="RoundRectangle 9999"
+                                        Background="{AppThemeBinding Light={StaticResource MineralProteinBg}, Dark=#1e2d14}"
+                                        Stroke="{StaticResource Primary}"
+                                        StrokeThickness="1"
                                         VerticalOptions="Center">
                                     <Label Text="{Binding ProteinBadgeText}"
-                                           FontSize="12"
+                                           FontSize="11"
                                            FontAttributes="Bold"
-                                           TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                           TextColor="{StaticResource OnPrimaryContainer}" />
                                 </Border>
                             </Grid>
 
+                            <!-- Subtitulo resumen de porcion y calorias -->
                             <Label Text="{Binding SubtitleSummary}"
-                                   FontSize="13"
-                                   TextColor="Gray" />
+                                   FontSize="12"
+                                   TextColor="{StaticResource Outline}" />
 
-                            <!-- Listado horizontal de minerales presentes -->
+                            <!-- Pastillas de Minerales Aportados (Pill Matrix) -->
                             <FlexLayout BindableLayout.ItemsSource="{Binding Minerals}"
                                         Wrap="Wrap"
-                                        Margin="0, 6, 0, 0">
+                                        Margin="0, 4, 0, 0">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="dto:MineralAmountDto">
-                                        <Border Margin="0, 2, 8, 4"
-                                                Padding="8, 3"
-                                                StrokeShape="RoundRectangle 6"
-                                                Background="{AppThemeBinding Light=#FFF1EA, Dark=#26262B}">
+                                        <Border Margin="0, 2, 6, 4"
+                                                Padding="8, 4"
+                                                StrokeShape="RoundRectangle 9999"
+                                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                                StrokeThickness="1"
+                                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}">
                                             <Label Text="{Binding DisplayText}"
-                                                   FontSize="12"
+                                                   FontSize="11"
                                                    FontAttributes="Bold"
                                                    TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                         </Border>
