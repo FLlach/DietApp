@@ -3,10 +3,9 @@ using DietApp.UI.ViewModels;
 namespace DietApp.UI.Views;
 
 /// <summary>
-/// Como funciona: Code-behind de AddMealPage. Conecta el AddMealViewModel e inicia la carga
-/// de alimentos disponibles cada vez que el usuario ingresa a la pantalla.
-/// Por que se tomo esta decision: Permite que el selector de alimentos contemple inmediatamente
-/// cualquier nuevo alimento que el usuario haya guardado previamente en el catalogo.
+/// Como funciona: Code-behind de AddMealPage. Conecta la pagina con su ViewModel e inicializa
+/// el cache de alimentos y recetas para busqueda rapida en memoria.
+/// Por que se tomo esta decision: Asegura separacion estricta MVVM sin acoplamientos ni dependencias directas en la vista.
 /// </summary>
 public partial class AddMealPage : ContentPage
 {
@@ -22,6 +21,6 @@ public partial class AddMealPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadAvailableFoodsAndRecipesAsync();
+        await _viewModel.InitializeAsync();
     }
 }

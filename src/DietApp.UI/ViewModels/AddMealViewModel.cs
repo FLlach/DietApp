@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DietApp.Application.DTOs;
@@ -9,170 +10,467 @@ using DietApp.UI.Models;
 namespace DietApp.UI.ViewModels;
 
 /// <summary>
-/// Como funciona: ViewModel para la creacion y registro de comidas consumidas. Permite seleccionar
-/// alimentos del catalogo, especificar la porcion exacta en gramos para cada uno, y ver la lista
-/// preliminar antes de persistir la comida completa.
-/// Por que se tomo esta decision: Emplea propiedades parciales de C# 13 con CommunityToolkit.Mvvm,
-/// asegurando compatibilidad WinRT y AOT mientras desacopla la vista de la capa de aplicacion.
+/// Como funciona: ViewModel para el Compositor de Comidas (AddMealPage) basado en el diseno Stitch.
+/// Permite seleccionar el momento del dia (Desayuno, Almuerzo, Cena, Snack), incorporar alimentos y recetas,
+/// ajustar porciones y gramajes en tiempo real con proyeccion inmediata del balance de macronutrientes
+/// y los 7 minerales criticos (K, P, Na, Ca, Mg, Fe, Zn), y confirmar la ingesta diaria en SQLite.
+/// Por que se tomo esta decision: Centraliza el calculo reactivo de la carga metabolica y garantiza
+/// una experiencia de usuario ergonomica de una sola mano.
 /// </summary>
 public partial class AddMealViewModel : ObservableObject
 {
-    private readonly IFoodCatalogService _foodCatalogService;
-    private readonly IRecipeService _recipeService;
     private readonly IMealTrackingService _mealTrackingService;
+    private readonly IFoodCatalogService _catalogService;
+    private readonly IRecipeService _recipeService;
 
-    [ObservableProperty]
-    public partial DateTime MealDate { get; set; } = DateTime.Today;
-
-    [ObservableProperty]
-    public partial string SelectedMealTypeName { get; set; } = "Almuerzo";
-
-    [ObservableProperty]
-    public partial string Note { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial FoodItemDto? SelectedFood { get; set; }
-
-    [ObservableProperty]
-    public partial string PortionGramsText { get; set; } = "100";
-
-    [ObservableProperty]
-    public partial RecipeDto? SelectedRecipe { get; set; }
-
-    [ObservableProperty]
-    public partial string RecipeServingsText { get; set; } = "1";
-
-    [ObservableProperty]
-    public partial string StatusMessage { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial bool IsBusy { get; set; }
-
-    public ObservableCollection<FoodItemDto> AvailableFoods { get; } = new();
-    public ObservableCollection<RecipeDto> AvailableRecipes { get; } = new();
-    public ObservableCollection<string> MealTypeOptions { get; } = new();
-    public ObservableCollection<MealDraftItemModel> SelectedItems { get; } = new();
+    private List<FoodItemDto> _cachedFoods = new();
+    private List<RecipeDto> _cachedRecipes = new();
 
     public AddMealViewModel(
-        IFoodCatalogService foodCatalogService,
-        IRecipeService recipeService,
-        IMealTrackingService mealTrackingService)
+        IMealTrackingService mealTrackingService,
+        IFoodCatalogService catalogService,
+        IRecipeService recipeService)
     {
-        _foodCatalogService = foodCatalogService ?? throw new ArgumentNullException(nameof(foodCatalogService));
-        _recipeService = recipeService ?? throw new ArgumentNullException(nameof(recipeService));
-        _mealTrackingService = mealTrackingService ?? throw new ArgumentNullException(nameof(mealTrackingService));
+        _mealTrackingService = mealTrackingService;
+        _catalogService = catalogService;
+        _recipeService = recipeService;
 
-        MealTypeOptions.Add("Desayuno");
-        MealTypeOptions.Add("Almuerzo");
-        MealTypeOptions.Add("Cena");
-        MealTypeOptions.Add("Merienda / Colacion");
-        MealTypeOptions.Add("Otro");
+        SetMealType(MealType.Lunch);
+        UpdateFormattedDateTime();
+    }
+
+    [ObservableProperty]
+    private MealType _selectedMealType = MealType.Lunch;
+
+    [ObservableProperty]
+    private bool _isBreakfastSelected;
+
+    [ObservableProperty]
+    private bool _isLunchSelected = true;
+
+    [ObservableProperty]
+    private bool _isDinnerSelected;
+
+    [ObservableProperty]
+    private bool _isSnackSelected;
+
+    [ObservableProperty]
+    private string _formattedDateTime = string.Empty;
+
+    [ObservableProperty]
+    private string _clinicalNotes = string.Empty;
+
+    [ObservableProperty]
+    private int _incorporatedItemsCount;
+
+    [ObservableProperty]
+    private bool _hasDraftItems;
+
+    [ObservableProperty]
+    private double _projectedCalories;
+
+    [ObservableProperty]
+    private double _projectedProtein;
+
+    [ObservableProperty]
+    private double _caloriesProgress;
+
+    [ObservableProperty]
+    private double _proteinProgress;
+
+    [ObservableProperty]
+    private string _formattedCaloriesTarget = "0% del objetivo (2000 kcal)";
+
+    [ObservableProperty]
+    private string _formattedProteinTarget = "0% meta diaria (75g)";
+
+    [ObservableProperty]
+    private double _potassiumMg;
+
+    [ObservableProperty]
+    private double _potassiumProgress;
+
+    [ObservableProperty]
+    private string _formattedPotassium = "0 mg";
+
+    [ObservableProperty]
+    private double _phosphorusMg;
+
+    [ObservableProperty]
+    private double _phosphorusProgress;
+
+    [ObservableProperty]
+    private string _formattedPhosphorus = "0 mg";
+
+    [ObservableProperty]
+    private double _sodiumMg;
+
+    [ObservableProperty]
+    private double _sodiumProgress;
+
+    [ObservableProperty]
+    private string _formattedSodium = "0 mg";
+
+    [ObservableProperty]
+    private string _formattedCalcium = "0 mg";
+
+    [ObservableProperty]
+    private string _formattedMagnesium = "0 mg";
+
+    [ObservableProperty]
+    private string _formattedIron = "0 mg";
+
+    [ObservableProperty]
+    private string _formattedZinc = "0 mg";
+
+    [ObservableProperty]
+    private bool _isPickerOpen;
+
+    [ObservableProperty]
+    private string _pickerTitle = string.Empty;
+
+    [ObservableProperty]
+    private string _searchQuery = string.Empty;
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    public ObservableCollection<MealComposerItemModel> DraftItems { get; } = new();
+    public ObservableCollection<PickerOptionModel> PickerItems { get; } = new();
+
+    public async Task InitializeAsync()
+    {
+        await LoadCatalogCacheAsync();
+        UpdateFormattedDateTime();
+        RecalculateProjections();
     }
 
     [RelayCommand]
-    public async Task LoadAvailableFoodsAndRecipesAsync()
+    private void SelectMealType(string typeStr)
     {
-        if (IsBusy) return;
+        if (Enum.TryParse<MealType>(typeStr, true, out var type))
+        {
+            SetMealType(type);
+        }
+    }
 
+    private void SetMealType(MealType type)
+    {
+        SelectedMealType = type;
+        IsBreakfastSelected = type == MealType.Breakfast;
+        IsLunchSelected = type == MealType.Lunch;
+        IsDinnerSelected = type == MealType.Dinner;
+        IsSnackSelected = type == MealType.Snack;
+    }
+
+    private void UpdateFormattedDateTime()
+    {
+        var now = DateTime.Now;
+        FormattedDateTime = $"Hoy, {now:HH:mm}";
+    }
+
+    private async Task LoadCatalogCacheAsync()
+    {
         try
         {
-            IsBusy = true;
-            var foodsTask = _foodCatalogService.GetAllFoodsAsync();
+            var foodsTask = _catalogService.GetAllFoodsAsync();
             var recipesTask = _recipeService.GetAllRecipesAsync();
-
             await Task.WhenAll(foodsTask, recipesTask);
 
-            AvailableFoods.Clear();
-            foreach (var food in await foodsTask)
+            _cachedFoods = (await foodsTask).ToList();
+            _cachedRecipes = (await recipesTask).ToList();
+        }
+        catch
+        {
+            // Resistencia ante fallos de conexion inicial
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenFoodPickerAsync()
+    {
+        if (_cachedFoods.Count == 0)
+        {
+            await LoadCatalogCacheAsync();
+        }
+
+        PickerTitle = "Buscar Alimento";
+        SearchQuery = string.Empty;
+        FilterPickerItems(false);
+        IsPickerOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task OpenRecipePickerAsync()
+    {
+        if (_cachedRecipes.Count == 0)
+        {
+            await LoadCatalogCacheAsync();
+        }
+
+        PickerTitle = "Añadir de Recetas";
+        SearchQuery = string.Empty;
+        FilterPickerItems(true);
+        IsPickerOpen = true;
+    }
+
+    [RelayCommand]
+    private void ClosePicker()
+    {
+        IsPickerOpen = false;
+        SearchQuery = string.Empty;
+    }
+
+    [RelayCommand]
+    private void SearchPicker(string query)
+    {
+        SearchQuery = query;
+        bool isRecipePicker = PickerTitle.Contains("Receta", StringComparison.OrdinalIgnoreCase);
+        FilterPickerItems(isRecipePicker);
+    }
+
+    private void FilterPickerItems(bool forRecipes)
+    {
+        PickerItems.Clear();
+
+        if (forRecipes)
+        {
+            var query = _cachedRecipes.AsEnumerable();
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
-                AvailableFoods.Add(food);
+                query = query.Where(r => r.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
             }
 
-            AvailableRecipes.Clear();
-            foreach (var recipe in await recipesTask)
+            foreach (var r in query.Take(30))
             {
-                AvailableRecipes.Add(recipe);
+                PickerItems.Add(new PickerOptionModel
+                {
+                    Id = r.Id,
+                    Title = r.Title,
+                    Subtitle = $"{r.Servings} porciones estándar",
+                    TagText = "Receta clínica",
+                    IsRecipe = true,
+                    Calories = Math.Round(r.CaloriesPerServing, 0),
+                    Protein = Math.Round(r.ProteinPerServing, 1)
+                });
             }
         }
-        finally
+        else
         {
-            IsBusy = false;
+            var query = _cachedFoods.AsEnumerable();
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                query = query.Where(f => f.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
+            }
+
+            foreach (var f in query.Take(30))
+            {
+                PickerItems.Add(new PickerOptionModel
+                {
+                    Id = f.Id,
+                    Title = f.Name,
+                    Subtitle = "Por 100g estándar",
+                    TagText = "Alimento base",
+                    IsRecipe = false,
+                    Calories = Math.Round(f.Calories, 0),
+                    Protein = Math.Round(f.ProteinGrams, 1)
+                });
+            }
         }
     }
 
     [RelayCommand]
-    public Task LoadAvailableFoodsAsync() => LoadAvailableFoodsAndRecipesAsync();
-
-    [RelayCommand]
-    public void AddFoodToMeal()
+    private void SelectPickerItem(PickerOptionModel item)
     {
-        if (SelectedFood == null)
+        if (item == null)
         {
-            StatusMessage = "Selecciona un alimento de la lista.";
             return;
         }
 
-        if (!double.TryParse(PortionGramsText, out double grams) || grams <= 0)
+        if (item.IsRecipe)
         {
-            StatusMessage = "Ingresa una porcion valida en gramos (mayor a 0).";
-            return;
+            var recipe = _cachedRecipes.FirstOrDefault(r => r.Id == item.Id);
+            if (recipe != null)
+            {
+                var composerItem = new MealComposerItemModel
+                {
+                    ItemId = recipe.Id,
+                    ItemName = recipe.Title,
+                    IsRecipe = true,
+                    TypeBadgeText = "Receta clínica",
+                    Subtitle = "1 ración estándar",
+                    TypeBadgeBackground = Color.FromArgb("#FFDBCF"),
+                    TypeBadgeTextColor = Color.FromArgb("#671F00"),
+                    Quantity = 1.0,
+                    BaseCaloriesPerUnit = recipe.CaloriesPerServing,
+                    BaseProteinPerUnit = recipe.ProteinPerServing
+                };
+
+                foreach (var m in recipe.MineralsPerServing)
+                {
+                    composerItem.BaseMineralsPerUnit[m.Type] = m.Milligrams;
+                }
+
+                composerItem.Recalculate();
+                DraftItems.Add(composerItem);
+            }
+        }
+        else
+        {
+            var food = _cachedFoods.FirstOrDefault(f => f.Id == item.Id);
+            if (food != null)
+            {
+                var composerItem = new MealComposerItemModel
+                {
+                    ItemId = food.Id,
+                    ItemName = food.Name,
+                    IsRecipe = false,
+                    TypeBadgeText = "Alimento base",
+                    Subtitle = "Cocido / Hervido",
+                    TypeBadgeBackground = Color.FromArgb("#EAEDFF"),
+                    TypeBadgeTextColor = Color.FromArgb("#131B2E"),
+                    Quantity = 100, // 100 gramos por defecto
+                    BaseCaloriesPerUnit = food.Calories / 100.0,
+                    BaseProteinPerUnit = food.ProteinGrams / 100.0
+                };
+
+                foreach (var m in food.Minerals)
+                {
+                    composerItem.BaseMineralsPerUnit[m.Type] = m.Milligrams / 100.0;
+                }
+
+                composerItem.Recalculate();
+                DraftItems.Add(composerItem);
+            }
         }
 
-        SelectedItems.Add(new MealDraftItemModel
-        {
-            ItemId = SelectedFood.Id,
-            ItemName = SelectedFood.Name,
-            Quantity = grams,
-            IsRecipe = false
-        });
-
-        StatusMessage = $"Agregado: {SelectedFood.Name} ({grams:F0}g)";
-        PortionGramsText = "100";
+        ClosePicker();
+        RecalculateProjections();
     }
 
     [RelayCommand]
-    public void AddRecipeToMeal()
+    private void IncreaseQuantity(MealComposerItemModel item)
     {
-        if (SelectedRecipe == null)
+        if (item == null) return;
+
+        if (item.IsRecipe)
         {
-            StatusMessage = "Selecciona una receta de la lista.";
-            return;
+            item.Quantity += 0.5;
+        }
+        else
+        {
+            item.Quantity += 25; // Salto de 25 gramos
         }
 
-        if (!double.TryParse(RecipeServingsText, out double servings) || servings <= 0)
-        {
-            StatusMessage = "Ingresa una cantidad valida de porciones (mayor a 0).";
-            return;
-        }
-
-        string servingWord = servings == 1 ? "1 porcion" : $"{servings:0.##} porciones";
-        SelectedItems.Add(new MealDraftItemModel
-        {
-            ItemId = SelectedRecipe.Id,
-            ItemName = $"{SelectedRecipe.Title} (Receta)",
-            Quantity = servings,
-            IsRecipe = true
-        });
-
-        StatusMessage = $"Receta agregada: {SelectedRecipe.Title} ({servingWord})";
-        RecipeServingsText = "1";
+        item.Recalculate();
+        RecalculateProjections();
     }
 
     [RelayCommand]
-    public void RemoveItem(MealDraftItemModel item)
+    private void DecreaseQuantity(MealComposerItemModel item)
+    {
+        if (item == null) return;
+
+        if (item.IsRecipe)
+        {
+            if (item.Quantity > 0.5)
+            {
+                item.Quantity -= 0.5;
+            }
+        }
+        else
+        {
+            if (item.Quantity > 25)
+            {
+                item.Quantity -= 25;
+            }
+        }
+
+        item.Recalculate();
+        RecalculateProjections();
+    }
+
+    [RelayCommand]
+    private void RemoveDraftItem(MealComposerItemModel item)
     {
         if (item != null)
         {
-            SelectedItems.Remove(item);
+            DraftItems.Remove(item);
+            RecalculateProjections();
         }
     }
 
-    [RelayCommand]
-    public async Task SaveMealAsync()
+    private void RecalculateProjections()
     {
-        if (SelectedItems.Count == 0)
+        IncorporatedItemsCount = DraftItems.Count;
+        HasDraftItems = DraftItems.Count > 0;
+
+        double cal = 0;
+        double prot = 0;
+        var minerals = new Dictionary<MineralType, double>();
+
+        foreach (var item in DraftItems)
         {
-            StatusMessage = "Agrega al menos un alimento o receta a la comida.";
+            cal += item.CalculatedCalories;
+            prot += item.CalculatedProtein;
+
+            foreach (var kvp in item.BaseMineralsPerUnit)
+            {
+                if (!minerals.ContainsKey(kvp.Key)) minerals[kvp.Key] = 0;
+                minerals[kvp.Key] += (kvp.Value * item.Quantity);
+            }
+        }
+
+        ProjectedCalories = Math.Round(cal, 0);
+        ProjectedProtein = Math.Round(prot, 1);
+
+        // Metas referenciales del prototipo Stitch (2000 kcal, 75g proteina)
+        double targetCalories = 2000;
+        double targetProtein = 75;
+
+        double calPct = targetCalories > 0 ? (ProjectedCalories / targetCalories) * 100 : 0;
+        CaloriesProgress = Math.Min(1.0, calPct / 100.0);
+        FormattedCaloriesTarget = $"{Math.Round(calPct, 0)}% del objetivo (2000 kcal)";
+
+        double protPct = targetProtein > 0 ? (ProjectedProtein / targetProtein) * 100 : 0;
+        ProteinProgress = Math.Min(1.0, protPct / 100.0);
+        FormattedProteinTarget = $"{Math.Round(protPct, 0)}% meta diaria (75g)";
+
+        // Minerales
+        PotassiumMg = minerals.TryGetValue(MineralType.Potassium, out var k) ? Math.Round(k, 1) : 0;
+        PotassiumProgress = Math.Min(1.0, PotassiumMg / 2000.0);
+        FormattedPotassium = $"{PotassiumMg:N0} mg";
+
+        PhosphorusMg = minerals.TryGetValue(MineralType.Phosphorus, out var p) ? Math.Round(p, 1) : 0;
+        PhosphorusProgress = Math.Min(1.0, PhosphorusMg / 850.0);
+        FormattedPhosphorus = $"{PhosphorusMg:N0} mg";
+
+        SodiumMg = minerals.TryGetValue(MineralType.Sodium, out var na) ? Math.Round(na, 1) : 0;
+        SodiumProgress = Math.Min(1.0, SodiumMg / 2000.0);
+        FormattedSodium = $"{SodiumMg:N0} mg";
+
+        double ca = minerals.TryGetValue(MineralType.Calcium, out var caVal) ? caVal : 0;
+        FormattedCalcium = $"{ca:N0} mg";
+
+        double mg = minerals.TryGetValue(MineralType.Magnesium, out var mgVal) ? mgVal : 0;
+        FormattedMagnesium = $"{mg:N0} mg";
+
+        double fe = minerals.TryGetValue(MineralType.Iron, out var feVal) ? feVal : 0;
+        FormattedIron = $"{fe:0.#} mg";
+
+        double zn = minerals.TryGetValue(MineralType.Zinc, out var znVal) ? znVal : 0;
+        FormattedZinc = $"{zn:0.#} mg";
+    }
+
+    [RelayCommand]
+    private async Task ConfirmAndSaveAsync()
+    {
+        if (DraftItems.Count == 0)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlertAsync("Aviso", "Añada al menos un alimento o receta para registrar la comida.", "Entendido");
+            }
             return;
         }
 
@@ -180,25 +478,37 @@ public partial class AddMealViewModel : ObservableObject
         {
             IsBusy = true;
 
-            var mealType = SelectedMealTypeName switch
+            var itemsToSave = DraftItems.Select(d => (id: d.ItemId, quantity: d.Quantity, isRecipe: d.IsRecipe));
+            await _mealTrackingService.RecordMealWithMixedItemsAsync(
+                DateTime.Today,
+                SelectedMealType,
+                ClinicalNotes,
+                itemsToSave);
+
+            if (Shell.Current != null)
             {
-                "Desayuno" => MealType.Breakfast,
-                "Almuerzo" => MealType.Lunch,
-                "Cena" => MealType.Dinner,
-                "Merienda / Colacion" => MealType.Snack,
-                _ => MealType.Other
-            };
-
-            var itemsToSave = SelectedItems.Select(i => (i.ItemId, i.Quantity, i.IsRecipe)).ToList();
-            await _mealTrackingService.RecordMealWithMixedItemsAsync(MealDate, mealType, Note, itemsToSave);
-
-            StatusMessage = "Comida registrada correctamente con el conteo de minerales actualizado.";
-            SelectedItems.Clear();
-            Note = string.Empty;
+                await Shell.Current.GoToAsync("..");
+            }
+        }
+        catch (Exception ex)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlertAsync("Error", $"No se pudo guardar la comida: {ex.Message}", "Aceptar");
+            }
         }
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DiscardAndCancelAsync()
+    {
+        if (Shell.Current != null)
+        {
+            await Shell.Current.GoToAsync("..");
         }
     }
 }

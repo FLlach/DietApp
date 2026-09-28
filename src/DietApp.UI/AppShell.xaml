@@ -5,19 +5,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:DietApp.UI.Views"
     xmlns:loc="clr-namespace:DietApp.UI.Localization"
-    Title="DietApp">
+    xmlns:helpers="clr-namespace:DietApp.UI.Helpers"
+    Title="DietApp"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarBackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+    Shell.TabBarForegroundColor="{StaticResource StitchPrimary}"
+    Shell.TabBarUnselectedColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
+    Shell.TabBarTitleColor="{StaticResource StitchPrimary}">
 
     <!--
-    Como funciona: Estructura central de navegacion basada en pestanas (TabBar).
-    Permite alternar de forma nativa entre el conteo diario, el catalogo con filtro
-    de minerales, el modulo de recetas culinarias, el registro de comidas, el alta de alimentos
-    y los ajustes de idioma y configuracion.
-    Por que se tomo esta decision: Shell provee navegacion declarativa, fluida y nativa
-    optimizada tanto para dispositivos moviles (Android e iOS) como para ventanas en escritorio.
+    Como funciona: Estructura central de navegacion basada en pestanas (TabBar) estilizada segun Stitch.
+    Configura iconos vectoriales nítidos de Material Symbols (PieChart, RestaurantMenu, MenuBook, Settings)
+    y colores de navegacion activos e inactivos acordes a la paleta 'Clinical Nutrition Ergonomics'.
+    Por que se tomo esta decision: Shell provee navegacion nativa y fluida en Android y Windows
+    sin requerir controles de navegacion manuales propensos a fugas o fallos de renderizado.
     -->
 
     <TabBar>
         <Tab x:Name="TabDailyTracking" Title="{loc:Translate Tab_DailyTracking}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialSymbols"
+                                 Glyph="{x:Static helpers:MaterialIconFont.PieChart}"
+                                 Size="22" />
+            </Tab.Icon>
             <ShellContent
                 Title="{loc:Translate Tab_DailyTracking}"
                 ContentTemplate="{DataTemplate views:MealTrackingPage}"
@@ -25,6 +35,11 @@
         </Tab>
 
         <Tab x:Name="TabRecipes" Title="{loc:Translate Tab_Recipes}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialSymbols"
+                                 Glyph="{x:Static helpers:MaterialIconFont.RestaurantMenu}"
+                                 Size="22" />
+            </Tab.Icon>
             <ShellContent
                 Title="{loc:Translate Tab_Recipes}"
                 ContentTemplate="{DataTemplate views:RecipesPage}"
@@ -32,6 +47,11 @@
         </Tab>
 
         <Tab x:Name="TabCatalog" Title="{loc:Translate Tab_Catalog}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialSymbols"
+                                 Glyph="{x:Static helpers:MaterialIconFont.MenuBook}"
+                                 Size="22" />
+            </Tab.Icon>
             <ShellContent
                 Title="{loc:Translate Tab_Catalog}"
                 ContentTemplate="{DataTemplate views:FoodCatalogPage}"
@@ -39,6 +59,11 @@
         </Tab>
 
         <Tab x:Name="TabSettings" Title="{loc:Translate Tab_Settings}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialSymbols"
+                                 Glyph="{x:Static helpers:MaterialIconFont.Settings}"
+                                 Size="22" />
+            </Tab.Icon>
             <ShellContent
                 Title="{loc:Translate Tab_Settings}"
                 ContentTemplate="{DataTemplate views:SettingsPage}"

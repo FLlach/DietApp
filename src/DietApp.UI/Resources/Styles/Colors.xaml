@@ -3,189 +3,148 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
+    <!--
+    Como funciona: Diccionario central de colores del sistema de diseno 'Clinical Nutrition Ergonomics' de Stitch.
+    Define tokens semanticos primarios, secundarios, contenedores tonales, paleta para los 7 minerales criticos
+    y soporte contrastado para modo claro y modo oscuro.
+    Por que se tomo esta decision: Centraliza los codigos hexadecimales oficiales de Stitch en Color y SolidColorBrush,
+    garantizando coherencia visual absoluta y compatibilidad nativa con Android y Windows.
+    -->
 
-    <!-- Sistema de Diseno Stitch: Clinical Nutrition Ergonomics -->
-    <!-- Colores Nucleares y Acentos -->
-    <Color x:Key="Primary">#84cc16</Color>
-    <Color x:Key="PrimaryDark">#416900</Color>
-    <Color x:Key="PrimaryDarkText">#102000</Color>
-    <Color x:Key="PrimaryFixed">#acf847</Color>
-    <Color x:Key="PrimaryFixedDim">#91db2a</Color>
-    <Color x:Key="OnPrimary">#ffffff</Color>
-    <Color x:Key="OnPrimaryContainer">#315200</Color>
-    <Color x:Key="PrimaryContainer">#84cc16</Color>
+    <!-- 1. Paleta Basica y Neutros -->
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+    <Color x:Key="Transparent">#00000000</Color>
 
-    <!-- Secundario (Coral Clinico / Excesos y Alertas Severas) -->
-    <Color x:Key="Secondary">#ef713f</Color>
-    <Color x:Key="SecondaryDark">#a53c0b</Color>
-    <Color x:Key="SecondaryDarkText">#ffffff</Color>
-    <Color x:Key="SecondaryContainer">#fc7b48</Color>
-    <Color x:Key="OnSecondary">#ffffff</Color>
-    <Color x:Key="OnSecondaryContainer">#671f00</Color>
-    <Color x:Key="SecondaryFixed">#ffdbcf</Color>
-    <Color x:Key="SecondaryFixedDim">#ffb59b</Color>
+    <!-- 2. Tokens Oficiales Stitch (Tema Claro) -->
+    <Color x:Key="StitchBackground">#FAF8FF</Color>
+    <Color x:Key="StitchSurface">#FAF8FF</Color>
+    <Color x:Key="StitchSurfaceDim">#D2D9F4</Color>
+    <Color x:Key="StitchSurfaceBright">#FAF8FF</Color>
+    <Color x:Key="StitchSurfaceContainerLowest">#FFFFFF</Color>
+    <Color x:Key="StitchSurfaceContainerLow">#F2F3FF</Color>
+    <Color x:Key="StitchSurfaceContainer">#EAEDFF</Color>
+    <Color x:Key="StitchSurfaceContainerHigh">#E2E7FF</Color>
+    <Color x:Key="StitchSurfaceContainerHighest">#DAE2FD</Color>
 
-    <!-- Terciario (Ambar Clinico / Avisos Preventivos y Limites Cercanos) -->
-    <Color x:Key="Tertiary">#f59e0b</Color>
-    <Color x:Key="TertiaryDark">#855300</Color>
-    <Color x:Key="TertiaryContainer">#fea518</Color>
-    <Color x:Key="OnTertiary">#ffffff</Color>
-    <Color x:Key="OnTertiaryContainer">#684000</Color>
-    <Color x:Key="TertiaryFixed">#ffddb8</Color>
-    <Color x:Key="TertiaryFixedDim">#ffb95f</Color>
+    <Color x:Key="StitchOnSurface">#131B2E</Color>
+    <Color x:Key="StitchOnSurfaceVariant">#424936</Color>
+    <Color x:Key="StitchInverseSurface">#283044</Color>
+    <Color x:Key="StitchInverseOnSurface">#EEF0FF</Color>
 
-    <!-- Superficies, Fondos y Contenedores -->
-    <Color x:Key="SurfaceWarm">#faf8ff</Color>
-    <Color x:Key="SurfaceLight">#faf8ff</Color>
-    <Color x:Key="SurfaceDark">#121214</Color>
-    <Color x:Key="Surface">#faf8ff</Color>
-    <Color x:Key="SurfaceDim">#d2d9f4</Color>
-    <Color x:Key="SurfaceBright">#faf8ff</Color>
-    <Color x:Key="SurfaceContainerLowest">#ffffff</Color>
-    <Color x:Key="SurfaceContainerLowestLight">#ffffff</Color>
-    <Color x:Key="SurfaceContainerLowestDark">#18181c</Color>
-    <Color x:Key="SurfaceContainerLow">#f2f3ff</Color>
-    <Color x:Key="SurfaceContainerLowLight">#f2f3ff</Color>
-    <Color x:Key="SurfaceContainerLowDark">#1c1c24</Color>
-    <Color x:Key="SurfaceContainer">#eaedff</Color>
-    <Color x:Key="SurfaceContainerLight">#eaedff</Color>
-    <Color x:Key="SurfaceContainerDark">#1c1c20</Color>
-    <Color x:Key="SurfaceContainerHigh">#e2e7ff</Color>
-    <Color x:Key="SurfaceContainerHighLight">#e2e7ff</Color>
-    <Color x:Key="SurfaceContainerHighDark">#23232c</Color>
-    <Color x:Key="SurfaceContainerHighest">#dae2fd</Color>
-    <Color x:Key="SurfaceContainerHighestLight">#dae2fd</Color>
-    <Color x:Key="SurfaceContainerHighestDark">#2c2c36</Color>
+    <Color x:Key="StitchOutline">#727A64</Color>
+    <Color x:Key="StitchOutlineVariant">#C1CAB0</Color>
+    <Color x:Key="StitchOutlineVariantSoft">#E2E8F0</Color>
 
-    <Color x:Key="CardBackgroundLight">#ffffff</Color>
-    <Color x:Key="CardBackgroundDark">#1c1c20</Color>
-    <Color x:Key="BorderWarmLight">#c1cab0</Color>
-    <Color x:Key="BorderWarmDark">#334155</Color>
+    <!-- 3. Roles Semanticos Primarios, Secundarios y Terciarios -->
+    <Color x:Key="StitchPrimary">#416900</Color>
+    <Color x:Key="StitchOnPrimary">#FFFFFF</Color>
+    <Color x:Key="StitchPrimaryContainer">#84CC16</Color>
+    <Color x:Key="StitchOnPrimaryContainer">#315200</Color>
+    <Color x:Key="StitchInversePrimary">#91DB2A</Color>
+    <Color x:Key="StitchPrimaryFixed">#ACF847</Color>
 
-    <!-- Tipografia y Contraste Clinico -->
-    <Color x:Key="ContrastDark">#131b2e</Color>
-    <Color x:Key="OnSurface">#131b2e</Color>
-    <Color x:Key="OnSurfaceLight">#131b2e</Color>
-    <Color x:Key="OnSurfaceDark">#ffffff</Color>
-    <Color x:Key="OnSurfaceVariant">#424936</Color>
-    <Color x:Key="OnSurfaceVariantLight">#424936</Color>
-    <Color x:Key="OnSurfaceVariantDark">#94a3b8</Color>
-    <Color x:Key="InverseSurface">#283044</Color>
-    <Color x:Key="InverseOnSurface">#eef0ff</Color>
-    <Color x:Key="Outline">#727a64</Color>
-    <Color x:Key="OutlineLight">#727a64</Color>
-    <Color x:Key="OutlineDark">#43483e</Color>
-    <Color x:Key="OutlineVariant">#c1cab0</Color>
+    <Color x:Key="StitchSecondary">#A53C0B</Color>
+    <Color x:Key="StitchOnSecondary">#FFFFFF</Color>
+    <Color x:Key="StitchSecondaryContainer">#FC7B48</Color>
+    <Color x:Key="StitchOnSecondaryContainer">#671F00</Color>
+    <Color x:Key="StitchSecondaryFixed">#FFDBCF</Color>
+    <Color x:Key="StitchSecondaryFixedDim">#FFB59B</Color>
+    <Color x:Key="StitchClinicalCoral">#EF713F</Color>
 
-    <!-- Matriz Tonal Especializada de 7 Minerales Clinicos -->
+    <Color x:Key="StitchTertiary">#855300</Color>
+    <Color x:Key="StitchOnTertiary">#FFFFFF</Color>
+    <Color x:Key="StitchTertiaryContainer">#FEA518</Color>
+    <Color x:Key="StitchOnTertiaryContainer">#684000</Color>
+    <Color x:Key="StitchTertiaryFixed">#FFDDB8</Color>
+    <Color x:Key="StitchTertiaryFixedDim">#FFB95F</Color>
+
+    <Color x:Key="StitchError">#BA1A1A</Color>
+    <Color x:Key="StitchOnError">#FFFFFF</Color>
+    <Color x:Key="StitchErrorContainer">#FFDAD6</Color>
+    <Color x:Key="StitchOnErrorContainer">#93000A</Color>
+
+    <!-- 4. Tokens Modo Oscuro -->
+    <Color x:Key="StitchDarkBackground">#0B0F19</Color>
+    <Color x:Key="StitchDarkSurface">#131B2E</Color>
+    <Color x:Key="StitchDarkSurfaceLowest">#1A2238</Color>
+    <Color x:Key="StitchDarkSurfaceLow">#1E2742</Color>
+    <Color x:Key="StitchDarkSurfaceContainer">#242E4C</Color>
+    <Color x:Key="StitchDarkOnSurface">#F1F5F9</Color>
+    <Color x:Key="StitchDarkOnSurfaceVariant">#94A3B8</Color>
+    <Color x:Key="StitchDarkOutline">#475569</Color>
+    <Color x:Key="StitchDarkOutlineVariant">#334155</Color>
+
+    <!-- 5. Paleta de los 7 Minerales Clinicos (Stitch Pill Matrix) -->
     <!-- Potasio (K) -->
-    <Color x:Key="MineralPotassiumBg">#FFF1ED</Color>
-    <Color x:Key="MineralPotassiumText">#C2410C</Color>
-    <Color x:Key="MineralPotassiumBorder">#FDBA74</Color>
+    <Color x:Key="MineralKContainer">#FFF1ED</Color>
+    <Color x:Key="MineralKText">#C2410C</Color>
+    <Color x:Key="MineralKBorder">#FDBA74</Color>
+
     <!-- Fosforo (P) -->
-    <Color x:Key="MineralPhosphorusBg">#FAF5FF</Color>
-    <Color x:Key="MineralPhosphorusText">#7E22CE</Color>
-    <Color x:Key="MineralPhosphorusBorder">#D8B4FE</Color>
+    <Color x:Key="MineralPContainer">#FAF5FF</Color>
+    <Color x:Key="MineralPText">#7E22CE</Color>
+    <Color x:Key="MineralPBorder">#D8B4FE</Color>
+
     <!-- Sodio (Na) -->
-    <Color x:Key="MineralSodiumBg">#EFF6FF</Color>
-    <Color x:Key="MineralSodiumText">#1D4ED8</Color>
-    <Color x:Key="MineralSodiumBorder">#93C5FD</Color>
+    <Color x:Key="MineralNaContainer">#EFF6FF</Color>
+    <Color x:Key="MineralNaText">#1D4ED8</Color>
+    <Color x:Key="MineralNaBorder">#93C5FD</Color>
+
     <!-- Calcio (Ca) -->
-    <Color x:Key="MineralCalciumBg">#F0FDFA</Color>
-    <Color x:Key="MineralCalciumText">#0F766E</Color>
-    <Color x:Key="MineralCalciumBorder">#99F6E4</Color>
+    <Color x:Key="MineralCaContainer">#F0FDFA</Color>
+    <Color x:Key="MineralCaText">#0F766E</Color>
+    <Color x:Key="MineralCaBorder">#99F6E4</Color>
+
     <!-- Magnesio (Mg) -->
-    <Color x:Key="MineralMagnesiumBg">#FFF1F2</Color>
-    <Color x:Key="MineralMagnesiumText">#BE123C</Color>
-    <Color x:Key="MineralMagnesiumBorder">#FECDD3</Color>
+    <Color x:Key="MineralMgContainer">#FFF1F2</Color>
+    <Color x:Key="MineralMgText">#BE123C</Color>
+    <Color x:Key="MineralMgBorder">#FECDD3</Color>
+
     <!-- Hierro (Fe) -->
-    <Color x:Key="MineralIronBg">#FEF3C7</Color>
-    <Color x:Key="MineralIronText">#B45309</Color>
-    <Color x:Key="MineralIronBorder">#FDE68A</Color>
+    <Color x:Key="MineralFeContainer">#FEF3C7</Color>
+    <Color x:Key="MineralFeText">#B45309</Color>
+    <Color x:Key="MineralFeBorder">#FDE68A</Color>
+
     <!-- Zinc (Zn) -->
-    <Color x:Key="MineralZincBg">#F1F5F9</Color>
-    <Color x:Key="MineralZincText">#334155</Color>
-    <Color x:Key="MineralZincBorder">#CBD5E1</Color>
+    <Color x:Key="MineralZnContainer">#F1F5F9</Color>
+    <Color x:Key="MineralZnText">#334155</Color>
+    <Color x:Key="MineralZnBorder">#CBD5E1</Color>
+
     <!-- Proteina -->
-    <Color x:Key="MineralProteinBg">#F4F9EA</Color>
+    <Color x:Key="MineralProteinContainer">#F7FEE7</Color>
     <Color x:Key="MineralProteinText">#315200</Color>
     <Color x:Key="MineralProteinBorder">#84CC16</Color>
 
-    <!-- Pildoras y Badges Nutricionales Generales -->
-    <Color x:Key="PillNeutralBackground">#ffffff</Color>
-    <Color x:Key="PillNeutralBorder">#c1cab0</Color>
-    <Color x:Key="PillNeutralText">#131b2e</Color>
-    <Color x:Key="PillCoralBackground">#ef713f</Color>
-    <Color x:Key="PillCoralText">#ffffff</Color>
-    <Color x:Key="PillLimeBackground">#84cc16</Color>
-    <Color x:Key="PillLimeText">#102000</Color>
+    <!-- 6. Pinceles (SolidColorBrush) para evitar conversiones en tiempo de ejecucion -->
+    <SolidColorBrush x:Key="StitchBackgroundBrush" Color="{StaticResource StitchBackground}" />
+    <SolidColorBrush x:Key="StitchSurfaceBrush" Color="{StaticResource StitchSurface}" />
+    <SolidColorBrush x:Key="StitchSurfaceContainerLowestBrush" Color="{StaticResource StitchSurfaceContainerLowest}" />
+    <SolidColorBrush x:Key="StitchSurfaceContainerLowBrush" Color="{StaticResource StitchSurfaceContainerLow}" />
+    <SolidColorBrush x:Key="StitchSurfaceContainerBrush" Color="{StaticResource StitchSurfaceContainer}" />
+    <SolidColorBrush x:Key="StitchSurfaceContainerHighBrush" Color="{StaticResource StitchSurfaceContainerHigh}" />
+    <SolidColorBrush x:Key="StitchSurfaceContainerHighestBrush" Color="{StaticResource StitchSurfaceContainerHighest}" />
 
-    <!-- Colores Semanticos de Nutricion, Accion y Alerta -->
-    <Color x:Key="HealthTeal">#0F766E</Color>
-    <Color x:Key="HealthTealDark">#14B8A6</Color>
-    <Color x:Key="SuccessGreen">#84cc16</Color>
-    <Color x:Key="SuccessGreenDark">#416900</Color>
-    <Color x:Key="AlertRed">#ba1a1a</Color>
-    <Color x:Key="AlertRedDark">#ffdad6</Color>
-    <Color x:Key="WarningAmber">#f59e0b</Color>
-    <Color x:Key="WarningAmberDark">#fea518</Color>
-    <Color x:Key="InfoBlue">#1D4ED8</Color>
-    <Color x:Key="InfoBlueDark">#93C5FD</Color>
-    <Color x:Key="SlateDark">#1E293B</Color>
-    <Color x:Key="SlateLight">#F8FAFC</Color>
-    <Color x:Key="BorderLight">#c1cab0</Color>
-    <Color x:Key="BorderDark">#334155</Color>
+    <SolidColorBrush x:Key="StitchPrimaryBrush" Color="{StaticResource StitchPrimary}" />
+    <SolidColorBrush x:Key="StitchPrimaryContainerBrush" Color="{StaticResource StitchPrimaryContainer}" />
+    <SolidColorBrush x:Key="StitchSecondaryBrush" Color="{StaticResource StitchSecondary}" />
+    <SolidColorBrush x:Key="StitchSecondaryContainerBrush" Color="{StaticResource StitchSecondaryContainer}" />
+    <SolidColorBrush x:Key="StitchTertiaryBrush" Color="{StaticResource StitchTertiary}" />
+    <SolidColorBrush x:Key="StitchTertiaryContainerBrush" Color="{StaticResource StitchTertiaryContainer}" />
+    <SolidColorBrush x:Key="StitchClinicalCoralBrush" Color="{StaticResource StitchClinicalCoral}" />
 
-    <Color x:Key="White">White</Color>
-    <Color x:Key="Black">#131b2e</Color>
-    <Color x:Key="Magenta">#ef713f</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#131b2e</Color>
+    <SolidColorBrush x:Key="StitchOnSurfaceBrush" Color="{StaticResource StitchOnSurface}" />
+    <SolidColorBrush x:Key="StitchOnSurfaceVariantBrush" Color="{StaticResource StitchOnSurfaceVariant}" />
+    <SolidColorBrush x:Key="StitchOutlineBrush" Color="{StaticResource StitchOutline}" />
+    <SolidColorBrush x:Key="StitchOutlineVariantBrush" Color="{StaticResource StitchOutlineVariant}" />
+    <SolidColorBrush x:Key="StitchOutlineVariantSoftBrush" Color="{StaticResource StitchOutlineVariantSoft}" />
 
-    <Color x:Key="Gray100">#F3EFEA</Color>
-    <Color x:Key="Gray200">#E5DFD9</Color>
-    <Color x:Key="Gray300">#C9C2BA</Color>
-    <Color x:Key="Gray400">#9E9891</Color>
-    <Color x:Key="Gray500">#6E6862</Color>
-    <Color x:Key="Gray600">#45413C</Color>
-    <Color x:Key="Gray900">#1C1B19</Color>
-    <Color x:Key="Gray950">#131b2e</Color>
+    <SolidColorBrush x:Key="MineralKContainerBrush" Color="{StaticResource MineralKContainer}" />
+    <SolidColorBrush x:Key="MineralPContainerBrush" Color="{StaticResource MineralPContainer}" />
+    <SolidColorBrush x:Key="MineralNaContainerBrush" Color="{StaticResource MineralNaContainer}" />
+    <SolidColorBrush x:Key="MineralCaContainerBrush" Color="{StaticResource MineralCaContainer}" />
+    <SolidColorBrush x:Key="MineralMgContainerBrush" Color="{StaticResource MineralMgContainer}" />
+    <SolidColorBrush x:Key="MineralFeContainerBrush" Color="{StaticResource MineralFeContainer}" />
+    <SolidColorBrush x:Key="MineralZnContainerBrush" Color="{StaticResource MineralZnContainer}" />
 
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
-    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
-    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
-    <SolidColorBrush x:Key="ContrastDarkBrush" Color="{StaticResource ContrastDark}"/>
-    <SolidColorBrush x:Key="SurfaceWarmBrush" Color="{StaticResource SurfaceWarm}"/>
-    <SolidColorBrush x:Key="CardBackgroundLightBrush" Color="{StaticResource CardBackgroundLight}"/>
-    <SolidColorBrush x:Key="CardBackgroundDarkBrush" Color="{StaticResource CardBackgroundDark}"/>
-    <SolidColorBrush x:Key="BorderWarmLightBrush" Color="{StaticResource BorderWarmLight}"/>
-    <SolidColorBrush x:Key="PillCoralBrush" Color="{StaticResource PillCoralBackground}"/>
-    <SolidColorBrush x:Key="PillLimeBrush" Color="{StaticResource PillLimeBackground}"/>
-    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
-    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
-    <SolidColorBrush x:Key="HealthTealBrush" Color="{StaticResource HealthTeal}"/>
-    <SolidColorBrush x:Key="SuccessGreenBrush" Color="{StaticResource SuccessGreen}"/>
-    <SolidColorBrush x:Key="AlertRedBrush" Color="{StaticResource AlertRed}"/>
-    <SolidColorBrush x:Key="WarningAmberBrush" Color="{StaticResource WarningAmber}"/>
-    <SolidColorBrush x:Key="InfoBlueBrush" Color="{StaticResource InfoBlue}"/>
-    <SolidColorBrush x:Key="OutlineLightBrush" Color="{StaticResource OutlineLight}"/>
-    <SolidColorBrush x:Key="OutlineDarkBrush" Color="{StaticResource OutlineDark}"/>
-    <SolidColorBrush x:Key="MineralPillPotassiumBrush" Color="{StaticResource MineralPotassiumText}"/>
-    <SolidColorBrush x:Key="MineralPillPhosphorusBrush" Color="{StaticResource MineralPhosphorusText}"/>
-    <SolidColorBrush x:Key="MineralPillSodiumBrush" Color="{StaticResource MineralSodiumText}"/>
-    <SolidColorBrush x:Key="MineralPillCalciumBrush" Color="{StaticResource MineralCalciumText}"/>
-    <SolidColorBrush x:Key="MineralPillMagnesiumBrush" Color="{StaticResource MineralMagnesiumText}"/>
-    <SolidColorBrush x:Key="MineralPillIronBrush" Color="{StaticResource MineralIronText}"/>
-    <SolidColorBrush x:Key="MineralPillZincBrush" Color="{StaticResource MineralZincText}"/>
-    <SolidColorBrush x:Key="MineralPillProteinBrush" Color="{StaticResource MineralProteinText}"/>
-
-    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
-    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
-    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
-    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
-    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
-    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
-    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
 </ResourceDictionary>
