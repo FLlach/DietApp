@@ -37,15 +37,26 @@
 
     <!-- Superficies, Fondos y Contenedores -->
     <Color x:Key="SurfaceWarm">#faf8ff</Color>
+    <Color x:Key="SurfaceLight">#faf8ff</Color>
     <Color x:Key="SurfaceDark">#121214</Color>
     <Color x:Key="Surface">#faf8ff</Color>
     <Color x:Key="SurfaceDim">#d2d9f4</Color>
     <Color x:Key="SurfaceBright">#faf8ff</Color>
     <Color x:Key="SurfaceContainerLowest">#ffffff</Color>
+    <Color x:Key="SurfaceContainerLowestLight">#ffffff</Color>
+    <Color x:Key="SurfaceContainerLowestDark">#18181c</Color>
     <Color x:Key="SurfaceContainerLow">#f2f3ff</Color>
+    <Color x:Key="SurfaceContainerLowLight">#f2f3ff</Color>
+    <Color x:Key="SurfaceContainerLowDark">#1c1c24</Color>
     <Color x:Key="SurfaceContainer">#eaedff</Color>
+    <Color x:Key="SurfaceContainerLight">#eaedff</Color>
+    <Color x:Key="SurfaceContainerDark">#1c1c20</Color>
     <Color x:Key="SurfaceContainerHigh">#e2e7ff</Color>
+    <Color x:Key="SurfaceContainerHighLight">#e2e7ff</Color>
+    <Color x:Key="SurfaceContainerHighDark">#23232c</Color>
     <Color x:Key="SurfaceContainerHighest">#dae2fd</Color>
+    <Color x:Key="SurfaceContainerHighestLight">#dae2fd</Color>
+    <Color x:Key="SurfaceContainerHighestDark">#2c2c36</Color>
 
     <Color x:Key="CardBackgroundLight">#ffffff</Color>
     <Color x:Key="CardBackgroundDark">#1c1c20</Color>
@@ -55,10 +66,16 @@
     <!-- Tipografia y Contraste Clinico -->
     <Color x:Key="ContrastDark">#131b2e</Color>
     <Color x:Key="OnSurface">#131b2e</Color>
+    <Color x:Key="OnSurfaceLight">#131b2e</Color>
+    <Color x:Key="OnSurfaceDark">#ffffff</Color>
     <Color x:Key="OnSurfaceVariant">#424936</Color>
+    <Color x:Key="OnSurfaceVariantLight">#424936</Color>
+    <Color x:Key="OnSurfaceVariantDark">#94a3b8</Color>
     <Color x:Key="InverseSurface">#283044</Color>
     <Color x:Key="InverseOnSurface">#eef0ff</Color>
     <Color x:Key="Outline">#727a64</Color>
+    <Color x:Key="OutlineLight">#727a64</Color>
+    <Color x:Key="OutlineDark">#43483e</Color>
     <Color x:Key="OutlineVariant">#c1cab0</Color>
 
     <!-- Matriz Tonal Especializada de 7 Minerales Clinicos -->
@@ -152,6 +169,16 @@
     <SolidColorBrush x:Key="AlertRedBrush" Color="{StaticResource AlertRed}"/>
     <SolidColorBrush x:Key="WarningAmberBrush" Color="{StaticResource WarningAmber}"/>
     <SolidColorBrush x:Key="InfoBlueBrush" Color="{StaticResource InfoBlue}"/>
+    <SolidColorBrush x:Key="OutlineLightBrush" Color="{StaticResource OutlineLight}"/>
+    <SolidColorBrush x:Key="OutlineDarkBrush" Color="{StaticResource OutlineDark}"/>
+    <SolidColorBrush x:Key="MineralPillPotassiumBrush" Color="{StaticResource MineralPotassiumText}"/>
+    <SolidColorBrush x:Key="MineralPillPhosphorusBrush" Color="{StaticResource MineralPhosphorusText}"/>
+    <SolidColorBrush x:Key="MineralPillSodiumBrush" Color="{StaticResource MineralSodiumText}"/>
+    <SolidColorBrush x:Key="MineralPillCalciumBrush" Color="{StaticResource MineralCalciumText}"/>
+    <SolidColorBrush x:Key="MineralPillMagnesiumBrush" Color="{StaticResource MineralMagnesiumText}"/>
+    <SolidColorBrush x:Key="MineralPillIronBrush" Color="{StaticResource MineralIronText}"/>
+    <SolidColorBrush x:Key="MineralPillZincBrush" Color="{StaticResource MineralZincText}"/>
+    <SolidColorBrush x:Key="MineralPillProteinBrush" Color="{StaticResource MineralProteinText}"/>
 
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
