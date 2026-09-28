@@ -89,7 +89,7 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
 
 * **Navegacion (`AppShell.xaml`)**:
   * Pestanas en `TabBar` (optimizadas a 4 pestanas nucleares para ergonomia movil):
-    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, banner reactivo de advertencias si se superan los limites maximos fijados por el usuario, detalle por comida y boton de accion rapida "+ Registrar Comida".
+    1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, cumplimiento porcentual dinamico del plan diario (iniciado en 0% al no haber ingestas y recalculado reactivamente con cada comida registrada), banner reactivo de advertencias si se superan los limites maximos fijados por el usuario, detalle por comida y boton de accion rapida "+ Registrar Comida".
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de minerales por porcion, y apartado integrado para gestionar y abrir los **Alinos y Marinadas** (`SeasoningsPage`).
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales y boton de accion "+ Nuevo Alimento".
     4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles) y configuracion personalizada de limites maximos diarios de minerales con activacion de alertas.

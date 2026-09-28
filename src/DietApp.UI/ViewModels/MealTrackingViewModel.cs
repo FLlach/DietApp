@@ -48,13 +48,13 @@ public partial class MealTrackingViewModel : ObservableObject
     private double _totalProteinGrams;
 
     [ObservableProperty]
-    private double _planCompletionPercentage = 76;
+    private double _planCompletionPercentage;
 
     [ObservableProperty]
-    private string _formattedPlanProgress = "76% Completado";
+    private string _formattedPlanProgress = "0% Completado";
 
     [ObservableProperty]
-    private double _planProgressFraction = 0.76;
+    private double _planProgressFraction;
 
     [ObservableProperty]
     private string _registeredMealsSummary = "0 tomas registradas hoy";
@@ -170,7 +170,7 @@ public partial class MealTrackingViewModel : ObservableObject
             // Calcular porcentaje del plan (meta base estimada: 60g proteina o 1850 kcal)
             double targetCalories = 1850;
             double completion = targetCalories > 0 ? Math.Min(100, Math.Round((TotalCalories / targetCalories) * 100, 0)) : 0;
-            PlanCompletionPercentage = completion > 0 ? completion : 76;
+            PlanCompletionPercentage = completion;
             PlanProgressFraction = PlanCompletionPercentage / 100.0;
             FormattedPlanProgress = $"{PlanCompletionPercentage}% Completado";
 
