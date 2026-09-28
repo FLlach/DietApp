@@ -101,6 +101,12 @@
     </Style>
 
     <!-- 3. Tarjetas Clinicas Stitch -->
+    <Shadow x:Key="StitchCardShadow"
+            Brush="#1A000000"
+            Offset="0, 2"
+            Radius="8"
+            Opacity="0.8" />
+
     <Style x:Key="StitchCardBorderStyle" TargetType="Border">
         <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="StrokeThickness" Value="1" />

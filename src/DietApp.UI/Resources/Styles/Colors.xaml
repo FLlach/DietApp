@@ -50,6 +50,7 @@
     <Color x:Key="StitchOnSecondaryContainer">#671F00</Color>
     <Color x:Key="StitchSecondaryFixed">#FFDBCF</Color>
     <Color x:Key="StitchSecondaryFixedDim">#FFB59B</Color>
+    <Color x:Key="StitchOnSecondaryFixed">#380D00</Color>
     <Color x:Key="StitchClinicalCoral">#EF713F</Color>
 
     <Color x:Key="StitchTertiary">#855300</Color>
@@ -58,6 +59,7 @@
     <Color x:Key="StitchOnTertiaryContainer">#684000</Color>
     <Color x:Key="StitchTertiaryFixed">#FFDDB8</Color>
     <Color x:Key="StitchTertiaryFixedDim">#FFB95F</Color>
+    <Color x:Key="StitchOnTertiaryFixed">#2A1700</Color>
 
     <Color x:Key="StitchError">#BA1A1A</Color>
     <Color x:Key="StitchOnError">#FFFFFF</Color>
@@ -69,7 +71,9 @@
     <Color x:Key="StitchDarkSurface">#131B2E</Color>
     <Color x:Key="StitchDarkSurfaceLowest">#1A2238</Color>
     <Color x:Key="StitchDarkSurfaceLow">#1E2742</Color>
+    <Color x:Key="StitchDarkSurfaceContainerLow">#1E2742</Color>
     <Color x:Key="StitchDarkSurfaceContainer">#242E4C</Color>
+    <Color x:Key="StitchDarkSurfaceContainerHigh">#2A3554</Color>
     <Color x:Key="StitchDarkOnSurface">#F1F5F9</Color>
     <Color x:Key="StitchDarkOnSurfaceVariant">#94A3B8</Color>
     <Color x:Key="StitchDarkOutline">#475569</Color>
@@ -135,6 +139,9 @@
 
     <SolidColorBrush x:Key="StitchOnSurfaceBrush" Color="{StaticResource StitchOnSurface}" />
     <SolidColorBrush x:Key="StitchOnSurfaceVariantBrush" Color="{StaticResource StitchOnSurfaceVariant}" />
+    <SolidColorBrush x:Key="StitchOnSecondaryFixedBrush" Color="{StaticResource StitchOnSecondaryFixed}" />
+    <SolidColorBrush x:Key="StitchOnTertiaryFixedBrush" Color="{StaticResource StitchOnTertiaryFixed}" />
+    <SolidColorBrush x:Key="StitchDarkSurfaceContainerLowBrush" Color="{StaticResource StitchDarkSurfaceContainerLow}" />
     <SolidColorBrush x:Key="StitchOutlineBrush" Color="{StaticResource StitchOutline}" />
     <SolidColorBrush x:Key="StitchOutlineVariantBrush" Color="{StaticResource StitchOutlineVariant}" />
     <SolidColorBrush x:Key="StitchOutlineVariantSoftBrush" Color="{StaticResource StitchOutlineVariantSoft}" />
