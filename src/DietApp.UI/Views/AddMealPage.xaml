@@ -7,173 +7,315 @@
              x:Class="DietApp.UI.Views.AddMealPage"
              x:DataType="vm:AddMealViewModel"
              x:Name="ThisPage"
-             Title="{loc:Translate AddMeal_Title}">
+             Title="{loc:Translate AddMeal_Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceWarm}, Dark={StaticResource Black}}">
 
     <!--
-    Como funciona: Interfaz para armar y registrar una comida con uno o mas alimentos,
-    especificando el gramaje exacto de cada uno para calcular los minerales resultantes.
-    Por que se tomo esta decision: Permite al usuario componer un plato o ingesta completa
-    en un solo paso antes de consolidar el conteo en el historial.
+    Como funciona: Interfaz de registro modal de ingesta adaptada al diseno Stitch 'Clinical Nutrition Ergonomics'.
+    Permite asociar alimentos simples con gramaje dosificado o recetas culinarias completas por raciones,
+    asignando fecha, momento del dia y notas clinicas.
+    Por que se tomo esta decision: Mantiene objetivos tactiles ergonomicos de 48dp para facilitar
+    el ingreso de datos en pantallas moviles Android sin errores de pulsacion.
     -->
 
     <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="14">
-            <Label Text="{loc:Translate AddMeal_Title}"
-                   FontAttributes="Bold"
-                   FontSize="18" />
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- 1. Encabezado Clinico -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16, 12"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="DIETAPP • REGISTRO DE INGESTA"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryDark}" />
+                    <Label Text="{loc:Translate AddMeal_Title}"
+                           FontAttributes="Bold"
+                           FontSize="20"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                    <Label Text="Composición y dosificación de la comida"
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Indicador de Carga -->
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
-                               Color="{StaticResource Primary}"
+                               Color="{StaticResource PrimaryDark}"
                                HorizontalOptions="Center" />
 
-            <!-- Encabezado de la comida -->
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="8">
-                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                        <Label Text="{loc:Translate AddMeal_Date}" FontAttributes="Bold" FontSize="12" />
-                        <DatePicker Date="{Binding MealDate}" />
-                    </VerticalStackLayout>
+            <!-- 2. Bento: Datos Generales de la Comida -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Momento y Fecha de Ingesta"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                        <Label Text="{loc:Translate AddMeal_Moment}" FontAttributes="Bold" FontSize="12" />
-                        <Picker ItemsSource="{Binding MealTypeOptions}"
-                                SelectedItem="{Binding SelectedMealTypeName}" />
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{loc:Translate AddMeal_Date}"
+                                   FontAttributes="Bold"
+                                   FontSize="11"
+                                   TextColor="{StaticResource Outline}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                    Padding="8, 0">
+                                <DatePicker Date="{Binding MealDate}"
+                                            HeightRequest="48"
+                                            FontSize="13" />
+                            </Border>
+                        </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                        <Label Text="{loc:Translate AddMeal_Note}" FontAttributes="Bold" FontSize="12" />
-                        <Entry Placeholder="{loc:Translate AddMeal_NotePlaceholder}"
-                               Text="{Binding Note}" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="{loc:Translate AddMeal_Moment}"
+                                   FontAttributes="Bold"
+                                   FontSize="11"
+                                   TextColor="{StaticResource Outline}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                    Padding="8, 0">
+                                <Picker ItemsSource="{Binding MealTypeOptions}"
+                                        SelectedItem="{Binding SelectedMealTypeName}"
+                                        HeightRequest="48"
+                                        FontSize="13" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddMeal_Note}"
+                               FontAttributes="Bold"
+                               FontSize="11"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Entry Placeholder="{loc:Translate AddMeal_NotePlaceholder}"
+                                   Text="{Binding Note}"
+                                   HeightRequest="48"
+                                   FontSize="13" />
+                        </Border>
                     </VerticalStackLayout>
-                </Grid>
+                </VerticalStackLayout>
             </Border>
 
-            <!-- Seccion para agregar un alimento -->
-            <Label Text="{loc:Translate AddMeal_AddFoodTitle}"
-                   FontAttributes="Bold"
-                   FontSize="15" />
+            <!-- 3. Bento: Agregar Alimento Individual -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate AddMeal_AddFoodTitle}"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate AddMeal_SelectFood}" FontAttributes="Bold" FontSize="12" />
-                    <Picker ItemsSource="{Binding AvailableFoods}"
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding SelectedFood}"
-                            Title="{loc:Translate AddMeal_ChooseFoodPlaceholder}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddMeal_SelectFood}"
+                               FontAttributes="Bold"
+                               FontSize="11"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Picker ItemsSource="{Binding AvailableFoods}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedFood}"
+                                    Title="{loc:Translate AddMeal_ChooseFoodPlaceholder}"
+                                    HeightRequest="48"
+                                    FontSize="13" />
+                        </Border>
+                    </VerticalStackLayout>
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                        <VerticalStackLayout Grid.Column="0">
-                            <Label Text="{loc:Translate AddMeal_GramsConsumed}" FontAttributes="Bold" FontSize="12" />
-                            <Entry Placeholder="100"
-                                   Keyboard="Numeric"
-                                   Text="{Binding PortionGramsText}" />
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{loc:Translate AddMeal_GramsConsumed}"
+                                   FontAttributes="Bold"
+                                   FontSize="11"
+                                   TextColor="{StaticResource Outline}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                    Padding="8, 0">
+                                <Entry Placeholder="100"
+                                       Keyboard="Numeric"
+                                       Text="{Binding PortionGramsText}"
+                                       HeightRequest="48"
+                                       FontSize="14" />
+                            </Border>
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
                                 Text="{loc:Translate AddMeal_AddFoodButton}"
-                                VerticalOptions="End"
-                                HeightRequest="44"
-                                MinimumHeightRequest="44"
-                                Command="{Binding AddFoodToMealCommand}" />
+                                Command="{Binding AddFoodToMealCommand}"
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                Padding="14, 0"
+                                VerticalOptions="End" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Seccion para agregar una receta -->
-            <Label Text="{loc:Translate AddMeal_AddRecipeTitle}"
-                   FontAttributes="Bold"
-                   FontSize="15" />
+            <!-- 4. Bento: Agregar Receta Culinaria -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate AddMeal_AddRecipeTitle}"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate AddMeal_SelectRecipe}" FontAttributes="Bold" FontSize="12" />
-                    <Picker ItemsSource="{Binding AvailableRecipes}"
-                            ItemDisplayBinding="{Binding Title}"
-                            SelectedItem="{Binding SelectedRecipe}"
-                            Title="{loc:Translate AddMeal_ChooseRecipePlaceholder}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddMeal_SelectRecipe}"
+                               FontAttributes="Bold"
+                               FontSize="11"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Picker ItemsSource="{Binding AvailableRecipes}"
+                                    ItemDisplayBinding="{Binding Title}"
+                                    SelectedItem="{Binding SelectedRecipe}"
+                                    Title="{loc:Translate AddMeal_ChooseRecipePlaceholder}"
+                                    HeightRequest="48"
+                                    FontSize="13" />
+                        </Border>
+                    </VerticalStackLayout>
 
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                        <VerticalStackLayout Grid.Column="0">
-                            <Label Text="{loc:Translate AddMeal_ServingsConsumed}" FontAttributes="Bold" FontSize="12" />
-                            <Entry Placeholder="1"
-                                   Keyboard="Numeric"
-                                   Text="{Binding RecipeServingsText}" />
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{loc:Translate AddMeal_ServingsConsumed}"
+                                   FontAttributes="Bold"
+                                   FontSize="11"
+                                   TextColor="{StaticResource Outline}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                    Padding="8, 0">
+                                <Entry Placeholder="1"
+                                       Keyboard="Numeric"
+                                       Text="{Binding RecipeServingsText}"
+                                       HeightRequest="48"
+                                       FontSize="14" />
+                            </Border>
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
                                 Text="{loc:Translate AddMeal_AddRecipeButton}"
-                                VerticalOptions="End"
-                                HeightRequest="44"
-                                MinimumHeightRequest="44"
-                                BackgroundColor="{StaticResource Secondary}"
-                                TextColor="{StaticResource ContrastDark}"
-                                FontAttributes="Bold"
-                                Command="{Binding AddRecipeToMealCommand}" />
+                                Command="{Binding AddRecipeToMealCommand}"
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                Padding="14, 0"
+                                VerticalOptions="End" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Lista de Alimentos y Recetas Agregados a la Comida Actual -->
-            <Label Text="{loc:Translate AddMeal_ItemsInMeal}"
-                   FontAttributes="Bold"
-                   FontSize="15" />
+            <!-- 5. Bento: Items Agregados a la Comida -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{loc:Translate AddMeal_ItemsInMeal}"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="8">
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedItems}"
-                                         Spacing="6">
+                                         Spacing="8">
                         <BindableLayout.EmptyView>
                             <Label Text="{loc:Translate AddMeal_EmptyItems}"
-                                   TextColor="Gray"
+                                   TextColor="{StaticResource Outline}"
                                    HorizontalTextAlignment="Center"
-                                   Padding="10" />
+                                   FontSize="13"
+                                   Padding="14" />
                         </BindableLayout.EmptyView>
 
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:MealDraftItemModel">
-                                <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
-                                    <Label Grid.Column="0" Text="{Binding FoodName}" FontAttributes="Bold" VerticalOptions="Center" />
-                                    <Label Grid.Column="1" Text="{Binding GramsDisplay}" TextColor="Gray" VerticalOptions="Center" />
-                                    <Button Grid.Column="2"
-                                            Text="{loc:Translate Common_Remove}"
-                                            Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.RemoveItemCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="{StaticResource AlertRed}"
-                                            TextColor="White"
-                                            FontSize="12"
-                                            HeightRequest="44"
-                                            MinimumHeightRequest="44"
-                                            MinimumWidthRequest="44"
-                                            Padding="12, 4"
-                                            VerticalOptions="Center" />
-                                </Grid>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Padding="12, 8"
+                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}">
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding FoodName}"
+                                               FontAttributes="Bold"
+                                               FontSize="13"
+                                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
+                                               VerticalOptions="Center" />
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding GramsDisplay}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource Outline}"
+                                               VerticalOptions="Center" />
+
+                                        <Button Grid.Column="2"
+                                                Text="✕"
+                                                Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.RemoveItemCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="{StaticResource Secondary}"
+                                                TextColor="White"
+                                                FontAttributes="Bold"
+                                                FontSize="12"
+                                                WidthRequest="38"
+                                                HeightRequest="38"
+                                                CornerRadius="10"
+                                                Padding="0"
+                                                VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Mensaje de estado -->
+            <!-- Mensaje de Estado -->
             <Label Text="{Binding StatusMessage}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource Primary}" />
+                   FontSize="13"
+                   TextColor="{StaticResource PrimaryDark}" />
 
-            <!-- Boton Guardar Comida -->
+            <!-- 6. Boton Principal de Guardado -->
             <Button Text="{loc:Translate AddMeal_SaveButton}"
                     Command="{Binding SaveMealCommand}"
-                    FontAttributes="Bold"
-                    HeightRequest="48" />
+                    Style="{StaticResource StitchPrimaryButtonStyle}"
+                    HeightRequest="52"
+                    MinimumHeightRequest="52"
+                    FontSize="16"
+                    Margin="0, 4, 0, 16" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

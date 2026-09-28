@@ -7,83 +7,145 @@
              x:Class="DietApp.UI.Views.MealTrackingPage"
              x:Name="ThisTrackingPage"
              x:DataType="vm:MealTrackingViewModel"
-             Title="{loc:Translate DailyTracking_Title}">
+             Title="{loc:Translate DailyTracking_Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceWarm}, Dark={StaticResource Black}}">
 
     <!--
-    Como funciona: Pantalla de monitoreo nutricional que consolida los totales diarios
-    de minerales consumidos y desglosa cada comida con sus respectivos alimentos y aportes.
-    Por que se tomo esta decision: Permite al usuario tener control exacto del balance de
-    minerales por comida y por dia, facilitando la toma de decisiones dieteticas.
+    Como funciona: Vista de conteo diario y trazabilidad metabolica-renal basada en el diseno
+    Stitch 'Clinical Nutrition Ergonomics'. Consolida la ingesta acumulada de minerales criticos,
+    alerta de limites fisiologicos superados mediante tonalidades coral y ambar, y desglosa cada
+    comida con objetivos tactiles de 48dp.
+    Por que se tomo esta decision: Permite una lectura clinica de alta precision sin sobrecarga visual,
+    garantizando que la informacion numerica este claramente diferenciada de sus unidades.
     -->
 
     <ScrollView>
-        <VerticalStackLayout Padding="14" Spacing="16">
-            <!-- Indicador de Carga -->
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- Indicador de Carga Reactivo -->
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
-                               Color="{StaticResource Primary}"
+                               Color="{StaticResource PrimaryDark}"
                                HorizontalOptions="Center" />
 
-            <!-- Barra de Navegacion por Fechas -->
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="12"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
-                    <Button Grid.Column="0"
-                            Text="{loc:Translate DailyTracking_PreviousDay}"
-                            Command="{Binding GoToPreviousDayCommand}"
-                            HeightRequest="44"
-                            MinimumHeightRequest="44"
-                            Padding="12, 0"
-                            FontSize="12" />
-
-                    <Label Grid.Column="1"
-                            Text="{Binding SelectedDate, StringFormat='{0:D}'}"
-                            HorizontalTextAlignment="Center"
-                            VerticalOptions="Center"
-                            FontAttributes="Bold"
-                            FontSize="15" />
-
-                    <Button Grid.Column="2"
-                            Text="{loc:Translate DailyTracking_NextDay}"
-                            Command="{Binding GoToNextDayCommand}"
-                            HeightRequest="44"
-                            MinimumHeightRequest="44"
-                            Padding="12, 0"
-                            FontSize="12" />
+            <!-- 1. Encabezado de Estado Clinico -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16, 12"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="DIETAPP • METABOLIC TRACKER"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryDark}" />
+                        <Label Text="{loc:Translate DailyTracking_Title}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                    </VerticalStackLayout>
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 9999"
+                            Padding="10, 4"
+                            StrokeThickness="0"
+                            Background="{AppThemeBinding Light={StaticResource MineralProteinBg}, Dark=#1e2d14}">
+                        <Label Text="Control Renal y Metabólico"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource OnPrimaryContainer}"
+                               VerticalOptions="Center" />
+                    </Border>
                 </Grid>
             </Border>
 
-            <!-- Banner de Alertas y Avisos Preventivos de Minerales -->
-            <Border StrokeShape="RoundRectangle 12"
-                    Padding="14"
+            <!-- 2. Barra Ergonomica de Navegacion por Fechas (Touch targets 48dp) -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="8"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <Grid ColumnDefinitions="48, *, 48" VerticalOptions="Center">
+                    <Button Grid.Column="0"
+                            Text="◀"
+                            Command="{Binding GoToPreviousDayCommand}"
+                            HeightRequest="48"
+                            MinimumHeightRequest="48"
+                            WidthRequest="48"
+                            MinimumWidthRequest="48"
+                            Padding="0"
+                            CornerRadius="12"
+                            Style="{StaticResource StitchNeutralButtonStyle}"
+                            SemanticProperties.Description="{loc:Translate DailyTracking_PreviousDay}" />
+
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                        <Label Text="{Binding SelectedDate, StringFormat='{0:dddd, d MMMM}'}"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                        <Label Text="{Binding SelectedDate, StringFormat='{0:yyyy}'}"
+                               HorizontalTextAlignment="Center"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                    </VerticalStackLayout>
+
+                    <Button Grid.Column="2"
+                            Text="▶"
+                            Command="{Binding GoToNextDayCommand}"
+                            HeightRequest="48"
+                            MinimumHeightRequest="48"
+                            WidthRequest="48"
+                            MinimumWidthRequest="48"
+                            Padding="0"
+                            CornerRadius="12"
+                            Style="{StaticResource StitchNeutralButtonStyle}"
+                            SemanticProperties.Description="{loc:Translate DailyTracking_NextDay}" />
+                </Grid>
+            </Border>
+
+            <!-- 3. Banner de Alertas y Avisos Preventivos Clinicos (Level Alert Tonal) -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
                     IsVisible="{Binding HasExceededAlerts}"
-                    Stroke="{StaticResource WarningAmber}"
+                    Stroke="{StaticResource SecondaryContainer}"
                     StrokeThickness="1.5"
-                    Background="{AppThemeBinding Light=#FEF9E7, Dark=#2E2315}">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="{loc:Translate DailyTracking_AlertsTitle}"
-                           FontAttributes="Bold"
-                           FontSize="15"
-                           TextColor="{AppThemeBinding Light=#B9770E, Dark=#F39C12}" />
+                    Background="{AppThemeBinding Light=#FFF7F5, Dark=#331c15}">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 9999"
+                                Padding="8, 3"
+                                Background="{StaticResource SecondaryContainer}">
+                            <Label Text="ALERTA CLÍNICA"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                        </Border>
+                        <Label Grid.Column="1"
+                               Text="{loc:Translate DailyTracking_AlertsTitle}"
+                               FontAttributes="Bold"
+                               FontSize="15"
+                               TextColor="{StaticResource Secondary}"
+                               VerticalOptions="Center" />
+                    </Grid>
 
                     <Label Text="{loc:Translate DailyTracking_AlertsSubtitle}"
                            FontSize="12"
-                           TextColor="{AppThemeBinding Light=#7D6608, Dark=#FAD7A0}" />
+                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource Gray300}}" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding ExceededAlerts}"
-                                         Spacing="6">
+                                         Spacing="8">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="dto:MineralAlertExceededDto">
-                                <Border StrokeShape="RoundRectangle 8"
-                                        Padding="10, 8"
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Padding="12, 10"
                                         Stroke="{Binding CardBorderHex}"
                                         StrokeThickness="1"
                                         Background="{Binding CardBackgroundHex}">
                                     <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="8" VerticalOptions="Center">
                                         <Border Grid.Column="0"
-                                                StrokeShape="RoundRectangle 4"
-                                                Padding="6, 2"
+                                                StrokeShape="RoundRectangle 9999"
+                                                Padding="8, 3"
                                                 Background="{Binding CardBorderHex}"
                                                 VerticalOptions="Center">
                                             <Label Text="{Binding SeverityBadgeText}"
@@ -114,51 +176,63 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Resumen Total de Minerales del Dia -->
-            <Border StrokeShape="RoundRectangle 12"
+            <!-- 4. Tarjeta Bento: Resumen Total de Ingesta y Balance Metabolico -->
+            <Border StrokeShape="RoundRectangle 16"
                     Padding="16"
                     Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
                     StrokeThickness="1"
-                    Background="{AppThemeBinding Light=#FFF9F5, Dark=#1C1C20}">
-                <VerticalStackLayout Spacing="10">
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                        <Label Grid.Column="0"
-                               Text="{loc:Translate DailyTracking_DailyTotal}"
-                               FontAttributes="Bold"
-                               FontSize="16"
-                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="Balance Metabólico"
+                                   FontSize="12"
+                                   TextColor="{StaticResource Outline}" />
+                            <Label Text="{loc:Translate DailyTracking_DailyTotal}"
+                                   FontAttributes="Bold"
+                                   FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                        </VerticalStackLayout>
 
+                        <!-- Badge Destacado de Meta Proteica (Stitch Lime Primary) -->
                         <Border Grid.Column="1"
-                                Padding="10, 5"
-                                StrokeShape="RoundRectangle 8"
-                                Background="{AppThemeBinding Light=#E8F5E9, Dark=#1B382B}"
+                                Padding="12, 6"
+                                StrokeShape="RoundRectangle 12"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource MineralProteinBg}, Dark=#1e2d14}"
                                 VerticalOptions="Center">
                             <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                                 <Label Text="{loc:Translate DailyTracking_ProteinTotal}"
-                                       FontSize="12"
+                                       FontSize="11"
                                        FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                       TextColor="{StaticResource OnPrimaryContainer}"
+                                       VerticalOptions="Center" />
                                 <Label Text="{Binding DailyProteinDisplay}"
-                                       FontSize="13"
+                                       FontSize="14"
                                        FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light=#1B5E20, Dark=#A5D6A7}" />
+                                       TextColor="{StaticResource OnPrimaryContainer}"
+                                       VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </Border>
                     </Grid>
 
-                    <Label Text="{loc:Translate DailyTracking_DailyTotalSubtitle}"
+                    <Label Text="Trazabilidad cuantitativa de 7 minerales críticos (mg):"
                            FontSize="12"
-                           TextColor="Gray" />
+                           TextColor="{StaticResource Outline}" />
 
+                    <!-- Coleccion fluida de pastillas de minerales (Pill Matrix) -->
                     <FlexLayout BindableLayout.ItemsSource="{Binding DailyMinerals}"
                                 Wrap="Wrap"
                                 Margin="0, 4, 0, 0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="dto:MineralAmountDto">
                                 <Border Margin="0, 3, 8, 5"
-                                        Padding="10, 6"
-                                        StrokeShape="RoundRectangle 8"
-                                        Background="{AppThemeBinding Light=#FFF1EA, Dark=#26262B}">
+                                        Padding="12, 6"
+                                        StrokeShape="RoundRectangle 9999"
+                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}">
                                     <Label Text="{Binding DisplayText}"
                                            FontSize="13"
                                            FontAttributes="Bold"
@@ -170,87 +244,103 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Lista de Comidas del Dia -->
-            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                <Label Grid.Column="0"
-                       Text="{loc:Translate DailyTracking_MealsDetail}"
-                       FontAttributes="Bold"
-                       FontSize="17"
-                       VerticalOptions="Center" />
+            <!-- 5. Seccion de Listado de Comidas del Dia -->
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" Margin="0, 4, 0, 0">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                    <Label Text="{loc:Translate DailyTracking_MealsDetail}"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                    <Label Text="Desglose por momentos de ingesta"
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
+                </VerticalStackLayout>
 
                 <Button Grid.Column="1"
                         Text="{loc:Translate DailyTracking_AddMeal}"
                         Command="{Binding NavigateToAddMealCommand}"
-                        FontAttributes="Bold"
-                        FontSize="12"
-                        HeightRequest="44"
-                        MinimumHeightRequest="44"
-                        Padding="12, 0"
+                        Style="{StaticResource StitchPrimaryButtonStyle}"
+                        HeightRequest="48"
+                        MinimumHeightRequest="48"
+                        Padding="16, 0"
                         VerticalOptions="Center" />
             </Grid>
 
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding DayMeals}"
                                  Spacing="12">
                 <BindableLayout.EmptyView>
-                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0, 20, 0, 20">
-                        <Label Text="{loc:Translate DailyTracking_EmptyMeals}"
-                               TextColor="Gray"
-                               HorizontalTextAlignment="Center" />
-                        <Button Text="{loc:Translate DailyTracking_AddMeal}"
-                                Command="{Binding NavigateToAddMealCommand}"
-                                FontSize="12"
-                                HeightRequest="44"
-                                MinimumHeightRequest="44"
-                                HorizontalOptions="Center" />
-                    </VerticalStackLayout>
+                    <Border StrokeShape="RoundRectangle 16"
+                            Padding="24"
+                            Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                            StrokeThickness="1"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}"
+                            Margin="0, 8">
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Label Text="{loc:Translate DailyTracking_EmptyMeals}"
+                                   TextColor="{StaticResource Outline}"
+                                   HorizontalTextAlignment="Center"
+                                   FontSize="14" />
+                            <Button Text="{loc:Translate DailyTracking_AddMeal}"
+                                    Command="{Binding NavigateToAddMealCommand}"
+                                    Style="{StaticResource StitchPrimaryButtonStyle}"
+                                    HeightRequest="48"
+                                    MinimumHeightRequest="48"
+                                    HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
                 </BindableLayout.EmptyView>
 
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="dto:MealDto">
-                        <Border StrokeShape="RoundRectangle 12"
-                                Padding="14"
+                        <Border StrokeShape="RoundRectangle 16"
+                                Padding="16"
                                 Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
                                 StrokeThickness="1"
-                                Background="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C20}">
-                            <VerticalStackLayout Spacing="8">
-                                <Grid ColumnDefinitions="*, Auto">
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
                                         <Label Text="{Binding TitleDisplay}"
                                                FontAttributes="Bold"
-                                               FontSize="16" />
+                                               FontSize="16"
+                                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                         <Label Text="{Binding NutritionSummary}"
-                                               FontSize="12"
+                                               FontSize="13"
                                                FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                                               TextColor="{StaticResource PrimaryDark}" />
                                     </VerticalStackLayout>
 
+                                    <!-- Boton Ergonomico de Eliminacion (48dp min touch target) -->
                                     <Button Grid.Column="1"
                                             Text="{loc:Translate DailyTracking_Delete}"
                                             Command="{Binding Source={x:Reference ThisTrackingPage}, Path=BindingContext.DeleteMealCommand}"
                                             CommandParameter="{Binding Id}"
-                                            BackgroundColor="{StaticResource AlertRed}"
+                                            BackgroundColor="{StaticResource Secondary}"
                                             TextColor="White"
                                             FontSize="12"
-                                            HeightRequest="44"
-                                            MinimumHeightRequest="44"
-                                            Padding="12, 4"
+                                            FontAttributes="Bold"
+                                            HeightRequest="48"
+                                            MinimumHeightRequest="48"
+                                            Padding="14, 0"
+                                            CornerRadius="12"
                                             VerticalOptions="Center" />
                                 </Grid>
 
                                 <!-- Alimentos de la comida -->
                                 <Label Text="{loc:Translate DailyTracking_FoodsIngested}"
                                        FontSize="12"
-                                       TextColor="Gray" />
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Outline}" />
 
                                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
                                                      Spacing="4"
-                                                     Margin="10, 0, 0, 0">
+                                                     Margin="8, 0, 0, 0">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="dto:MealItemDto">
                                             <HorizontalStackLayout Spacing="6">
-                                                <Label Text="•" FontAttributes="Bold" />
-                                                <Label Text="{Binding FoodName}" FontAttributes="Bold" FontSize="13" />
-                                                <Label Text="{Binding PortionSummary, StringFormat='({0})'}" FontSize="13" TextColor="Gray" />
+                                                <Label Text="•" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                                                <Label Text="{Binding FoodName}" FontAttributes="Bold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                                                <Label Text="{Binding PortionSummary, StringFormat='({0})'}" FontSize="13" TextColor="{StaticResource Outline}" />
                                             </HorizontalStackLayout>
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>
@@ -259,7 +349,8 @@
                                 <!-- Minerales totales de esta comida -->
                                 <Label Text="{loc:Translate DailyTracking_MineralsProvided}"
                                        FontSize="12"
-                                       TextColor="Gray"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Outline}"
                                        Margin="0, 4, 0, 0" />
 
                                 <FlexLayout BindableLayout.ItemsSource="{Binding TotalMinerals}"
@@ -267,11 +358,14 @@
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="dto:MineralAmountDto">
                                             <Border Margin="0, 2, 6, 4"
-                                                    Padding="6, 2"
-                                                    StrokeShape="RoundRectangle 6"
-                                                    Background="{AppThemeBinding Light=#F8F5F2, Dark=#26262B}">
+                                                    Padding="8, 4"
+                                                    StrokeShape="RoundRectangle 9999"
+                                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                                    StrokeThickness="1"
+                                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}">
                                                 <Label Text="{Binding DisplayText}"
                                                        FontSize="11"
+                                                       FontAttributes="Bold"
                                                        TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
                                             </Border>
                                         </DataTemplate>
