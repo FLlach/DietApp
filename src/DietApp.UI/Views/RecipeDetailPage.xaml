@@ -440,26 +440,31 @@
 
                     <FlexLayout BindableLayout.ItemsSource="{Binding SevenMinerals}"
                                 Wrap="Wrap"
+                                JustifyContent="SpaceBetween"
                                 AlignItems="Center">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:MealMineralChipModel">
-                                <Border StrokeShape="RoundRectangle 9999"
+                                <Border StrokeShape="RoundRectangle 8"
                                         Stroke="{Binding BorderColor}"
                                         StrokeThickness="1"
                                         Background="{Binding BackgroundColor}"
-                                        Padding="8, 3"
-                                        Margin="0, 3, 6, 3">
-                                    <HorizontalStackLayout Spacing="4">
-                                        <Label Text="{Binding Symbol}"
+                                        Padding="10, 6"
+                                        Margin="0, 0, 0, 8"
+                                        FlexLayout.Basis="48%">
+                                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6" VerticalOptions="Center">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding Symbol}"
                                                FontFamily="Inter"
-                                               FontSize="11"
+                                               FontSize="12"
                                                FontAttributes="Bold"
                                                TextColor="{Binding TextColor}" />
-                                        <Label Text="{Binding AmountWithUnit}"
+                                        <Label Grid.Column="1"
+                                               Text="{Binding AmountWithUnit}"
                                                FontFamily="Inter"
-                                               FontSize="11"
+                                               FontSize="12"
+                                               HorizontalTextAlignment="End"
                                                TextColor="{Binding TextColor}" />
-                                    </HorizontalStackLayout>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>

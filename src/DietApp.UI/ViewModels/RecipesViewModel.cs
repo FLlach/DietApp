@@ -224,24 +224,24 @@ public partial class RecipesViewModel : ObservableObject
         }
 
         // 7 Minerales
-        card.MineralChips.Add(new MealMineralChipModel { Symbol = "P", AmountWithUnit = $"{fosforo:N0}mg" });
+        card.MineralChips.Add(new MealMineralChipModel { Symbol = "P", AmountWithUnit = $"{fosforo:N0} mg" });
 
         bool isPotasioHigh = potasio > 500;
         card.MineralChips.Add(new MealMineralChipModel
         {
             Symbol = "K",
-            AmountWithUnit = isPotasioHigh ? $"{potasio:N0}mg (!)" : $"{potasio:N0}mg",
+            AmountWithUnit = isPotasioHigh ? $"{potasio:N0} mg (!)" : $"{potasio:N0} mg",
             IsAlert = isPotasioHigh,
             BackgroundColor = isPotasioHigh ? Color.FromArgb("#FFF7F5") : Color.FromArgb("#F2F3FF"),
             BorderColor = isPotasioHigh ? Color.FromArgb("#FC7B48") : Color.FromArgb("#C1CAB0"),
             TextColor = isPotasioHigh ? Color.FromArgb("#A53C0B") : Color.FromArgb("#131B2E")
         });
 
-        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Na", AmountWithUnit = $"{sodio:N0}mg" });
-        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Ca", AmountWithUnit = $"{calcio:N0}mg" });
-        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Mg", AmountWithUnit = $"{magnesio:N0}mg" });
-        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Fe", AmountWithUnit = $"{hierro:0.#}mg" });
-        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Zn", AmountWithUnit = $"{zinc:0.#}mg" });
+        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Na", AmountWithUnit = $"{sodio:N0} mg" });
+        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Ca", AmountWithUnit = $"{calcio:N0} mg" });
+        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Mg", AmountWithUnit = $"{magnesio:N0} mg" });
+        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Fe", AmountWithUnit = $"{hierro:0.#} mg" });
+        card.MineralChips.Add(new MealMineralChipModel { Symbol = "Zn", AmountWithUnit = $"{zinc:0.#} mg" });
 
         return card;
     }
