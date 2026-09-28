@@ -31,12 +31,35 @@ public partial class FoodCatalogViewModel : ObservableObject
         _ = LoadFoodsAsync();
     }
 
+    private const int PageSize = 25;
+    private int _currentPage = 1;
+    private List<FoodCardModel> _filteredPool = new();
+    private CancellationTokenSource? _searchCts;
+
     [ObservableProperty]
     private string _searchQuery = string.Empty;
 
     partial void OnSearchQueryChanged(string value)
     {
-        _ = FilterFoodsAsync();
+        _searchCts?.Cancel();
+        _searchCts = new CancellationTokenSource();
+        var token = _searchCts.Token;
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(250, token);
+                if (!token.IsCancellationRequested)
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ApplySortingAndFilter();
+                    });
+                }
+            }
+            catch (TaskCanceledException) { }
+        }, token);
     }
 
     // Filtros de Rango Mineral
@@ -94,6 +117,15 @@ public partial class FoodCatalogViewModel : ObservableObject
 
     [ObservableProperty]
     private int _totalFoodsCount;
+
+    [ObservableProperty]
+    private bool _hasMoreFoods;
+
+    [ObservableProperty]
+    private string _loadMoreButtonText = "Cargar más alimentos";
+
+    [ObservableProperty]
+    private string _resultsCountText = "alimentos encontrados";
 
     [ObservableProperty]
     private bool _isBusy;
@@ -453,14 +485,49 @@ public partial class FoodCatalogViewModel : ObservableObject
             _ => query.OrderBy(f => f.Name)
         };
 
-        var list = query.ToList();
+        _filteredPool = query.ToList();
+        TotalFoodsCount = _filteredPool.Count;
+        _currentPage = 1;
+        PopulateCurrentPage();
+    }
+
+    private void PopulateCurrentPage()
+    {
+        int itemsToShow = _currentPage * PageSize;
+        var pageItems = _filteredPool.Take(itemsToShow).ToList();
+
         Foods.Clear();
-        foreach (var item in list)
+        foreach (var item in pageItems)
         {
             Foods.Add(item);
         }
 
-        TotalFoodsCount = Foods.Count;
+        HasMoreFoods = _filteredPool.Count > itemsToShow;
+        int remaining = _filteredPool.Count - itemsToShow;
+        LoadMoreButtonText = $"Cargar más alimentos (+{Math.Min(remaining, PageSize)})";
+        ResultsCountText = _filteredPool.Count > PageSize
+            ? $"alimentos (mostrando {Foods.Count} de {TotalFoodsCount})"
+            : "alimentos encontrados";
+    }
+
+    [RelayCommand]
+    private void LoadMoreFoods()
+    {
+        if (!HasMoreFoods) return;
+        _currentPage++;
+        int nextBatchStartIndex = (_currentPage - 1) * PageSize;
+        var nextBatch = _filteredPool.Skip(nextBatchStartIndex).Take(PageSize).ToList();
+
+        foreach (var item in nextBatch)
+        {
+            Foods.Add(item);
+        }
+
+        int itemsToShow = _currentPage * PageSize;
+        HasMoreFoods = _filteredPool.Count > itemsToShow;
+        int remaining = _filteredPool.Count - itemsToShow;
+        LoadMoreButtonText = $"Cargar más alimentos (+{Math.Min(remaining, PageSize)})";
+        ResultsCountText = $"alimentos (mostrando {Foods.Count} de {TotalFoodsCount})";
     }
 
     [RelayCommand]
