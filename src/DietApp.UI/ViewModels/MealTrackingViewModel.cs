@@ -210,6 +210,9 @@ public partial class MealTrackingViewModel : ObservableObject
             bool isExceeded = limit > 0 && consumed > limit;
             bool isWarning = !isExceeded && limit > 0 && (consumed / limit) >= 0.85;
 
+            double fraction = limit > 0 ? Math.Clamp(consumed / limit, 0.0, 1.0) : 0;
+            double percentage = limit > 0 ? (consumed / limit) * 100.0 : 0;
+
             var model = new MineralDisplayModel
             {
                 MineralType = spec.type,
@@ -219,39 +222,48 @@ public partial class MealTrackingViewModel : ObservableObject
                 FormattedAmount = consumed >= 100 ? consumed.ToString("N0", CultureInfo.InvariantCulture) : consumed.ToString("0.#", CultureInfo.InvariantCulture),
                 Unit = "mg",
                 LimitAmount = limit,
-                FormattedLimit = $"Máx. {limit:N0} mg",
+                FormattedLimit = $"Límite máx. {limit:N0} mg",
                 IsExceeded = isExceeded,
                 IsWarning = isWarning,
-                IsColSpan2 = (spec.type == MineralType.Potassium) // Potasio tiene tarjeta destacada en Stitch
+                IsColSpan2 = false,
+                ProgressFraction = fraction,
+                ProgressPercentText = $"{percentage:0}%",
+                ProgressColor = isExceeded
+                    ? Color.FromArgb("#EF713F")
+                    : (isWarning ? Color.FromArgb("#FEA518") : Color.FromArgb("#84CC16"))
             };
 
-            // Tokens visuales especificos
-            if (isExceeded || spec.type == MineralType.Potassium)
+            // Tokens cromaticos especificos para cada uno de los 7 minerales segun DESIGN.md
+            switch (spec.type)
             {
-                model.CardBackground = Color.FromArgb("#FFF7F5");
-                model.CardBorderColor = Color.FromArgb("#FC7B48");
-                model.SymbolBackground = Color.FromArgb("#FFDBCF");
-                model.SymbolTextColor = Color.FromArgb("#A53C0B");
-                model.ValueTextColor = Color.FromArgb("#A53C0B");
-                model.TitleTextColor = Color.FromArgb("#A53C0B");
-            }
-            else if (isWarning || spec.type == MineralType.Phosphorus)
-            {
-                model.CardBackground = Color.FromArgb("#FFFBEB");
-                model.CardBorderColor = Color.FromArgb("#FEA518");
-                model.SymbolBackground = Color.FromArgb("#FFDDB8");
-                model.SymbolTextColor = Color.FromArgb("#684000");
-                model.ValueTextColor = Color.FromArgb("#855300");
-                model.TitleTextColor = Color.FromArgb("#131B2E");
-            }
-            else
-            {
-                model.CardBackground = Color.FromArgb("#F2F3FF");
-                model.CardBorderColor = Color.FromArgb("#E2E8F0");
-                model.SymbolBackground = Color.FromArgb("#DAE2FD");
-                model.SymbolTextColor = Color.FromArgb("#131B2E");
-                model.ValueTextColor = Color.FromArgb("#131B2E");
-                model.TitleTextColor = Color.FromArgb("#131B2E");
+                case MineralType.Potassium:
+                    model.SymbolBackground = Color.FromArgb("#FFDBCF");
+                    model.SymbolTextColor = Color.FromArgb("#A53C0B");
+                    break;
+                case MineralType.Phosphorus:
+                    model.SymbolBackground = Color.FromArgb("#F3E8FF");
+                    model.SymbolTextColor = Color.FromArgb("#7E22CE");
+                    break;
+                case MineralType.Sodium:
+                    model.SymbolBackground = Color.FromArgb("#DBEAFE");
+                    model.SymbolTextColor = Color.FromArgb("#1D4ED8");
+                    break;
+                case MineralType.Calcium:
+                    model.SymbolBackground = Color.FromArgb("#CCFBF1");
+                    model.SymbolTextColor = Color.FromArgb("#0F766E");
+                    break;
+                case MineralType.Magnesium:
+                    model.SymbolBackground = Color.FromArgb("#FFE4E6");
+                    model.SymbolTextColor = Color.FromArgb("#BE123C");
+                    break;
+                case MineralType.Iron:
+                    model.SymbolBackground = Color.FromArgb("#FEF3C7");
+                    model.SymbolTextColor = Color.FromArgb("#B45309");
+                    break;
+                case MineralType.Zinc:
+                    model.SymbolBackground = Color.FromArgb("#E2E8F0");
+                    model.SymbolTextColor = Color.FromArgb("#334155");
+                    break;
             }
 
             SevenMinerals.Add(model);

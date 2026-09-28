@@ -362,7 +362,7 @@ dotnet run --project src/DietApp.UI/DietApp.UI.csproj -f net10.0-windows10.0.190
 La interfaz grafica de usuario de DietApp fue reconstruida desde cero para alinearse al prototipo de Stitch (`projects/2919043587307730423`).
 
 ### 11.1. Catalogo Completo de Pantallas Reconstruidas
-1. **`MealTrackingPage` (Conteo Diario)**: Monitoreo ergonomico del dia con 3 anillos de progreso circular para electrolitos criticos (K, P, Na), desglose de las 4 tomas del dia y banner de advertencia si se supera el umbral preventivo.
+1. **`MealTrackingPage` (Conteo Diario)**: Monitoreo ergonomico del dia con balance metabolico, energia calorica, meta proteica, cumplimiento del plan diario, panel de trazabilidad cuantitativa de los 7 minerales criticos en columna unica a ancho completo con barras de progreso y badges clinicos (K, P, Na, Ca, Mg, Fe, Zn), banners reactivos de advertencia si se supera el umbral preventivo y desglose de las tomas registradas.
 2. **`AddMealPage` (Compositor de Comidas)**: Composicion de platos con seleccion combinada de alimentos de la base de datos y recetas, selector de momento de ingesta y auditoria preventiva previa al registro.
 3. **`RecipesPage` (Catalogo de Recetas)**: Recetario clinico con buscador en tiempo real, ordenamiento multicriterio por densidad de minerales o proteinas, badges macro flotantes y acceso directo al modulo de alinos.
 4. **`RecipeDetailPage` (Ficha de Receta)**: Fotografia heroica culinaria, barras de sodio, potasio y fosforo, auditoria preventiva proactiva, cuadricula dosificada de ingredientes en 2 columnas, matriz de los 7 minerales cuantitativos, pasos tecnicos numerados y modulo de registro de porciones consumidas.

@@ -23,6 +23,11 @@ public class MineralDisplayModel
     public bool IsColSpan2 { get; set; }
     public string StatusText { get; set; } = string.Empty;
 
+    // Progreso cuantitativo visual
+    public double ProgressFraction { get; set; }
+    public string ProgressPercentText { get; set; } = string.Empty;
+    public Color ProgressColor { get; set; } = Color.FromArgb("#84CC16");
+
     // Tokens visuales Stitch
     public Color CardBackground { get; set; } = Color.FromArgb("#F2F3FF");
     public Color CardBorderColor { get; set; } = Color.FromArgb("#DAE2FD");

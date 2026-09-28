@@ -328,69 +328,151 @@
                                        TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
                             </Grid>
 
-                            <!-- Lista / Grid de minerales en 2 columnas -->
-                            <FlexLayout BindableLayout.ItemsSource="{Binding SevenMinerals}"
-                                        Wrap="Wrap"
-                                        JustifyContent="SpaceBetween"
-                                        AlignItems="Stretch">
+                            <!-- Listado de Minerales en Columna Unica con Ancho Completo -->
+                            <VerticalStackLayout Spacing="8"
+                                                 BindableLayout.ItemsSource="{Binding SevenMinerals}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:MineralDisplayModel">
-                                        <Border StrokeShape="RoundRectangle 12"
-                                                Stroke="{Binding CardBorderColor}"
+                                        <Border StrokeShape="RoundRectangle 14"
                                                 StrokeThickness="1"
-                                                Background="{Binding CardBackground}"
-                                                Padding="10, 8"
-                                                Margin="0, 4"
-                                                FlexLayout.Basis="{Binding IsColSpan2, Converter={x:Null}}"
-                                                WidthRequest="210">
-                                            <Grid ColumnDefinitions="Auto, *">
-                                                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
-                                                    <!-- Pildora del simbolo quimico -->
-                                                    <Border WidthRequest="28"
-                                                            HeightRequest="28"
-                                                            StrokeShape="RoundRectangle 8"
+                                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
+                                                Padding="12, 10"
+                                                HorizontalOptions="Fill">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsExceeded}" Value="True">
+                                                    <Setter Property="Stroke" Value="{StaticResource StitchClinicalCoral}" />
+                                                    <Setter Property="StrokeThickness" Value="1.5" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsWarning}" Value="True">
+                                                    <Setter Property="Stroke" Value="{StaticResource StitchTertiaryContainer}" />
+                                                    <Setter Property="StrokeThickness" Value="1.5" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+
+                                            <VerticalStackLayout Spacing="8">
+                                                <!-- Fila Superior: Badge Simbolo + Nombre/Limite + Consumo/Porcentaje -->
+                                                <Grid ColumnDefinitions="36, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                                    <!-- Simbolo Quimico con estilo clinico Stitch -->
+                                                    <Border Grid.Column="0"
+                                                            WidthRequest="36"
+                                                            HeightRequest="36"
+                                                            StrokeShape="RoundRectangle 10"
                                                             StrokeThickness="0"
-                                                            Background="{Binding SymbolBackground}">
+                                                            Background="{Binding SymbolBackground}"
+                                                            VerticalOptions="Center">
                                                         <Label Text="{Binding Symbol}"
                                                                FontFamily="Inter"
-                                                               FontSize="12"
+                                                               FontSize="13"
                                                                FontAttributes="Bold"
                                                                HorizontalTextAlignment="Center"
                                                                VerticalTextAlignment="Center"
                                                                TextColor="{Binding SymbolTextColor}" />
                                                     </Border>
 
-                                                    <VerticalStackLayout Spacing="0" VerticalOptions="Center">
-                                                        <Label Text="{Binding Name}"
-                                                               FontFamily="Inter"
-                                                               FontSize="13"
-                                                               FontAttributes="Bold"
-                                                               TextColor="{Binding TitleTextColor}" />
+                                                    <!-- Nombre del mineral, Badges clinicos y Limite Maximo -->
+                                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                                            <Label Text="{Binding Name}"
+                                                                   FontFamily="PlusJakartaSans"
+                                                                   FontSize="14"
+                                                                   FontAttributes="Bold"
+                                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                            <!-- Badge Excedido -->
+                                                            <Border IsVisible="{Binding IsExceeded}"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    Background="#20EF713F"
+                                                                    Stroke="{StaticResource StitchClinicalCoral}"
+                                                                    StrokeThickness="1"
+                                                                    Padding="6, 1"
+                                                                    VerticalOptions="Center">
+                                                                <Label Text="Excedido"
+                                                                       FontFamily="Inter"
+                                                                       FontSize="9"
+                                                                       FontAttributes="Bold"
+                                                                       TextColor="{StaticResource StitchClinicalCoral}" />
+                                                            </Border>
+                                                            <!-- Badge Alerta Preventiva -->
+                                                            <Border IsVisible="{Binding IsWarning}"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    Background="#20FEA518"
+                                                                    Stroke="{StaticResource StitchTertiaryContainer}"
+                                                                    StrokeThickness="1"
+                                                                    Padding="6, 1"
+                                                                    VerticalOptions="Center">
+                                                                <Label Text="Alerta"
+                                                                       FontFamily="Inter"
+                                                                       FontSize="9"
+                                                                       FontAttributes="Bold"
+                                                                       TextColor="{StaticResource StitchTertiaryContainer}" />
+                                                            </Border>
+                                                        </HorizontalStackLayout>
+
                                                         <Label Text="{Binding FormattedLimit}"
                                                                FontFamily="Inter"
-                                                               FontSize="10"
+                                                               FontSize="11"
                                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
                                                     </VerticalStackLayout>
-                                                </HorizontalStackLayout>
 
-                                                <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Spacing="2">
-                                                    <Label Text="{Binding FormattedAmount}"
-                                                           FontFamily="Inter"
-                                                           FontSize="15"
-                                                           FontAttributes="Bold"
-                                                           TextColor="{Binding ValueTextColor}" />
-                                                    <Label Text="{Binding Unit}"
-                                                           FontFamily="Inter"
-                                                           FontSize="11"
-                                                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                                                           VerticalOptions="End"
-                                                           Margin="0,0,0,1" />
-                                                </HorizontalStackLayout>
-                                            </Grid>
+                                                    <!-- Cantidad Ingerida y Porcentaje -->
+                                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Spacing="1">
+                                                        <HorizontalStackLayout HorizontalOptions="End" Spacing="2">
+                                                            <Label Text="{Binding FormattedAmount}"
+                                                                   FontFamily="PlusJakartaSans"
+                                                                   FontSize="16"
+                                                                   FontAttributes="Bold"
+                                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}">
+                                                                <Label.Triggers>
+                                                                    <DataTrigger TargetType="Label" Binding="{Binding IsExceeded}" Value="True">
+                                                                        <Setter Property="TextColor" Value="{StaticResource StitchClinicalCoral}" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger TargetType="Label" Binding="{Binding IsWarning}" Value="True">
+                                                                        <Setter Property="TextColor" Value="{StaticResource StitchTertiaryContainer}" />
+                                                                    </DataTrigger>
+                                                                </Label.Triggers>
+                                                            </Label>
+                                                            <Label Text="{Binding Unit}"
+                                                                   FontFamily="Inter"
+                                                                   FontSize="11"
+                                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                                   VerticalOptions="End"
+                                                                   Margin="0, 0, 0, 1" />
+                                                        </HorizontalStackLayout>
+
+                                                        <Label Text="{Binding ProgressPercentText}"
+                                                               FontFamily="Inter"
+                                                               FontSize="11"
+                                                               FontAttributes="Bold"
+                                                               HorizontalTextAlignment="End"
+                                                               TextColor="{StaticResource StitchPrimary}">
+                                                            <Label.Triggers>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IsExceeded}" Value="True">
+                                                                    <Setter Property="TextColor" Value="{StaticResource StitchClinicalCoral}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IsWarning}" Value="True">
+                                                                    <Setter Property="TextColor" Value="{StaticResource StitchTertiaryContainer}" />
+                                                                </DataTrigger>
+                                                            </Label.Triggers>
+                                                        </Label>
+                                                    </VerticalStackLayout>
+                                                </Grid>
+
+                                                <!-- Barra de Progreso que abarca todo el ancho del contenedor -->
+                                                <Border StrokeShape="RoundRectangle 3"
+                                                        StrokeThickness="0"
+                                                        Background="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                                        HeightRequest="6"
+                                                        HorizontalOptions="Fill">
+                                                    <ProgressBar Progress="{Binding ProgressFraction}"
+                                                                 ProgressColor="{Binding ProgressColor}"
+                                                                 HeightRequest="6"
+                                                                 HorizontalOptions="Fill" />
+                                                </Border>
+                                            </VerticalStackLayout>
                                         </Border>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
-                            </FlexLayout>
+                            </VerticalStackLayout>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
