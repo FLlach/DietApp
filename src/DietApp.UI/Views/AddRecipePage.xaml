@@ -7,257 +7,476 @@
              x:Class="DietApp.UI.Views.AddRecipePage"
              x:Name="ThisAddRecipePage"
              x:DataType="vm:AddRecipeViewModel"
-             Title="{loc:Translate AddRecipe_Title}">
+             Title="{loc:Translate AddRecipe_Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceWarm}, Dark={StaticResource Black}}">
 
     <!--
-    Como funciona: Formulario de composicion de recetas culinarias con ingredientes dosificados,
-    pasos de preparacion numerados con imagenes ilustrativas e imagen final de la receta terminada.
-    Por que se tomo esta decision: Permite al usuario construir una receta interactiva, seleccionar imagenes
-    desde el dispositivo para cada paso y obtener un calculo inmediato de minerales y calorias por porcion.
+    Como funciona: Compositor de recetas clinicas basado en el diseno Stitch 'Clinical Nutrition Ergonomics'.
+    Organiza la captura del plato mediante tarjetas Bento: fotografia del plato, informacion basica
+    con selectores tactiles de raciones, dosificacion de ingredientes con integracion modular de alinos,
+    y pasos secuenciales con ilustracion visual.
+    Por que se tomo esta decision: Asegura una experiencia de introduccion de datos fluida, con alturas
+    ergonomicas de 48dp y 52dp para teclado virtual en Android y prevencion de errores de dosificacion.
     -->
 
     <ScrollView>
-        <VerticalStackLayout Padding="14" Spacing="16">
-            <Label Text="{loc:Translate AddRecipe_Header}"
-                   FontAttributes="Bold"
-                   FontSize="18" />
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- 1. Encabezado de Estado Clinico -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16, 12"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="DIETAPP • COMPOSITOR CULINARIO"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryDark}" />
+                        <Label Text="{loc:Translate AddRecipe_Title}"
+                               FontAttributes="Bold"
+                               FontSize="20"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                        <Label Text="Modo Dosificación Clínica"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                    </VerticalStackLayout>
+
+                    <Button Grid.Column="1"
+                            Text="{loc:Translate AddRecipe_SaveButton}"
+                            Command="{Binding SaveRecipeCommand}"
+                            Style="{StaticResource StitchPrimaryButtonStyle}"
+                            HeightRequest="48"
+                            MinimumHeightRequest="48"
+                            Padding="16, 0"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
 
             <!-- Indicador de Carga -->
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
-                               Color="{StaticResource Primary}"
+                               Color="{StaticResource PrimaryDark}"
                                HorizontalOptions="Center" />
 
-            <!-- Informacion Basica -->
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate AddRecipe_RecipeTitle}" FontAttributes="Bold" FontSize="12" />
-                    <Entry Placeholder="{loc:Translate AddRecipe_RecipeTitlePlaceholder}"
-                           Text="{Binding Title}" />
-
-                    <Label Text="{loc:Translate AddRecipe_Description}" FontAttributes="Bold" FontSize="12" />
-                    <Editor Placeholder="{loc:Translate AddRecipe_DescriptionPlaceholder}"
-                            Text="{Binding Description}"
-                            HeightRequest="70" />
-
-                    <Label Text="{loc:Translate AddRecipe_Servings}" FontAttributes="Bold" FontSize="12" />
-                    <Entry Placeholder="2"
-                           Keyboard="Numeric"
-                           Text="{Binding ServingsText}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Imagen Final de la Receta Terminada -->
-            <Label Text="{loc:Translate AddRecipe_FinalImage}"
+            <!-- Mensaje de Estado / Notificacion Clinica -->
+            <Label Text="{Binding StatusMessage}"
+                   FontSize="13"
                    FontAttributes="Bold"
-                   FontSize="15" />
+                   TextColor="{StaticResource PrimaryDark}"
+                   HorizontalTextAlignment="Center" />
 
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
+            <!-- 2. Hero Fotografia del Plato Terminado -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate AddRecipe_FinalImageSubtitle}"
-                           FontSize="12"
-                           TextColor="Gray" />
-
-                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                        <Entry Grid.Column="0"
-                               Placeholder="{loc:Translate AddRecipe_ImagePathPlaceholder}"
-                               Text="{Binding FinalImagePath}" />
-
-                        <Button Grid.Column="1"
-                                Text="{loc:Translate AddRecipe_BrowseButton}"
-                                Command="{Binding PickFinalImageCommand}"
-                                FontSize="12" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate AddRecipe_FinalImage}"
+                               FontAttributes="Bold"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                        <Border Grid.Column="1"
+                                StrokeShape="RoundRectangle 9999"
+                                Padding="8, 3"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}">
+                            <Label Text="Recomendado"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource PrimaryDark}" />
+                        </Border>
                     </Grid>
 
-                    <Border StrokeShape="RoundRectangle 8"
-                            HeightRequest="140"
+                    <Label Text="{loc:Translate AddRecipe_FinalImageSubtitle}"
+                           FontSize="12"
+                           TextColor="{StaticResource Outline}" />
+
+                    <!-- Vista Previa de la Fotografia -->
+                    <Border StrokeShape="RoundRectangle 14"
+                            HeightRequest="170"
                             Padding="0"
+                            Stroke="{StaticResource BorderWarmLight}"
+                            StrokeThickness="1"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
                             IsVisible="{Binding HasFinalImage}">
                         <Image Source="{Binding FinalImagePath}"
                                Aspect="AspectFill" />
                     </Border>
+
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Entry Placeholder="{loc:Translate AddRecipe_ImagePathPlaceholder}"
+                                   Text="{Binding FinalImagePath}"
+                                   HeightRequest="48"
+                                   FontSize="12"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <Button Grid.Column="1"
+                                Text="{loc:Translate AddRecipe_BrowseButton}"
+                                Command="{Binding PickFinalImageCommand}"
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                Padding="14, 0"
+                                VerticalOptions="Center" />
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Seccion de Ingredientes -->
-            <Label Text="{loc:Translate AddRecipe_Ingredients}"
-                   FontAttributes="Bold"
-                   FontSize="15" />
+            <!-- 3. Informacion Basica de la Preparacion -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Información Básica"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate AddRecipe_SelectFood}" FontAttributes="Bold" FontSize="12" />
-                    <Picker ItemsSource="{Binding AvailableFoods}"
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding SelectedFood}"
-                            Title="{loc:Translate AddRecipe_SelectFoodPlaceholder}" />
+                    <!-- Titulo de la Receta -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddRecipe_RecipeTitle}"
+                               FontAttributes="Bold"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Entry Placeholder="{loc:Translate AddRecipe_RecipeTitlePlaceholder}"
+                                   Text="{Binding Title}"
+                                   HeightRequest="48"
+                                   FontSize="14" />
+                        </Border>
+                    </VerticalStackLayout>
 
-                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                        <VerticalStackLayout Grid.Column="0">
-                            <Label Text="{loc:Translate AddRecipe_GramsRequired}" FontAttributes="Bold" FontSize="12" />
-                            <Entry Placeholder="100"
+                    <!-- Descripcion o Notas Clinicas -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddRecipe_Description}"
+                               FontAttributes="Bold"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 4">
+                            <Editor Placeholder="{loc:Translate AddRecipe_DescriptionPlaceholder}"
+                                    Text="{Binding Description}"
+                                    HeightRequest="80"
+                                    FontSize="13" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Raciones Totales -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddRecipe_Servings}"
+                               FontAttributes="Bold"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Entry Placeholder="2"
                                    Keyboard="Numeric"
-                                   Text="{Binding IngredientGramsText}" />
+                                   Text="{Binding ServingsText}"
+                                   HeightRequest="48"
+                                   FontSize="14" />
+                        </Border>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- 4. Ingredientes Dosificados e Integracion de Alinos -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate AddRecipe_Ingredients}"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+
+                    <!-- Selector de Alimento -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddRecipe_SelectFood}"
+                               FontAttributes="Bold"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Picker ItemsSource="{Binding AvailableFoods}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedFood}"
+                                    Title="{loc:Translate AddRecipe_SelectFoodPlaceholder}"
+                                    HeightRequest="48"
+                                    FontSize="13" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Gramaje y Boton Agregar -->
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{loc:Translate AddRecipe_Grams}"
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   TextColor="{StaticResource Outline}" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                    Padding="8, 0">
+                                <Entry Placeholder="100"
+                                       Keyboard="Numeric"
+                                       Text="{Binding IngredientGramsText}"
+                                       HeightRequest="48"
+                                       FontSize="14" />
+                            </Border>
                         </VerticalStackLayout>
 
                         <Button Grid.Column="1"
-                                Text="{loc:Translate AddRecipe_AddIngredient}"
-                                VerticalOptions="End"
+                                Text="{loc:Translate AddRecipe_AddIngredientButton}"
                                 Command="{Binding AddIngredientCommand}"
-                                FontSize="12" />
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                Padding="14, 0"
+                                VerticalOptions="End" />
                     </Grid>
 
-                    <!-- Opcion de Incorporar Alino o Condimento Preconfigurado -->
-                    <Border StrokeShape="RoundRectangle 8"
+                    <!-- Integracion de Alinos y Marinadas Clinicas -->
+                    <Border StrokeShape="RoundRectangle 14"
                             Padding="12"
-                            Background="{AppThemeBinding Light=#FEF9E7, Dark=#262115}"
-                            Stroke="{AppThemeBinding Light=#F9E79F, Dark=#564A23}"
-                            StrokeThickness="1">
+                            Stroke="{StaticResource Primary}"
+                            StrokeThickness="1"
+                            Background="{AppThemeBinding Light={StaticResource MineralProteinBg}, Dark=#1e2d14}">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="{loc:Translate AddRecipe_AddSeasoningTitle}"
+                            <Label Text="Incorporar Aliño o Marinada Existente"
                                    FontAttributes="Bold"
                                    FontSize="13"
-                                   TextColor="{AppThemeBinding Light=#B9770E, Dark=#F39C12}" />
-
-                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
-                                <Picker Grid.Column="0"
-                                        ItemsSource="{Binding AvailableSeasonings}"
-                                        ItemDisplayBinding="{Binding SummaryDisplayText}"
-                                        SelectedItem="{Binding SelectedSeasoning}"
-                                        Title="{loc:Translate AddRecipe_SelectSeasoningPlaceholder}"
-                                        FontSize="12" />
-
+                                   TextColor="{StaticResource OnPrimaryContainer}" />
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                <Border Grid.Column="0"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource BorderWarmLight}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark=#23232c}"
+                                        Padding="8, 0">
+                                    <Picker ItemsSource="{Binding AvailableSeasonings}"
+                                            ItemDisplayBinding="{Binding Name}"
+                                            SelectedItem="{Binding SelectedSeasoning}"
+                                            Title="Seleccionar aliño..."
+                                            HeightRequest="48"
+                                            FontSize="12" />
+                                </Border>
                                 <Button Grid.Column="1"
-                                        Text="{loc:Translate AddRecipe_ApplySeasoning}"
+                                        Text="Incorporar"
                                         Command="{Binding ApplySeasoningCommand}"
-                                        BackgroundColor="{StaticResource WarningAmber}"
-                                        TextColor="White"
-                                        FontSize="11"
-                                        Padding="10, 4"
+                                        Style="{StaticResource StitchPrimaryButtonStyle}"
+                                        HeightRequest="48"
+                                        MinimumHeightRequest="48"
+                                        Padding="14, 0"
                                         VerticalOptions="Center" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Lista de ingredientes agregados -->
-                    <Label Text="{loc:Translate AddRecipe_IngredientsListTitle}"
-                           FontAttributes="Bold"
+                    <!-- Lista de Ingredientes Agregados -->
+                    <Label Text="Ingredientes dosificados en la preparación:"
                            FontSize="12"
-                           Margin="0, 6, 0, 0" />
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Outline}"
+                           Margin="0, 4, 0, 0" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Ingredients}"
-                                         Spacing="6">
+                                         Spacing="8">
                         <BindableLayout.EmptyView>
-                            <Label Text="{loc:Translate AddRecipe_EmptyIngredients}"
-                                   TextColor="Gray"
+                            <Label Text="No se han agregado ingredientes aún."
                                    FontSize="12"
+                                   TextColor="{StaticResource Outline}"
                                    HorizontalTextAlignment="Center"
-                                   Padding="6" />
+                                   Margin="0, 8" />
                         </BindableLayout.EmptyView>
 
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:RecipeIngredientDraftModel">
-                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
-                                    <Label Grid.Column="0" Text="{Binding DisplayText}" FontAttributes="Bold" VerticalOptions="Center" />
-                                    <Button Grid.Column="1"
-                                            Text="{loc:Translate AddRecipe_Remove}"
-                                            Command="{Binding Source={x:Reference ThisAddRecipePage}, Path=BindingContext.RemoveIngredientCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="#E74C3C"
-                                            TextColor="White"
-                                            FontSize="12"
-                                            HeightRequest="44"
-                                            MinimumHeightRequest="44"
-                                            MinimumWidthRequest="44"
-                                            Padding="12, 4"
-                                            VerticalOptions="Center" />
-                                </Grid>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Padding="12, 8"
+                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding Summary}"
+                                               FontAttributes="Bold"
+                                               FontSize="13"
+                                               VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+
+                                        <Button Grid.Column="1"
+                                                Text="✕"
+                                                Command="{Binding Source={x:Reference ThisAddRecipePage}, Path=BindingContext.RemoveIngredientCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="{StaticResource Secondary}"
+                                                TextColor="White"
+                                                FontAttributes="Bold"
+                                                FontSize="12"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                CornerRadius="10"
+                                                Padding="0"
+                                                VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Seccion de Pasos Numerados -->
-            <Label Text="{loc:Translate AddRecipe_PreparationSteps}"
-                   FontAttributes="Bold"
-                   FontSize="15" />
+            <!-- 5. Pasos Secuenciales de Elaboracion -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Padding="16"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                    StrokeThickness="1"
+                    Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate AddRecipe_Steps}"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-            <Border StrokeShape="RoundRectangle 10"
-                    Padding="14"
-                    Background="{AppThemeBinding Light=#FFFFFF, Dark=#25252D}">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="{loc:Translate AddRecipe_StepInstruction}" FontAttributes="Bold" FontSize="12" />
-                    <Editor Placeholder="{loc:Translate AddRecipe_StepInstructionPlaceholder}"
-                            Text="{Binding CurrentStepInstruction}"
-                            HeightRequest="60" />
+                    <!-- Instruccion del Paso -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{loc:Translate AddRecipe_StepInstruction}"
+                               FontAttributes="Bold"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 4">
+                            <Editor Placeholder="{loc:Translate AddRecipe_StepInstructionPlaceholder}"
+                                    Text="{Binding CurrentStepInstruction}"
+                                    HeightRequest="70"
+                                    FontSize="13" />
+                        </Border>
+                    </VerticalStackLayout>
 
-                    <Label Text="{loc:Translate AddRecipe_StepImage}" FontAttributes="Bold" FontSize="12" />
-                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                        <Entry Grid.Column="0"
-                               Placeholder="{loc:Translate AddRecipe_ImagePathPlaceholder}"
-                               Text="{Binding CurrentStepImagePath}" />
+                    <!-- Selector de Imagen del Paso -->
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                StrokeThickness="1"
+                                Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}"
+                                Padding="8, 0">
+                            <Entry Placeholder="{loc:Translate AddRecipe_ImagePathPlaceholder}"
+                                   Text="{Binding CurrentStepImagePath}"
+                                   HeightRequest="48"
+                                   FontSize="12"
+                                   VerticalOptions="Center" />
+                        </Border>
+
                         <Button Grid.Column="1"
                                 Text="{loc:Translate AddRecipe_BrowseButton}"
                                 Command="{Binding PickStepImageCommand}"
-                                FontSize="12" />
+                                Style="{StaticResource StitchNeutralButtonStyle}"
+                                HeightRequest="48"
+                                MinimumHeightRequest="48"
+                                Padding="14, 0"
+                                VerticalOptions="Center" />
                     </Grid>
 
-                    <Button Text="{loc:Translate AddRecipe_AddStep}"
+                    <Button Text="{loc:Translate AddRecipe_AddStepButton}"
                             Command="{Binding AddStepCommand}"
-                            FontAttributes="Bold"
-                            FontSize="12" />
+                            Style="{StaticResource StitchNeutralButtonStyle}"
+                            HeightRequest="48"
+                            MinimumHeightRequest="48" />
 
-                    <!-- Lista de Pasos Registrados -->
-                    <Label Text="{loc:Translate AddRecipe_StepsListTitle}"
-                           FontAttributes="Bold"
+                    <!-- Lista de Pasos Numerados -->
+                    <Label Text="Secuencia de elaboración clínica:"
                            FontSize="12"
-                           Margin="0, 8, 0, 0" />
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Outline}"
+                           Margin="0, 4, 0, 0" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Steps}"
-                                         Spacing="8">
+                                         Spacing="10">
                         <BindableLayout.EmptyView>
-                            <Label Text="{loc:Translate AddRecipe_EmptySteps}"
-                                   TextColor="Gray"
+                            <Label Text="No se han registrado pasos aún."
                                    FontSize="12"
+                                   TextColor="{StaticResource Outline}"
                                    HorizontalTextAlignment="Center"
-                                   Padding="6" />
+                                   Margin="0, 8" />
                         </BindableLayout.EmptyView>
 
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:RecipeStepDraftModel">
-                                <Border StrokeShape="RoundRectangle 8"
-                                        Padding="10"
-                                        Background="{AppThemeBinding Light=#F8F9FA, Dark=#1A252F}">
-                                    <VerticalStackLayout Spacing="6">
-                                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                                            <Label Grid.Column="0" Text="{Binding StepTitle}" FontAttributes="Bold" VerticalOptions="Center" />
+                                <Border StrokeShape="RoundRectangle 14"
+                                        Padding="14"
+                                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                                        StrokeThickness="1"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark=#23232c}">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                            <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                                <Border StrokeShape="RoundRectangle 9999"
+                                                        Padding="8, 2"
+                                                        Background="{StaticResource PrimaryDark}">
+                                                    <Label Text="{Binding StepNumber, StringFormat='Paso {0}'}"
+                                                           FontSize="11"
+                                                           FontAttributes="Bold"
+                                                           TextColor="White" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+
                                             <Button Grid.Column="1"
-                                                    Text="{loc:Translate AddRecipe_Remove}"
+                                                    Text="✕"
                                                     Command="{Binding Source={x:Reference ThisAddRecipePage}, Path=BindingContext.RemoveStepCommand}"
                                                     CommandParameter="{Binding .}"
-                                                    BackgroundColor="#E74C3C"
+                                                    BackgroundColor="{StaticResource Secondary}"
                                                     TextColor="White"
+                                                    FontAttributes="Bold"
                                                     FontSize="12"
-                                                    HeightRequest="44"
-                                                    MinimumHeightRequest="44"
-                                                    MinimumWidthRequest="44"
-                                                    Padding="12, 4"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    CornerRadius="10"
+                                                    Padding="0"
                                                     VerticalOptions="Center" />
                                         </Grid>
 
-                                        <Label Text="{Binding Instruction}" FontSize="13" />
+                                        <Label Text="{Binding Instruction}"
+                                               FontSize="13"
+                                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
 
-                                        <Image Source="{Binding ImagePath}"
-                                               HeightRequest="100"
-                                               Aspect="AspectFill"
-                                               IsVisible="{Binding HasImage}" />
+                                        <Border StrokeShape="RoundRectangle 10"
+                                                HeightRequest="120"
+                                                Padding="0"
+                                                IsVisible="{Binding HasImage}">
+                                            <Image Source="{Binding ImagePath}"
+                                                   Aspect="AspectFill" />
+                                        </Border>
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
@@ -266,17 +485,14 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Mensaje de estado -->
-            <Label Text="{Binding StatusMessage}"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource Primary}" />
-
-            <!-- Boton Guardar Receta -->
-            <Button Text="{loc:Translate AddRecipe_SaveRecipe}"
+            <!-- 6. Boton Principal Flotante/Final de Guardado -->
+            <Button Text="{loc:Translate AddRecipe_SaveButton}"
                     Command="{Binding SaveRecipeCommand}"
-                    FontAttributes="Bold"
-                    HeightRequest="48" />
+                    Style="{StaticResource StitchPrimaryButtonStyle}"
+                    HeightRequest="52"
+                    MinimumHeightRequest="52"
+                    FontSize="16"
+                    Margin="0, 8, 0, 16" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

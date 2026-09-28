@@ -22,23 +22,44 @@
     <Grid RowDefinitions="*, Auto">
         <!-- Area Desplazable de Contenido Principal -->
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="14" Spacing="16">
+            <VerticalStackLayout Padding="16" Spacing="16">
                 <!-- Indicador de Carga -->
                 <ActivityIndicator IsRunning="{Binding IsBusy}"
                                    IsVisible="{Binding IsBusy}"
-                                   Color="{StaticResource Primary}"
+                                   Color="{StaticResource PrimaryDark}"
                                    HorizontalOptions="Center" />
 
+                <!-- Encabezado Clinico Bento -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Padding="16, 12"
+                        Stroke="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                        StrokeThickness="1"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource CardBackgroundDark}}">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="DIETAPP • MÓDULO DE ALIÑOS"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryDark}" />
+                        <Label Text="{loc:Translate Seasonings_Title}"
+                               FontAttributes="Bold"
+                               FontSize="20"
+                               TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}" />
+                        <Label Text="Vinagretas, aderezos y marinadas clínicas controladas"
+                               FontSize="12"
+                               TextColor="{StaticResource Outline}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Mensaje de Estado / Notificacion Reactiva -->
-                <Border StrokeShape="RoundRectangle 10"
+                <Border StrokeShape="RoundRectangle 12"
                         Padding="12, 8"
-                        Background="{AppThemeBinding Light=#FFF3ED, Dark=#2E1D16}"
+                        Background="{AppThemeBinding Light={StaticResource MineralProteinBg}, Dark=#1e2d14}"
                         Stroke="{StaticResource Primary}"
                         StrokeThickness="1"
                         IsVisible="{Binding HasStatusMessage}">
                     <Label Text="{Binding StatusMessage}"
                            FontSize="12"
-                           TextColor="{StaticResource Primary}"
+                           TextColor="{StaticResource OnPrimaryContainer}"
                            FontAttributes="Bold" />
                 </Border>
 
@@ -399,12 +420,12 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- 6. Barra Fija de Acciones Inferiores (mockupBase.jpeg) -->
+        <!-- 6. Barra Fija de Acciones Inferiores (Stitch Ergonomics) -->
         <Border Grid.Row="1"
                 StrokeShape="RoundRectangle 24"
                 Background="{AppThemeBinding Light={StaticResource ContrastDark}, Dark=#18181B}"
                 Padding="16, 12"
-                Margin="14, 0, 14, 12"
+                Margin="16, 0, 16, 12"
                 StrokeThickness="0"
                 ZIndex="10">
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
@@ -414,24 +435,22 @@
                         Command="{Binding ToggleCreatePanelCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackgroundDark}}"
                         TextColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
-                        BorderColor="{AppThemeBinding Light={StaticResource ContrastDark}, Dark={StaticResource White}}"
-                        BorderWidth="1.5"
+                        BorderColor="{AppThemeBinding Light={StaticResource BorderWarmLight}, Dark={StaticResource BorderWarmDark}}"
+                        BorderWidth="1"
                         FontAttributes="Bold"
-                        CornerRadius="22"
-                        HeightRequest="44"
-                        MinimumHeightRequest="44"
+                        CornerRadius="14"
+                        HeightRequest="48"
+                        MinimumHeightRequest="48"
                         Padding="16, 8" />
 
                 <!-- Boton Primario: Completado (Verde Lima Suave con Texto Oscuro) -->
                 <Button Grid.Column="1"
                         Text="Completado"
                         Command="{Binding CompleteSelectionCommand}"
-                        BackgroundColor="{StaticResource Secondary}"
-                        TextColor="{StaticResource ContrastDark}"
-                        FontAttributes="Bold"
-                        CornerRadius="22"
-                        HeightRequest="44"
-                        MinimumHeightRequest="44"
+                        Style="{StaticResource StitchPrimaryButtonStyle}"
+                        CornerRadius="14"
+                        HeightRequest="48"
+                        MinimumHeightRequest="48"
                         Padding="16, 8" />
             </Grid>
         </Border>
