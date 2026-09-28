@@ -8,12 +8,13 @@ Proyecto: DietApp (.NET 10 MAUI)
 DietApp para Android esta concebida como una aplicacion movil ergonomica, reactiva y totalmente offline-first, orientada al registro, control y seguimiento clinico-nutricional de la ingesta de alimentos con foco especializado en 7 minerales criticos (fosforo, potasio, sodio, calcio, magnesio, hierro y zinc), proteinas (g) y valor calorico (kcal).
 
 ### Caracteristicas Tecnicas en Android
-* Framework base: .NET 10 MAUI con destino net10.0-android (API 21 a API 35).
+* Framework base: .NET 10 MAUI con destino net10.0-android (API 21 a API 35) y compilador XAML optimizado (`MauiXamlInflator=SourceGen`).
+* Sistema de Diseno: Implementacion completa del sistema Stitch "Clinical Nutrition Ergonomics" con paleta normalizada (Primario `#84cc16`, Alerta `#ef713f`, Preventivo `#f59e0b`), tarjetas bento con borde definido (`#c1cab0`) y matriz cromatica individual para 7 minerales.
 * Persistencia local: SQLite relacional indexado mediante [SqliteFoodRepository](file:///e:/GitHub_desktop/DietApp/src/DietApp.Infrastructure/Repositories/SqliteFoodRepository.cs) y [DietAppDbContext](file:///e:/GitHub_desktop/DietApp/src/DietApp.Infrastructure/Data/DietAppDbContext.cs) ubicado en el almacenamiento protegido de la aplicacion (`FileSystem.AppDataDirectory`).
 * Pre-carga de datos: 363 alimentos fundacionales de USDA FoodData Central con 383 porciones caseras y codigos nutricionales oficiales.
-* Ergonomia tactil: Objetivos de pulsacion con altura minima de 44dp / 48dp, espaciados tactiles, carruseles deslizables por gestos y teclados virtuales numericos especializados.
+* Ergonomia tactil: Objetivos de pulsacion con altura minima de 48dp en botones, selectores (`Picker`), selectores de fecha (`DatePicker`) y campos de entrada, radios de curvatura consistentes (12dp) y jerarquia visual accesible.
 * Navegacion: Shell inferior nativo ([AppShell](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/AppShell.xaml)) de 4 pestanas nucleares accesibles con el pulgar mas rutas modulares apiladas en la pila de navegacion.
-* Temas: Soporte reactivo de Modo Claro, Modo Oscuro y sincronizacion con el sistema operativo de Android ([AppThemeService](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/Services/AppThemeService.cs)).
+* Temas: Soporte reactivo de Modo Claro (`#faf8ff`), Modo Oscuro (`#121214`) y sincronizacion con el sistema operativo de Android ([AppThemeService](file:///e:/GitHub_desktop/DietApp/src/DietApp.UI/Services/AppThemeService.cs)).
 
 ---
 
@@ -38,7 +39,7 @@ AppShell (Barra Inferior de 4 Pestanas)
 
 ## 3. Catalogo Detallado de Vistas en Android
 
-A continuacion se detallan las 9 vistas que componen la interfaz movil de DietApp, especificando sus componentes XAML, ViewModels asociados, adaptaciones tactiles y funcionalidades operativas.
+A continuacion se detallan las 9 vistas que componen la interfaz movil de DietApp, especificando sus componentes XAML, ViewModels asociados, adaptaciones tactiles y funcionalidades operativas bajo la estetica Stitch Clinical Nutrition Ergonomics.
 
 ---
 
@@ -49,26 +50,25 @@ A continuacion se detallan las 9 vistas que componen la interfaz movil de DietAp
 * Tipo de Navegacion: Pestana primaria del TabBar inferior (Ruta: `MealTrackingPage`).
 * Proposito en Movil: Es la pantalla de inicio habitual del usuario. Permite inspeccionar en un solo vistazo el acumulado diario de minerales y proteinas, recibir alertas clinicas inmediatas y desglosar cada comida del dia.
 
-#### Componentes Visuales y Adaptacion Tactil
-1. Barra superior de navegacion por fechas:
-   - Botones tactiles para retroceder o avanzar de dia con altura de 44dp (`GoToPreviousDayCommand`, `GoToNextDayCommand`).
-   - Indicador central de la fecha seleccionada en formato extendido.
-2. Banner de Alertas y Avisos Preventivos:
-   - Contenedor con borde redondeado y fondo contrastante que se activa dinamicamente si el consumo alcanza el umbral preventivo (ambar) o rebasa el 100% del maximo fijado (rojo coral).
-   - Lista vertical con chips de severidad ("AVISO PREVENTIVO" / "LIMITE SUPERADO"), identificador del mineral, exceso en miligramos y porcentaje alcanzado.
-3. Tarjeta de Resumen Total del Dia:
-   - Bloque superior con badge verde destacado que exhibe los gramos totales de proteina consumidos (`DailyProteinDisplay`).
-   - Coleccion fluida envuelta (`FlexLayout Wrap="Wrap"`) con pastillas nutricionales para los 7 minerales cuantificables en miligramos (Fosforo, Potasio, Sodio, Calcio, Magnesio, Hierro, Zinc).
+#### Componentes Visuales y Adaptacion Tactil (Stitch)
+1. Encabezado Clinico y Navegacion por Fechas:
+   - Cabecera con rotulo de seccion `DIETAPP CLINICAL` y subtitulo dinamico de fecha.
+   - Botones tactiles de 48dp x 48dp con estilo neutral para retroceder o avanzar de dia (`GoToPreviousDayCommand`, `GoToNextDayCommand`).
+   - Boton primario de 48dp de altura "+ Registrar Comida" en verde lima clinico (`#84cc16`).
+2. Banner Clinico de Alertas y Avisos Preventivos:
+   - Tarjeta bento con fondo ambar claro (`#fef3c7`) y borde dorado (`#f59e0b`) que se despliega si algun mineral rebasa el umbral configurado o el limite maximo.
+   - Lista vertical con chips de severidad, identificador del mineral, exceso en miligramos y porcentaje alcanzado.
+3. Tarjeta Bento de Resumen Total del Dia:
+   - Bloque superior con badge verde destacado (`#84cc16`) que exhibe los gramos totales de proteina consumidos (`DailyProteinDisplay`).
+   - Matriz fluida envuelta (`FlexLayout Wrap="Wrap"`) con pastillas nutricionales Stitch (`StitchPillStyle`) para los 7 minerales cuantificables en miligramos (Fosforo, Potasio, Sodio, Calcio, Magnesio, Hierro, Zinc).
 4. Listado Vertical de Comidas Ingeridas:
-   - Tarjetas independientes para cada comida (Desayuno, Almuerzo, Cena, Snack, Otro).
+   - Tarjetas independientes para cada comida (Desayuno, Almuerzo, Cena, Snack, Otro) con borde `#c1cab0`.
    - Cabecera con nombre del momento y resumen nutricional (kcal y proteina).
-   - Boton rojo tactil de eliminacion individual con altura de 44dp y confirmacion inmediata.
-   - Lista indentada con viñetas de cada alimento consumido y gramaje ingerido.
+   - Boton tactil de eliminacion individual con altura de 48dp y confirmacion inmediata.
+   - Lista con viñetas de cada alimento consumido y gramaje ingerido.
    - Desglose de minerales aportados por cada comida especifica en pastillas compactas.
-5. Boton de Accion Principal (+ Registrar Comida):
-   - Ubicado junto al encabezado de comidas para registrar nuevas ingestas sin necesidad de scroll prolongado.
-6. Estado Vacio:
-   - Ilustracion textual y boton directo para registrar la primera ingesta cuando no existen registros en la fecha consultada.
+5. Estado Vacio:
+   - Tarjeta informativa explicativa y boton directo para registrar la primera ingesta cuando no existen registros en la fecha consultada.
 
 ---
 
@@ -102,27 +102,27 @@ A continuacion se detallan las 9 vistas que componen la interfaz movil de DietAp
 * Tipo de Navegacion: Ruta secundaria apilada (Ruta: `RecipeDetailPage`).
 * Proposito en Movil: Visualizar todos los detalles de una receta siguiendo la identidad visual oficial (Vista A de DESIGN.md), consultar ingredientes en cuadricula 2x2, auditar advertencias clinicas y registrar raciones directamente en el diario.
 
-#### Componentes Visuales y Adaptacion Tactil
+#### Componentes Visuales y Adaptacion Tactil (Stitch)
 1. Hero Fotografico Superior con Contenedores Flotantes:
-   - Imagen en alta resolucion del plato terminado con altura fija de 250dp y esquinas redondeadas de 20dp.
-   - Boton circular flotante translucido 'X' (44dp x 44dp, esquinas 22dp) en la esquina superior izquierda para cerrar la vista con un toque del pulgar (`Shell.Current.GoToAsync("..")`).
-   - Barra inferior flotante oscura superpuesta sobre el borde de la foto con el titulo del plato y badge de energia en color verde lima (`kcal por porcion`).
+   - Imagen en alta resolucion del plato terminado con altura fija de 260dp y esquinas redondeadas de 16dp.
+   - Boton circular flotante translucido 'X' (48dp x 48dp, esquinas 24dp) en la esquina superior izquierda para cerrar la vista con un toque del pulgar (`Shell.Current.GoToAsync("..")`).
+   - Barra inferior flotante oscura superpuesta sobre el borde de la foto con el titulo del plato y badge de energia en color verde lima clinico (`#84cc16`).
 2. Fila de Pildoras de Nutrientes Criticos:
-   - Tres pastillas distribuidas uniformemente: Sodio (neutra), Potasio (destacada en color Coral Orange `#ef713f`) y Fosforo (neutra).
+   - Tres pastillas distribuidas uniformemente: Sodio (azul cobalto `#2563eb`), Potasio (naranja coral `#ef713f`) y Fosforo (amatista `#8b5cf6`).
 3. Cuadricula 2x2 de Ingredientes Dosificados:
    - Tarjetas compactas en dos columnas (`FlexLayout` con `Basis="48%"`) con bordes calidos, fotografia del alimento base, nombre y gramaje exacto.
-   - Desplegable tactil inferior para ordenar los ingredientes de la receta segun la cantidad de cualquier mineral aportado.
+   - Desplegable tactil inferior de 48dp para ordenar los ingredientes de la receta segun la cantidad de cualquier mineral aportado.
 4. Banner de Auditoria Clinica Proactiva:
    - Evalua en tiempo real si consumir una porcion excede el limite diario del usuario o si sumada al consumo acumulado del dia seleccionado alcanza el umbral de advertencia preventivo.
 5. Resumen Completo de Minerales por Porcion:
-   - Panel desplegado con las 7 concentraciones de minerales en miligramos.
+   - Panel desplegado con las 7 concentraciones de minerales en miligramos con pastillas Stitch individuales.
 6. Modulo de Registro en Ingesta Diaria:
-   - Selector de fecha nativo de Android (`DatePicker`).
-   - Selector de momento de comida (`Picker` para Desayuno, Almuerzo, Cena, Snack).
+   - Selector de fecha nativo de Android (`DatePicker`) con 48dp de altura.
+   - Selector de momento de comida (`Picker` para Desayuno, Almuerzo, Cena, Snack) con 48dp de altura.
    - Campo numerico para cantidad de raciones consumidas.
-   - Boton verde lima "Registrar Consumo" con calculo proporcional automatico.
+   - Boton verde lima clinico "Registrar Consumo" (`#84cc16`, 48dp) con calculo proporcional automatico.
 7. Pasos Numerados de Elaboracion:
-   - Tarjetas individuales por paso con insignia numerada, texto de instruccion e imagen ilustrativa de la tecnica culinaria.
+   - Tarjetas bento individuales por paso con insignia numerada, texto de instruccion e imagen ilustrativa de la tecnica culinaria.
 
 ---
 
@@ -133,7 +133,7 @@ A continuacion se detallan las 9 vistas que componen la interfaz movil de DietAp
 * Tipo de Navegacion: Ruta secundaria apilada (Ruta: `SeasoningsPage`).
 * Proposito en Movil: Administrar condimentos, vinagretas y marinadas preconfiguradas segun el prototipo visual oficial (Vista B de DESIGN.md), con seleccion interactiva mediante toques y barra de accion fija al alcance del pulgar.
 
-#### Componentes Visuales y Adaptacion Tactil
+#### Componentes Visuales y Adaptacion Tactil (Stitch)
 1. Carrusel Superior Horizontal de Modulos del Menu:
    - Desplazamiento horizontal fluido (`ScrollView Orientation="Horizontal"`) con tarjetas compactas (145dp de ancho) que muestran el plato principal (con badges de alerta), postre y liquido (con badges de check).
 2. Segmentacion por Categorias:
@@ -146,9 +146,9 @@ A continuacion se detallan las 9 vistas que componen la interfaz movil de DietAp
 5. Listado de Alinos Guardados en Base de Datos:
    - Tarjetas con nombre, descripcion, calorias totales y boton de borrado persistente.
 6. Barra Inferior Fija de Acciones (Bottom Action Bar):
-   - Contenedor oscuro flotante anclado en la parte inferior de la pantalla con dos botones pildora de 44dp:
+   - Contenedor oscuro flotante anclado en la parte inferior de la pantalla con dos botones pildora de 48dp:
      - "Agregar" (fondo blanco con borde oscuro) para abrir o cerrar el panel constructor.
-     - "Completado" (fondo verde lima suave `#bed35a`) para confirmar la seleccion activa y cerrar.
+     - "Completado" (fondo verde lima clinico `#84cc16`, 48dp) para confirmar la seleccion activa y cerrar.
 
 ---
 

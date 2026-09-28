@@ -26,38 +26,36 @@ Dial: ENERGY 1 / RHYTHM 2 / MOTION 1
 
 El sistema visual contempla una paleta base oficial solicitada para el producto junto con dos propuestas de exploracion cromatica que resuelven contrastes, estados y niveles de jerarquia.
 
-### 4.1. Paleta Base (Solicitada)
-Es el esquema principal del sistema, caracterizado por una atmosfera fresca y calida con acentos energeticos controlados:
+### 4.1. Paleta Base Stitch (Clinical Nutrition Ergonomics)
+Es el esquema oficial implementado a partir del proyecto de diseno Stitch "Clinical Nutrition Ergonomics", caracterizado por una atmosfera clinica moderna, fondos limpios y contrastes normados para dispositivos moviles:
 
 | Rol Semantico | Muestra / Color | Codigo HEX | Uso en Interfaz |
 | :--- | :--- | :--- | :--- |
-| Acento Primario / Alerta | Naranja Coral | `#ef713f` | Pildoras de nutrientes criticos en alerta (ej. Potasio excedido o foco), checks de seleccion activa e indicadores clave. |
-| Acento Secundario / Accion | Verde Lima Suave | `#bed35a` | Botones de accion principal completada (`Completado`), estados exitosos y validacion de balance. |
-| Contraste / Texto Principal | Negro Profundo | `#0c0c0c` | Tipografia principal, iconos interactivos, bordes definidos y contenedor de botones oscuros. |
-| Superficie / Fondo | Blanco Calido | `#fffaf8` | Fondos de pantalla, tarjetas de detalle y lienzos de contenido limpio. |
+| Acento Primario / Accion | Verde Lima Clinico | `#84cc16` | Botones de accion principal (`Guardar`, `Completado`, `Registrar`), badges de proteina destacada y bordes de seleccion activa. |
+| Primario Oscuro | Verde Bosque Profundo | `#416900` | Estados presionados y textos sobre acentos lima. |
+| Alerta / Exceso / Nivel Critico | Naranja Coral | `#ef713f` | Pildoras de advertencia, banners de limite superado, pildora de potasio prioritario y acciones destructivas de eliminacion. |
+| Alerta Preventiva / Advertencia | Ambar Dorado | `#f59e0b` | Banners de aviso preventivo de minerales (consumo sobre el umbral configurado). |
+| Superficie Base (Claro) | Blanco Clinico Calido | `#faf8ff` | Fondo general de vistas y lienzos en modo claro. |
+| Superficie Contenedor (Claro) | Blanco Puro | `#ffffff` | Tarjetas bento, modulos interactivos y fichas de detalle. |
+| Superficie Contenedor Elevado | Gris Pizarra Suave | `#e2e8f0` | Contenedores de agrupacion secundaria y barras de herramientas. |
+| Borde Estructural (Claro) | Verde Oliva Claro | `#c1cab0` | Contornos de tarjetas (stroke de 1px), separadores y cajas de entrada. |
+| Texto Principal (Claro) | Azul Noche Muy Oscuro | `#191c1e` | Tipografia de lectura principal, titulos y etiquetas de campos. |
+| Texto Secundario (Claro) | Gris Neutro Medio | `#64748b` | Subtitulos, unidades secundarias y textos de ayuda. |
+| Fondo Base (Oscuro) | Grafito Profundo | `#121214` | Fondo de pantallas en modo oscuro. |
+| Contenedor (Oscuro) | Antracita | `#1c1c20` | Superficie de tarjetas bento en modo oscuro. |
 
-### 4.2. Propuesta #1 (Tonos Tierra y Organicos)
-Variacion orientada a una experiencia sobria, natural y editorial:
+### 4.2. Matriz Cromatica Especializada para los 7 Minerales
+Para asegurar una identificacion visual inmediata sin confusion entre nutrientes cuantificables, el sistema asigna un tono cromatico normalizado a cada mineral:
 
-| Rol Semantico | Muestra / Color | Codigo HEX | Uso en Interfaz |
-| :--- | :--- | :--- | :--- |
-| Acento Luminoso | Mostaza / Ocre Dorado | `#f2b742` | Cabeceras destacadas, barras superiores de resumen y alertas leves. |
-| Tono Medio Vegetal | Verde Oliva | `#96a757` | Contenedores secundarios, fondos de pie de pagina y estados intermedios. |
-| Fondo Estructural / Base | Verde Bosque Profundo | `#4d6a4e` | Pestanas de agrupacion, encabezados modulares y contrastes oscuros. |
-| Neutro Oscuro | Antracita / Carbon | `#252525` | Textos de alta jerarquia y bordes estructurales. |
-| Fondo Calido | Crema Vainilla | `#ffecc2` | Lienzos generales, fondos de tarjetas y superficies de lectura prolongada. |
-
-### 4.3. Propuesta #2 (Luminosa y Citrica Suave)
-Variacion enfocada en ligereza visual y division de modulos en bloques pastel:
-
-| Rol Semantico | Muestra / Color | Codigo HEX | Uso en Interfaz |
-| :--- | :--- | :--- | :--- |
-| Acento Primario | Naranja Medio | `#f5913c` | Botones principales y advertencias de umbrales. |
-| Acento Secundario | Salmone / Melocoton | `#f7c6a1` | Encabezados de tarjetas, bordes de elementos agrupados y etiquetas secundarias. |
-| Acento de Balance | Verde Lima Brillante | `#d5e159` | Barra superior de navegacion, pildoras activas y modales flotantes. |
-| Tono de Apoyo | Salvia Pastel / Lima Suave | `#e2e5ac` | Fondos de modulos secundarios y separadores. |
-| Neutro Oscuro | Oliva Terroso / Musgo | `#3c3d2d` | Texto principal, iconografia y elementos de cierre. |
-| Fondo Base | Marfil Claro | `#fef8e0` | Superficie general de la aplicacion y tarjetas limpias. |
+| Mineral | Simbolo | Color Semantico | Codigo HEX | Contraste de Texto |
+| :--- | :--- | :--- | :--- | :--- |
+| Potasio | K | Naranja Coral | `#ef713f` | Blanco |
+| Fosforo | P | Amatista Real | `#8b5cf6` | Blanco |
+| Sodio | Na | Azul Cobalto | `#2563eb` | Blanco |
+| Calcio | Ca | Cian Turquesa | `#06b6d4` | Blanco |
+| Magnesio | Mg | Rosa Pizarra | `#ec4899` | Blanco |
+| Hierro | Fe | Terracota Calido | `#f97316` | Blanco |
+| Zinc | Zn | Acero Industrial | `#64748b` | Blanco |
 
 ---
 
@@ -149,7 +147,7 @@ Enfoque de tarjetas modulares y hojas de dialogo sobre la Paleta 2 (`#f5913c`, `
 
 ## 7. Principios de Maquetacion, Accesibilidad y Usabilidad
 
-1. **Areas de Toque Minimas**: Todos los botones (como `Agregar`, `Completado` y tarjetas de seleccion) deben contar con un area minima interactiva de 44x44 dp/px.
+1. **Areas de Toque Minimas**: Todos los botones (como `Agregar`, `Completado` y tarjetas de seleccion), pickers y campos de entrada deben contar con un area minima interactiva de 48x48 dp/px para cumplir con las directrices de ergonomia tactil de Android.
 2. **Legibilidad de Minerales y Gramajes**: Las cifras numericas de sodio, potasio y fosforo deben destacarse siempre con suficiente contraste (WCAG AA ratio > 4.5:1) y sin ambiguedades de lectura.
 3. **Ausencia de Estados Ciegos**: Toda lista o pantalla de detalle debe contemplar estado vacio explicativo, estado de carga y estado de error.
 4. **Sin Controles Muertos ni Adornos Innecesarios**: Todo elemento visual cumple una funcion de orientacion, advertencia clinica o seleccion explicita.
