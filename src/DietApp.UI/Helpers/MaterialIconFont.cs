@@ -92,4 +92,13 @@ public static class MaterialIconFont
     public const string ArrowDropDown = "\ue5c5";
     public const string UnfoldMore = "\ue5d7";
     public const string Star = "\ue838";
+    public const string Language = "\ue894";
+    public const string Palette = "\ue40a";
+    public const string LightMode = "\ue518";
+    public const string DarkMode = "\ue51c";
+    public const string Devices = "\ue1b1";
+    public const string MedicalInformation = "\uebed";
+    public const string Lock = "\ue897";
+    public const string PictureAsPdf = "\ue415";
+    public const string ManageAccounts = "\uf02e";
 }
