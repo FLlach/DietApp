@@ -26,6 +26,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            // Inicializacion del motor nativo de escaneo de codigos de barra (Google ML Kit en Android / Apple Vision en iOS)
             .UseBarcodeScanning()
             .ConfigureFonts(fonts =>
             {
