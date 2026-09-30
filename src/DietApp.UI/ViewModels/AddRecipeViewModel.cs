@@ -118,6 +118,17 @@ public partial class AddRecipeViewModel : ObservableObject
     [ObservableProperty]
     private string _newStepTechnique = "Cocción suave";
 
+    [ObservableProperty]
+    private string? _newStepImagePath;
+
+    [ObservableProperty]
+    private bool _hasNewStepImage;
+
+    partial void OnNewStepImagePathChanged(string? value)
+    {
+        HasNewStepImage = !string.IsNullOrWhiteSpace(value);
+    }
+
     // 5. Selectores Modales / Desplegables de Alimentos y Aliños
     [ObservableProperty]
     private bool _isFoodPickerVisible;
@@ -468,11 +479,13 @@ public partial class AddRecipeViewModel : ObservableObject
         {
             StepNumber = StepsList.Count + 1,
             Instruction = NewStepInstruction.Trim(),
+            ImagePath = NewStepImagePath ?? string.Empty,
             TimeDisplayText = $"{NewStepTimeMinutes} min",
             TechniqueTag = string.IsNullOrWhiteSpace(NewStepTechnique) ? "Cocción dosificada" : NewStepTechnique.Trim()
         });
 
         NewStepInstruction = string.Empty;
+        NewStepImagePath = null;
         UpdateCounts();
     }
 
@@ -491,15 +504,57 @@ public partial class AddRecipeViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Captura una fotografia directamente con la camara del dispositivo para el plato principal.
+    /// Por que se tomo esta decision: Permite al usuario capturar en tiempo real la presentacion
+    /// final de la receta sin salir de la aplicacion para abrir camaras externas.
+    /// </summary>
+    [RelayCommand]
+    private async Task TakePhotoAsync()
+    {
+        try
+        {
+            if (!MediaPicker.Default.IsCaptureSupported)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlertAsync("Cámara", "La cámara no está disponible en este dispositivo.", "Aceptar");
+                }
+                return;
+            }
+
+            var photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
+            {
+                Title = "Fotografía del plato"
+            });
+
+            if (photo != null)
+            {
+                ImageUrl = photo.FullPath;
+                HasImage = true;
+                HasNoImage = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlertAsync("Aviso", $"No fue posible capturar la foto: {ex.Message}", "Aceptar");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Selecciona una fotografia existente desde la galeria o explorador de archivos.
+    /// </summary>
     [RelayCommand]
     private async Task BrowseGalleryAsync()
     {
         try
         {
-            var result = await FilePicker.Default.PickAsync(new PickOptions
+            var result = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
             {
-                PickerTitle = "Seleccionar fotografía del plato",
-                FileTypes = FilePickerFileType.Images
+                Title = "Seleccionar fotografía del plato"
             });
 
             if (result != null)
@@ -509,12 +564,197 @@ public partial class AddRecipeViewModel : ObservableObject
                 HasNoImage = false;
             }
         }
+        catch
+        {
+            try
+            {
+                var result = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Seleccionar fotografía del plato",
+                    FileTypes = FilePickerFileType.Images
+                });
+
+                if (result != null)
+                {
+                    ImageUrl = result.FullPath;
+                    HasImage = true;
+                    HasNoImage = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlertAsync("Aviso", $"No se pudo abrir la galería: {ex.Message}", "Aceptar");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Elimina la fotografia seleccionada del plato principal.
+    /// </summary>
+    [RelayCommand]
+    private void RemovePhoto()
+    {
+        ImageUrl = string.Empty;
+        HasImage = false;
+        HasNoImage = true;
+    }
+
+    /// <summary>
+    /// Despliega un menu contextual para seleccionar origen de fotografia (Camara, Galeria o Eliminar).
+    /// </summary>
+    [RelayCommand]
+    private async Task PickPhotoOptionAsync()
+    {
+        if (Shell.Current == null) return;
+
+        var options = new List<string> { "Tomar foto con cámara", "Elegir de la galería" };
+        if (HasImage)
+        {
+            options.Add("Eliminar foto");
+        }
+
+        string action = await Shell.Current.DisplayActionSheetAsync(
+            "Fotografía del Plato",
+            "Cancelar",
+            null,
+            options.ToArray());
+
+        if (action == "Tomar foto con cámara")
+        {
+            await TakePhotoAsync();
+        }
+        else if (action == "Elegir de la galería")
+        {
+            await BrowseGalleryAsync();
+        }
+        else if (action == "Eliminar foto")
+        {
+            RemovePhoto();
+        }
+    }
+
+    /// <summary>
+    /// Captura una fotografia con la camara directamente para el paso en redaccion.
+    /// </summary>
+    [RelayCommand]
+    private async Task TakeStepPhotoAsync()
+    {
+        try
+        {
+            if (!MediaPicker.Default.IsCaptureSupported)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlertAsync("Cámara", "La cámara no está disponible en este dispositivo.", "Aceptar");
+                }
+                return;
+            }
+
+            var photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
+            {
+                Title = "Fotografía del paso"
+            });
+
+            if (photo != null)
+            {
+                NewStepImagePath = photo.FullPath;
+            }
+        }
         catch (Exception ex)
         {
             if (Shell.Current != null)
             {
-                await Shell.Current.DisplayAlertAsync("Aviso", $"No se pudo abrir la galería: {ex.Message}", "Aceptar");
+                await Shell.Current.DisplayAlertAsync("Aviso", $"No fue posible capturar la foto del paso: {ex.Message}", "Aceptar");
             }
+        }
+    }
+
+    /// <summary>
+    /// Selecciona una fotografia de galeria para el paso en redaccion.
+    /// </summary>
+    [RelayCommand]
+    private async Task BrowseStepGalleryAsync()
+    {
+        try
+        {
+            var result = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+            {
+                Title = "Seleccionar fotografía del paso"
+            });
+
+            if (result != null)
+            {
+                NewStepImagePath = result.FullPath;
+            }
+        }
+        catch
+        {
+            try
+            {
+                var result = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Seleccionar fotografía del paso",
+                    FileTypes = FilePickerFileType.Images
+                });
+
+                if (result != null)
+                {
+                    NewStepImagePath = result.FullPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlertAsync("Aviso", $"No se pudo abrir la galería: {ex.Message}", "Aceptar");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Elimina la fotografia adjunta al paso en redaccion.
+    /// </summary>
+    [RelayCommand]
+    private void RemoveNewStepImage()
+    {
+        NewStepImagePath = null;
+    }
+
+    /// <summary>
+    /// Menu contextual para el paso en redaccion (Camara, Galeria o Eliminar).
+    /// </summary>
+    [RelayCommand]
+    private async Task PickStepPhotoOptionAsync()
+    {
+        if (Shell.Current == null) return;
+
+        var options = new List<string> { "Tomar foto con cámara", "Elegir de la galería" };
+        if (HasNewStepImage)
+        {
+            options.Add("Eliminar foto");
+        }
+
+        string action = await Shell.Current.DisplayActionSheetAsync(
+            "Fotografía del Paso",
+            "Cancelar",
+            null,
+            options.ToArray());
+
+        if (action == "Tomar foto con cámara")
+        {
+            await TakeStepPhotoAsync();
+        }
+        else if (action == "Elegir de la galería")
+        {
+            await BrowseStepGalleryAsync();
+        }
+        else if (action == "Eliminar foto")
+        {
+            RemoveNewStepImage();
         }
     }
 

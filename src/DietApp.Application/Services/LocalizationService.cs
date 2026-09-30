@@ -388,7 +388,14 @@ public class LocalizationService : ILocalizationService
         ["AddFood_ScanningClose"] = "Cerrar",
         ["AddFood_BarcodeFound"] = "Codigo detectado",
         ["AddFood_CameraPermissionRequired"] = "Se requiere permiso de camara para escanear el codigo de barras.",
-        ["AddFood_ClearBarcode"] = "Borrar codigo"
+        ["AddFood_ClearBarcode"] = "Borrar codigo",
+        ["AddRecipe_TakePhoto"] = "Tomar Foto",
+        ["AddRecipe_ChooseFromGallery"] = "Elegir de Galeria",
+        ["AddRecipe_RemovePhoto"] = "Eliminar Foto",
+        ["AddRecipe_CameraNotSupported"] = "La camara no esta disponible en este dispositivo.",
+        ["AddRecipe_PhotoActionTitle"] = "Fotografia del Plato",
+        ["AddRecipe_StepPhotoActionTitle"] = "Fotografia del Paso",
+        ["AddRecipe_AttachStepPhoto"] = "Foto del paso"
     };
 
     private static readonly Dictionary<string, string> EnglishStrings = new(StringComparer.OrdinalIgnoreCase)
@@ -629,6 +636,13 @@ public class LocalizationService : ILocalizationService
         ["AddFood_ScanningClose"] = "Close",
         ["AddFood_BarcodeFound"] = "Barcode detected",
         ["AddFood_CameraPermissionRequired"] = "Camera permission is required to scan barcodes.",
-        ["AddFood_ClearBarcode"] = "Clear barcode"
+        ["AddFood_ClearBarcode"] = "Clear barcode",
+        ["AddRecipe_TakePhoto"] = "Take Photo",
+        ["AddRecipe_ChooseFromGallery"] = "Choose from Gallery",
+        ["AddRecipe_RemovePhoto"] = "Remove Photo",
+        ["AddRecipe_CameraNotSupported"] = "Camera is not available on this device.",
+        ["AddRecipe_PhotoActionTitle"] = "Dish Photo",
+        ["AddRecipe_StepPhotoActionTitle"] = "Step Photo",
+        ["AddRecipe_AttachStepPhoto"] = "Step photo"
     };
 }

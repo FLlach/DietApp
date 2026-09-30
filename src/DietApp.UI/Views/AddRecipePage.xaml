@@ -106,10 +106,10 @@
                         <Border StrokeShape="RoundRectangle 14"
                                 StrokeThickness="1"
                                 Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                                HeightRequest="176"
+                                HeightRequest="210"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}">
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding BrowseGalleryCommand}" />
+                                <TapGestureRecognizer Command="{Binding PickPhotoOptionCommand}" />
                             </Border.GestureRecognizers>
                             <Grid>
                                 <!-- Imagen cargada -->
@@ -117,39 +117,85 @@
                                        Aspect="AspectFill"
                                        IsVisible="{Binding HasImage}" />
 
-                                <!-- Fondo si no hay imagen seleccionada -->
+                                <!-- Estado cuando no hay imagen seleccionada -->
                                 <VerticalStackLayout IsVisible="{Binding HasNoImage}"
                                                      HorizontalOptions="Center"
                                                      VerticalOptions="Center"
-                                                     Spacing="6">
+                                                     Spacing="10"
+                                                     Padding="12">
                                     <Label Text="{x:Static helpers:MaterialIconFont.AddAPhoto}"
                                            Style="{StaticResource MaterialIconStyle}"
-                                           FontSize="32"
+                                           FontSize="34"
                                            TextColor="{StaticResource StitchOutline}"
                                            HorizontalOptions="Center" />
-                                    <Label Text="Toca para adjuntar fotografía"
+                                    <Label Text="Toca aquí o elige cómo agregar la fotografía"
                                            FontFamily="Inter"
                                            FontSize="12"
-                                           TextColor="{StaticResource StitchOutline}" />
+                                           TextColor="{StaticResource StitchOutline}"
+                                           HorizontalOptions="Center" />
+
+                                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                        <Button Text="Cámara"
+                                                Command="{Binding TakePhotoCommand}"
+                                                FontFamily="Inter"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                HeightRequest="44"
+                                                Padding="14, 0"
+                                                CornerRadius="10"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                                BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                BorderWidth="1"
+                                                SemanticProperties.Description="Tomar fotografía con la cámara">
+                                            <Button.ImageSource>
+                                                <FontImageSource FontFamily="MaterialSymbols"
+                                                                 Glyph="{x:Static helpers:MaterialIconFont.PhotoCamera}"
+                                                                 Size="18"
+                                                                 Color="{StaticResource StitchPrimary}" />
+                                            </Button.ImageSource>
+                                        </Button>
+
+                                        <Button Text="Galería"
+                                                Command="{Binding BrowseGalleryCommand}"
+                                                FontFamily="Inter"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                HeightRequest="44"
+                                                Padding="14, 0"
+                                                CornerRadius="10"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                                BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                BorderWidth="1"
+                                                SemanticProperties.Description="Elegir fotografía de la galería">
+                                            <Button.ImageSource>
+                                                <FontImageSource FontFamily="MaterialSymbols"
+                                                                 Glyph="{x:Static helpers:MaterialIconFont.Collections}"
+                                                                 Size="18"
+                                                                 Color="{StaticResource StitchPrimary}" />
+                                            </Button.ImageSource>
+                                        </Button>
+                                    </HorizontalStackLayout>
                                 </VerticalStackLayout>
 
-                                <!-- Gradiente y Barra de Acciones Superpuesta -->
-                                <BoxView BackgroundColor="#A0000000" VerticalOptions="End" HeightRequest="60" IsVisible="{Binding HasImage}" />
+                                <!-- Gradiente y Barra de Acciones Superpuesta cuando hay imagen -->
+                                <BoxView BackgroundColor="#A0000000" VerticalOptions="End" HeightRequest="64" IsVisible="{Binding HasImage}" />
 
-                                <Grid VerticalOptions="End" Padding="10, 8" ColumnDefinitions="*, Auto">
+                                <Grid VerticalOptions="End" Padding="12, 10" ColumnDefinitions="*, Auto" IsVisible="{Binding HasImage}">
                                     <Border Grid.Column="0"
                                             StrokeShape="RoundRectangle 8"
                                             StrokeThickness="0"
-                                            Background="#D0FFFFFF"
-                                            Padding="8, 4"
+                                            Background="#E6FFFFFF"
+                                            Padding="10, 6"
                                             HorizontalOptions="Start"
-                                            IsVisible="{Binding HasImage}">
-                                        <HorizontalStackLayout Spacing="4">
+                                            VerticalOptions="Center">
+                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                                             <Label Text="{x:Static helpers:MaterialIconFont.Verified}"
                                                    Style="{StaticResource MaterialIconStyle}"
-                                                   FontSize="15"
+                                                   FontSize="16"
                                                    TextColor="{StaticResource StitchPrimary}" />
-                                            <Label Text="Foto del plato lista"
+                                            <Label Text="Foto lista"
                                                    FontFamily="Inter"
                                                    FontSize="11"
                                                    FontAttributes="Bold"
@@ -157,18 +203,60 @@
                                         </HorizontalStackLayout>
                                     </Border>
 
-                                    <Button Grid.Column="1"
-                                            Text="Examinar Galería"
-                                            Command="{Binding BrowseGalleryCommand}"
-                                            FontFamily="Inter"
-                                            FontSize="11"
-                                            FontAttributes="Bold"
-                                            HeightRequest="34"
-                                            Padding="10, 0"
-                                            CornerRadius="10"
-                                            BackgroundColor="#F2F3FF"
-                                            TextColor="#131B2E"
-                                            SemanticProperties.Description="Examinar galería de imágenes" />
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                        <Button Text="Cámara"
+                                                Command="{Binding TakePhotoCommand}"
+                                                FontFamily="Inter"
+                                                FontSize="11"
+                                                FontAttributes="Bold"
+                                                HeightRequest="44"
+                                                Padding="10, 0"
+                                                CornerRadius="10"
+                                                BackgroundColor="#F2F3FF"
+                                                TextColor="#131B2E"
+                                                SemanticProperties.Description="Volver a tomar foto con cámara">
+                                            <Button.ImageSource>
+                                                <FontImageSource FontFamily="MaterialSymbols"
+                                                                 Glyph="{x:Static helpers:MaterialIconFont.PhotoCamera}"
+                                                                 Size="16"
+                                                                 Color="#131B2E" />
+                                            </Button.ImageSource>
+                                        </Button>
+
+                                        <Button Text="Galería"
+                                                Command="{Binding BrowseGalleryCommand}"
+                                                FontFamily="Inter"
+                                                FontSize="11"
+                                                FontAttributes="Bold"
+                                                HeightRequest="44"
+                                                Padding="10, 0"
+                                                CornerRadius="10"
+                                                BackgroundColor="#F2F3FF"
+                                                TextColor="#131B2E"
+                                                SemanticProperties.Description="Cambiar foto de la galería">
+                                            <Button.ImageSource>
+                                                <FontImageSource FontFamily="MaterialSymbols"
+                                                                 Glyph="{x:Static helpers:MaterialIconFont.Collections}"
+                                                                 Size="16"
+                                                                 Color="#131B2E" />
+                                            </Button.ImageSource>
+                                        </Button>
+
+                                        <Button Command="{Binding RemovePhotoCommand}"
+                                                HeightRequest="44"
+                                                WidthRequest="44"
+                                                Padding="0"
+                                                CornerRadius="10"
+                                                BackgroundColor="#FFEDEA"
+                                                SemanticProperties.Description="Eliminar fotografía del plato">
+                                            <Button.ImageSource>
+                                                <FontImageSource FontFamily="MaterialSymbols"
+                                                                 Glyph="{x:Static helpers:MaterialIconFont.Delete}"
+                                                                 Size="18"
+                                                                 Color="#BA1A1A" />
+                                            </Button.ImageSource>
+                                        </Button>
+                                    </HorizontalStackLayout>
                                 </Grid>
                             </Grid>
                         </Border>
@@ -737,6 +825,22 @@
                                                        FontFamily="PlusJakartaSans"
                                                        FontSize="12"
                                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+
+                                                <!-- Miniatura de foto del paso si existe -->
+                                                <Border IsVisible="{Binding HasPhoto}"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1"
+                                                        Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                        HeightRequest="60"
+                                                        WidthRequest="90"
+                                                        HorizontalOptions="Start"
+                                                        Margin="0, 4, 0, 2">
+                                                    <Image Source="{Binding ImagePath}"
+                                                           Aspect="AspectFill"
+                                                           HeightRequest="60"
+                                                           WidthRequest="90" />
+                                                </Border>
+
                                                 <HorizontalStackLayout Spacing="8">
                                                     <HorizontalStackLayout Spacing="3" VerticalOptions="Center">
                                                         <Label Text="{x:Static helpers:MaterialIconFont.Schedule}"
@@ -760,12 +864,13 @@
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddRecipeViewModel}}, Path=RemoveStepCommand}"
                                                     CommandParameter="{Binding .}"
                                                     FontFamily="MaterialSymbols"
-                                                    FontSize="16"
+                                                    FontSize="18"
                                                     BackgroundColor="Transparent"
                                                     TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                                                    WidthRequest="32"
-                                                    HeightRequest="32"
-                                                    Padding="0" />
+                                                    WidthRequest="44"
+                                                    HeightRequest="44"
+                                                    Padding="0"
+                                                    SemanticProperties.Description="Eliminar este paso de la receta" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -806,7 +911,7 @@
                                 Stroke="{StaticResource StitchPrimaryContainer}"
                                 Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
                                 Padding="12">
-                            <VerticalStackLayout Spacing="8">
+                            <VerticalStackLayout Spacing="10">
                                 <HorizontalStackLayout Spacing="4">
                                     <Label Text="{x:Static helpers:MaterialIconFont.EditNote}"
                                            Style="{StaticResource MaterialIconStyle}"
@@ -827,28 +932,112 @@
                                         HeightRequest="60"
                                         TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
 
-                                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <!-- Vista previa de fotografía adjunta al paso si existe -->
+                                <Border IsVisible="{Binding HasNewStepImage}"
+                                        StrokeShape="RoundRectangle 8"
+                                        StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                        HeightRequest="66"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                        Padding="6">
+                                    <Grid ColumnDefinitions="54, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                        <Border Grid.Column="0"
+                                                StrokeShape="RoundRectangle 6"
+                                                StrokeThickness="0"
+                                                WidthRequest="54"
+                                                HeightRequest="54">
+                                            <Image Source="{Binding NewStepImagePath}"
+                                                   Aspect="AspectFill"
+                                                   WidthRequest="54"
+                                                   HeightRequest="54" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                            <Label Text="Foto del paso adjunta"
+                                                   FontFamily="Inter"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                            <Label Text="Se asociará al pulsar Añadir Paso"
+                                                   FontFamily="Inter"
+                                                   FontSize="10"
+                                                   TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="2"
+                                                Command="{Binding RemoveNewStepImageCommand}"
+                                                HeightRequest="44"
+                                                WidthRequest="44"
+                                                Padding="0"
+                                                CornerRadius="8"
+                                                BackgroundColor="#FFEDEA"
+                                                SemanticProperties.Description="Eliminar fotografía adjunta al paso">
+                                            <Button.ImageSource>
+                                                <FontImageSource FontFamily="MaterialSymbols"
+                                                                 Glyph="{x:Static helpers:MaterialIconFont.Delete}"
+                                                                 Size="18"
+                                                                 Color="#BA1A1A" />
+                                            </Button.ImageSource>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Acciones para adjuntar fotografía y agregar paso -->
+                                <Grid ColumnDefinitions="Auto, Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
                                     <Button Grid.Column="0"
-                                            Text="Adjuntar foto del paso"
-                                            Command="{Binding BrowseGalleryCommand}"
+                                            Text="Cámara"
+                                            Command="{Binding TakeStepPhotoCommand}"
                                             FontFamily="Inter"
                                             FontSize="11"
-                                            BackgroundColor="Transparent"
-                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
-                                            HorizontalOptions="Start"
-                                            Padding="0" />
+                                            FontAttributes="Bold"
+                                            HeightRequest="44"
+                                            Padding="10, 0"
+                                            CornerRadius="8"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                            BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            BorderWidth="1"
+                                            SemanticProperties.Description="Tomar fotografía del paso con cámara">
+                                        <Button.ImageSource>
+                                            <FontImageSource FontFamily="MaterialSymbols"
+                                                             Glyph="{x:Static helpers:MaterialIconFont.PhotoCamera}"
+                                                             Size="16"
+                                                             Color="{StaticResource StitchPrimary}" />
+                                        </Button.ImageSource>
+                                    </Button>
 
                                     <Button Grid.Column="1"
+                                            Text="Galería"
+                                            Command="{Binding BrowseStepGalleryCommand}"
+                                            FontFamily="Inter"
+                                            FontSize="11"
+                                            FontAttributes="Bold"
+                                            HeightRequest="44"
+                                            Padding="10, 0"
+                                            CornerRadius="8"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                            BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            BorderWidth="1"
+                                            SemanticProperties.Description="Elegir fotografía del paso de galería">
+                                        <Button.ImageSource>
+                                            <FontImageSource FontFamily="MaterialSymbols"
+                                                             Glyph="{x:Static helpers:MaterialIconFont.Collections}"
+                                                             Size="16"
+                                                             Color="{StaticResource StitchPrimary}" />
+                                        </Button.ImageSource>
+                                    </Button>
+
+                                    <Button Grid.Column="3"
                                             Text="Añadir Paso"
                                             Command="{Binding AddStepCommand}"
                                             FontFamily="Inter"
                                             FontSize="11"
                                             FontAttributes="Bold"
-                                            HeightRequest="34"
-                                            Padding="14, 0"
+                                            HeightRequest="44"
+                                            Padding="16, 0"
                                             CornerRadius="10"
                                             BackgroundColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkSurfaceLowest}}"
-                                            TextColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                            TextColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkOnSurface}}"
+                                            SemanticProperties.Description="Agregar paso redactado a la receta" />
                                 </Grid>
                             </VerticalStackLayout>
                         </Border>
