@@ -323,14 +323,14 @@
                                 Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
                                 Padding="16"
                                 Margin="0, 4">
-                            <Button.Triggers>
+                            <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding HasDraftItems}" Value="False">
                                     <Setter Property="IsVisible" Value="True" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Border" Binding="{Binding HasDraftItems}" Value="True">
                                     <Setter Property="IsVisible" Value="False" />
                                 </DataTrigger>
-                            </Button.Triggers>
+                            </Border.Triggers>
                             <Label Text="No hay ítems incorporados aún. Use los botones superiores para agregar alimentos o recetas."
                                    FontFamily="Inter"
                                    FontSize="12"
@@ -688,29 +688,57 @@
                 </VerticalStackLayout>
             </ScrollView>
 
-            <!-- 3. Fixed Bottom Action Bar (Ergonomic One-Thumb Zone, 48dp+ buttons) -->
-            <Border Grid.Row="2"
-                    StrokeShape="Rectangle"
-                    StrokeThickness="0,1,0,0"
-                    Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
-                    Padding="16, 12">
-                <VerticalStackLayout Spacing="8" MaximumWidthRequest="480" HorizontalOptions="Center">
-                    <Button Text="+ Confirmar y Guardar en Conteo Diario"
+            <!-- 3. Fixed Bottom Action Bar (Docked Footer Compacto) -->
+            <!--
+            Como funciona: Barra inferior de acciones fijas acoplada al fondo con layout horizontal ergonomico.
+            Dispone las acciones en dos columnas ('Descartar' y '+ Guardar en Conteo Diario') optimizando la altura vertical
+            a 64dp y utilizando una linea divisoria BoxView superior limpia para evitar fallos de renderizado en Android con Border.StrokeThickness no uniforme.
+            Por que se tomo esta decision: Elimina el artefacto visual que ocupaba la mitad inferior de la pantalla y reduce sustancialmente el espacio consumido.
+            -->
+            <Grid Grid.Row="2"
+                  VerticalOptions="End"
+                  BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}">
+
+                <!-- Linea divisoria superior suave para evitar el bug de Skia/Border en Android -->
+                <BoxView HeightRequest="1"
+                         VerticalOptions="Start"
+                         Color="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+
+                <Grid ColumnDefinitions="Auto, *"
+                      ColumnSpacing="10"
+                      Padding="16, 10"
+                      MaximumWidthRequest="480"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Center">
+
+                    <!-- Accion Secundaria: Descartar / Cancelar -->
+                    <Button Grid.Column="0"
+                            Text="Descartar"
+                            Command="{Binding DiscardAndCancelCommand}"
+                            FontFamily="Inter"
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            HeightRequest="44"
+                            CornerRadius="12"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
+                            BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                            BorderWidth="1"
+                            Padding="16, 0"
+                            SemanticProperties.Description="Descartar y Cancelar" />
+
+                    <!-- Accion Principal: Confirmar y Guardar en Conteo Diario -->
+                    <Button Grid.Column="1"
+                            Text="+ Guardar en Conteo Diario"
                             Command="{Binding ConfirmAndSaveCommand}"
                             Style="{StaticResource StitchPrimaryButtonStyle}"
-                            HeightRequest="48"
-                            CornerRadius="14"
-                            SemanticProperties.Description="Confirmar y Guardar" />
-
-                    <Button Text="Descartar y Cancelar"
-                            Command="{Binding DiscardAndCancelCommand}"
-                            Style="{StaticResource StitchNeutralButtonStyle}"
-                            HeightRequest="48"
-                            CornerRadius="14"
-                            SemanticProperties.Description="Descartar y Cancelar" />
-                </VerticalStackLayout>
-            </Border>
+                            HeightRequest="44"
+                            CornerRadius="12"
+                            FontSize="13"
+                            Padding="14, 0"
+                            SemanticProperties.Description="Confirmar y Guardar en Conteo Diario" />
+                </Grid>
+            </Grid>
 
         </Grid>
 
