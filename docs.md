@@ -275,19 +275,43 @@ La aplicacion incluye integracion integral de **proteinas (g)** a traves de las 
 
 ## 9. Instrucciones de Compilacion y Ejecucion
 
-### Ejecucion en Windows (Modo Rapido):
+### Compilacion y Ejecucion en Windows (PowerShell):
 Para compilar y ejecutar en Windows directamente desde la terminal:
 ```powershell
 dotnet build -t:Run -f net10.0-windows10.0.19041.0 src/DietApp.UI/DietApp.UI.csproj
 ```
+O para compilar sin ejecutar:
 ```powershell
-dotnet run --project src/DietApp.UI/DietApp.UI.csproj -f net10.0-windows10.0.19041.0
+dotnet build src/DietApp.UI/DietApp.UI.csproj -f net10.0-windows10.0.19041.0
 ```
 
-### Ejecucion en Android:
+### Compilacion y Ejecucion en Android (PowerShell):
+Para compilar la aplicacion para Android desde PowerShell:
+```powershell
+dotnet build src/DietApp.UI/DietApp.UI.csproj -f net10.0-android
+```
+
+Para compilar, instalar e iniciar directamente en el dispositivo fisico o emulador conectado:
+```powershell
+dotnet build -t:Run -f net10.0-android src/DietApp.UI/DietApp.UI.csproj
+```
+
+Para generar e instalar un APK independiente (standalone con ensamblados incrustados para ejecucion sin depurador activo):
+```powershell
+# 1. Compilar paquete APK con ensamblados incrustados
+dotnet publish src/DietApp.UI/DietApp.UI.csproj -f net10.0-android -c Debug -p:EmbedAssembliesIntoApk=true
+
+# 2. Instalar el paquete en el dispositivo conectado via adb
+adb install -r src/DietApp.UI/bin/Debug/net10.0-android/publish/com.companyname.dietapp-Signed.apk
+
+# 3. Iniciar la aplicacion en el dispositivo
+adb shell monkey -p com.companyname.dietapp -c android.intent.category.LAUNCHER 1
+```
+
+### Ejecucion desde Visual Studio:
 1. Abrir la solucion `DietApp.slnx` en Visual Studio.
 2. Seleccionar como proyecto de inicio `DietApp.UI`.
-3. Seleccionar el emulador de Android o un dispositivo fisico conectado en la barra superior.
+3. Seleccionar el dispositivo fisico conectado o el emulador de Android en la barra superior.
 4. Presionar `F5` para iniciar la depuracion.
 
 ---
