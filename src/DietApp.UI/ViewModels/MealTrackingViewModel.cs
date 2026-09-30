@@ -22,20 +22,25 @@ public partial class MealTrackingViewModel : ObservableObject
     private readonly IMealTrackingService _mealTrackingService;
     private readonly IMineralAlertService _mineralAlertService;
     private readonly IProteinGoalService _proteinGoalService;
+    private readonly ICalorieGoalService _calorieGoalService;
 
     public MealTrackingViewModel(
         IMealTrackingService mealTrackingService,
         IMineralAlertService mineralAlertService,
-        IProteinGoalService proteinGoalService)
+        IProteinGoalService proteinGoalService,
+        ICalorieGoalService calorieGoalService)
     {
         _mealTrackingService = mealTrackingService;
         _mineralAlertService = mineralAlertService;
         _proteinGoalService = proteinGoalService;
+        _calorieGoalService = calorieGoalService;
 
         _proteinGoalService.ProteinGoalChanged += OnProteinGoalChanged;
+        _calorieGoalService.CalorieGoalChanged += OnCalorieGoalChanged;
 
         UpdateDateLabels();
         UpdateProteinGoalProperties();
+        UpdateCalorieGoalProperties();
     }
 
     [ObservableProperty]
@@ -49,6 +54,18 @@ public partial class MealTrackingViewModel : ObservableObject
 
     [ObservableProperty]
     private double _totalCalories;
+
+    [ObservableProperty]
+    private double _dailyCalorieGoal = 2000.0;
+
+    [ObservableProperty]
+    private bool _isCalorieGoalEnabled = true;
+
+    [ObservableProperty]
+    private string _formattedCaloriesStatus = "0 / 2000 kcal";
+
+    [ObservableProperty]
+    private double _calorieGoalProgressFraction;
 
     [ObservableProperty]
     private double _totalProteinGrams;
@@ -186,9 +203,12 @@ public partial class MealTrackingViewModel : ObservableObject
             TotalCalories = Math.Round(meals.Sum(m => m.TotalCalories), 0);
 
             UpdateProteinGoalProperties();
+            UpdateCalorieGoalProperties();
 
-            // Calcular porcentaje del plan (meta base estimada: 60g proteina o 1850 kcal)
-            double targetCalories = 1850;
+            // Calcular porcentaje del plan basado en las metas configuradas
+            double targetCalories = _calorieGoalService.IsCalorieGoalEnabled && _calorieGoalService.DailyCalorieGoal > 0
+                ? _calorieGoalService.DailyCalorieGoal
+                : 2000.0;
             double completion = targetCalories > 0 ? Math.Min(100, Math.Round((TotalCalories / targetCalories) * 100, 0)) : 0;
             PlanCompletionPercentage = completion;
             PlanProgressFraction = PlanCompletionPercentage / 100.0;
@@ -484,6 +504,28 @@ public partial class MealTrackingViewModel : ObservableObject
         {
             FormattedProteinStatus = $"{TotalProteinGrams:0.#} g";
             ProteinGoalProgressFraction = 0.0;
+        }
+    }
+
+    private void OnCalorieGoalChanged(object? sender, EventArgs e)
+    {
+        UpdateCalorieGoalProperties();
+    }
+
+    private void UpdateCalorieGoalProperties()
+    {
+        DailyCalorieGoal = _calorieGoalService.DailyCalorieGoal;
+        IsCalorieGoalEnabled = _calorieGoalService.IsCalorieGoalEnabled;
+
+        if (IsCalorieGoalEnabled && DailyCalorieGoal > 0)
+        {
+            FormattedCaloriesStatus = $"{TotalCalories:N0} / {DailyCalorieGoal:N0} kcal";
+            CalorieGoalProgressFraction = Math.Min(1.0, TotalCalories / DailyCalorieGoal);
+        }
+        else
+        {
+            FormattedCaloriesStatus = $"{TotalCalories:N0} kcal";
+            CalorieGoalProgressFraction = 0.0;
         }
     }
 }

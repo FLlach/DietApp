@@ -20,17 +20,20 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IMineralAlertService _mineralAlertService;
     private readonly IProteinGoalService _proteinGoalService;
+    private readonly ICalorieGoalService _calorieGoalService;
     private readonly IThemeService _themeService;
 
     public SettingsViewModel(
         ILocalizationService localizationService,
         IMineralAlertService mineralAlertService,
         IProteinGoalService proteinGoalService,
+        ICalorieGoalService calorieGoalService,
         IThemeService themeService)
     {
         _localizationService = localizationService;
         _mineralAlertService = mineralAlertService;
         _proteinGoalService = proteinGoalService;
+        _calorieGoalService = calorieGoalService;
         _themeService = themeService;
 
         LoadSettings();
@@ -63,7 +66,13 @@ public partial class SettingsViewModel : ObservableObject
 
     public string WarningThresholdDisplay => $"{WarningThresholdPercent:F0}";
 
-    // 4. Meta de Proteina y Limites de Minerales
+    // 4. Metas Nutricionales (Calorias, Proteina) y Limites de Minerales
+    [ObservableProperty]
+    private bool _isCalorieGoalEnabled = true;
+
+    [ObservableProperty]
+    private string _calorieGoalText = "2000";
+
     [ObservableProperty]
     private bool _isProteinGoalEnabled = true;
 
@@ -136,7 +145,10 @@ public partial class SettingsViewModel : ObservableObject
         double wp = _mineralAlertService.WarningPercentage;
         WarningThresholdPercent = wp >= 50.0 && wp <= 95.0 ? wp : 80.0;
 
-        // Cargar Meta de Proteina
+        // Cargar Metas Nutricionales
+        IsCalorieGoalEnabled = _calorieGoalService.IsCalorieGoalEnabled;
+        CalorieGoalText = _calorieGoalService.DailyCalorieGoal.ToString("F0", CultureInfo.InvariantCulture);
+
         IsProteinGoalEnabled = _proteinGoalService.IsProteinGoalEnabled;
         ProteinGoalGramsText = _proteinGoalService.DailyProteinGoalGrams.ToString("F0", CultureInfo.InvariantCulture);
 
@@ -256,6 +268,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
+            // Guardar Meta de Calorias
+            if (double.TryParse(CalorieGoalText, NumberStyles.Any, CultureInfo.InvariantCulture, out var calories) && calories >= 0)
+            {
+                _calorieGoalService.SetDailyCalorieGoal(calories, IsCalorieGoalEnabled);
+            }
+
             // Guardar Meta de Proteina
             if (double.TryParse(ProteinGoalGramsText, NumberStyles.Any, CultureInfo.InvariantCulture, out var protein) && protein >= 0)
             {
@@ -305,6 +323,10 @@ public partial class SettingsViewModel : ObservableObject
 
         if (confirm)
         {
+            _calorieGoalService.ResetToDefault();
+            IsCalorieGoalEnabled = true;
+            CalorieGoalText = "2000";
+
             _proteinGoalService.ResetToDefault();
             IsProteinGoalEnabled = true;
             ProteinGoalGramsText = "60";

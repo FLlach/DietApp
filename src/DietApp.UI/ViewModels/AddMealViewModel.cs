@@ -23,6 +23,7 @@ public partial class AddMealViewModel : ObservableObject
     private readonly IFoodCatalogService _catalogService;
     private readonly IRecipeService _recipeService;
     private readonly IProteinGoalService _proteinGoalService;
+    private readonly ICalorieGoalService _calorieGoalService;
 
     private List<FoodItemDto> _cachedFoods = new();
     private List<RecipeDto> _cachedRecipes = new();
@@ -31,12 +32,14 @@ public partial class AddMealViewModel : ObservableObject
         IMealTrackingService mealTrackingService,
         IFoodCatalogService catalogService,
         IRecipeService recipeService,
-        IProteinGoalService proteinGoalService)
+        IProteinGoalService proteinGoalService,
+        ICalorieGoalService calorieGoalService)
     {
         _mealTrackingService = mealTrackingService;
         _catalogService = catalogService;
         _recipeService = recipeService;
         _proteinGoalService = proteinGoalService;
+        _calorieGoalService = calorieGoalService;
 
         SetMealType(MealType.Lunch);
         UpdateFormattedDateTime();
@@ -428,14 +431,16 @@ public partial class AddMealViewModel : ObservableObject
         ProjectedProtein = Math.Round(prot, 1);
 
         // Metas nutricionales diarias
-        double targetCalories = 2000;
+        double targetCalories = _calorieGoalService.IsCalorieGoalEnabled && _calorieGoalService.DailyCalorieGoal > 0
+            ? _calorieGoalService.DailyCalorieGoal
+            : 2000.0;
         double targetProtein = _proteinGoalService.IsProteinGoalEnabled && _proteinGoalService.DailyProteinGoalGrams > 0
             ? _proteinGoalService.DailyProteinGoalGrams
             : 60.0;
 
         double calPct = targetCalories > 0 ? (ProjectedCalories / targetCalories) * 100 : 0;
         CaloriesProgress = Math.Min(1.0, calPct / 100.0);
-        FormattedCaloriesTarget = $"{Math.Round(calPct, 0)}% del objetivo (2000 kcal)";
+        FormattedCaloriesTarget = $"{Math.Round(calPct, 0)}% del objetivo ({targetCalories:N0} kcal)";
 
         double protPct = targetProtein > 0 ? (ProjectedProtein / targetProtein) * 100 : 0;
         ProteinProgress = Math.Min(1.0, protPct / 100.0);

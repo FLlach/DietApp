@@ -120,6 +120,11 @@
     <Color x:Key="MineralProteinText">#315200</Color>
     <Color x:Key="MineralProteinBorder">#84CC16</Color>
 
+    <!-- Calorias / Energia -->
+    <Color x:Key="EnergyCalorieContainer">#FEF3C7</Color>
+    <Color x:Key="EnergyCalorieText">#92400E</Color>
+    <Color x:Key="EnergyCalorieBorder">#F59E0B</Color>
+
     <!-- 6. Pinceles (SolidColorBrush) para evitar conversiones en tiempo de ejecucion -->
     <SolidColorBrush x:Key="StitchBackgroundBrush" Color="{StaticResource StitchBackground}" />
     <SolidColorBrush x:Key="StitchSurfaceBrush" Color="{StaticResource StitchSurface}" />

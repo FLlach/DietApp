@@ -63,6 +63,7 @@ Orquesta los casos de uso del sistema:
 * **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales. Soporta registro combinado de alimentos y recetas (`RecordMealWithMixedItemsAsync`) y registro rapido de recetas consumidas (`RecordRecipeInMealAsync`).
 * **`Services/RecipeService.cs`**: Casos de uso de creacion, consulta y busqueda de recetas culinarias.
 * **`Services/IProteinGoalStorage.cs` y `Services/IProteinGoalService.cs` (`ProteinGoalService.cs`)**: Gestion, validacion y notificacion reactiva de la meta diaria de proteina en gramos para balance nitrogenado y control en enfermedad renal cronica.
+* **`Services/ICalorieGoalStorage.cs` y `Services/ICalorieGoalService.cs` (`CalorieGoalService.cs`)**: Gestion, validacion y notificacion reactiva de la meta diaria energetica en calorias (kcal) con persistencia desacoplada y calculo sincronizado del plan diario.
 
 ---
 
@@ -94,7 +95,7 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, cumplimiento porcentual dinamico del plan diario (iniciado en 0% al no haber ingestas y recalculado reactivamente con cada comida registrada), banner reactivo de advertencias si se superan los limites maximos fijados por el usuario, detalle por comida y boton de accion rapida "+ Registrar Comida".
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de los 7 minerales por porcion organizados en 2 columnas con solo simbolo quimico para legibilidad movil, y apartado integrado para gestionar y abrir los **Alinos y Marinadas** (`SeasoningsPage`).
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales y boton de accion "+ Nuevo Alimento".
-    4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles), selector de tema visual (Claro / Oscuro / Sistema), configuracion de la meta diaria cuantitativa de proteina (en gramos), calibracion del umbral preventivo y limites maximos diarios de minerales con activacion de alertas.
+    4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles), selector de tema visual (Claro / Oscuro / Sistema), configuracion de las metas diarias cuantitativas de proteina (en gramos) y de calorias (en kcal), calibracion del umbral preventivo y limites maximos diarios de minerales con activacion de alertas.
   * Rutas registradas:
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel de los 7 minerales clinicos por porcion en cuadricula de 2 columnas con simbolo quimico, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Compositor clinico de recetas con inicializacion limpia (formulario vacio con estados vacios para ingredientes, pasos y fotografia), dosificacion en tiempo real de alimentos y alinos, captura directa con camara (`MediaPicker.CapturePhotoAsync`) o seleccion desde galeria tanto para la foto del plato como para cada paso de elaboracion, previsualizacion con descarte y proyecciones instantaneas de nutrientes por porcion.
@@ -392,18 +393,31 @@ La interfaz grafica de usuario de DietApp fue reconstruida desde cero para aline
 
 ---
 
-## 12. Sistema de Metas Nutricionales y Meta Diaria de Proteina
+## 12. Sistema de Metas Nutricionales: Proteina y Calorias
 
 ### 12.1. Requerimiento Clinico
-En el tratamiento nutricional de pacientes con enfermedad renal cronica (ERC / CKD) segun las directrices KDOQI 2024, el control cuantitativo de la ingesta de proteina (habitualmente fijado en rangos de 0.6 a 0.8 g/kg/dia para estadios 3 a 5 sin dialisis) resulta tan determinante para preservar la tasa de filtracion glomerular como el control de fosforo y potasio.
+En el tratamiento nutricional de pacientes con enfermedad renal cronica (ERC / CKD) segun las directrices KDOQI 2024, tanto el control cuantitativo de la ingesta de proteina (habitualmente fijado en rangos de 0.6 a 0.8 g/kg/dia para estadios 3 a 5 sin dialisis) como el aporte energetico diario (25 a 35 kcal/kg/dia segun edad, sexo y nivel de actividad fisica) son esenciales para prevenir el desgaste proteico-energetico (PEW) sin sobrecargar la filtracion glomerular ni acumular toxinas uremicas.
 
-### 12.2. Arquitectura de la Solucion (DDD)
-* **Abstraccion de Almacenamiento (`IProteinGoalStorage`)**: Definida en `DietApp.Application.Services` para desacoplar el mecanismo de persistencia nativo de la capa de aplicacion.
-* **Implementacion con Preferences (`MauiPreferencesProteinGoalStorage`)**: Definida en `DietApp.UI.Services`, almacena la meta diaria en gramos y su estado de habilitacion de forma persistente entre sesiones del usuario.
-* **Servicio de Aplicacion (`IProteinGoalService` / `ProteinGoalService`)**: Centraliza la cifra meta (por defecto 60 g/dia), la activacion del objetivo, la restauracion a valores de referencia KDOQI y la emision de eventos `ProteinGoalChanged` para sincronizacion reactiva.
-* **Integracion en Pantalla de Ajustes (`SettingsViewModel` y `SettingsPage.xaml`)**:
-  * Incorpora tarjeta bento con distintivo verde lima `PROT` (`MineralProteinContainer` y `MineralProteinText`), titulo formal, subtitulo KDOQI, interruptor de activacion y campo numerico en gramos.
-  * Se guarda de forma unificada al accionar "Guardar Limites Clinicos" y se restablece con "Restablecer Valores por Defecto".
-* **Consumo Dinamico en Vistas**:
-  * **Conteo Diario (`MealTrackingViewModel` / `MealTrackingPage.xaml`)**: El badge "Meta Proteica" refleja reactivamente la relacion de consumo contra el objetivo (ejemplo: `45.2 / 60 g` o `45.2 g` si la meta esta deshabilitada).
-  * **Compositor de Comidas (`AddMealViewModel`)**: Calcula el porcentaje de cobertura proteica proactiva utilizando la meta configurada en lugar de valores fijos arbitrarios.
+### 12.2. Arquitectura de la Solucion de Metas Nutricionales (DDD)
+Para ambas metas (proteina y calorias) se sigue el mismo patron de diseno para mantener bajo acoplamiento y alta cohesion:
+
+1. **Abstracciones de Almacenamiento**:
+   * `IProteinGoalStorage` e `ICalorieGoalStorage` definidas en `DietApp.Application.Services`. Desacoplan los casos de uso de cualquier API nativa del sistema operativo.
+2. **Implementaciones de Persistencia**:
+   * `MauiPreferencesProteinGoalStorage` y `MauiPreferencesCalorieGoalStorage` en `DietApp.UI.Services`. Utilizan `Preferences.Default` de .NET MAUI para almacenar el valor numerico y el estado de habilitacion de forma ligera y permanente entre sesiones.
+3. **Servicios de Aplicacion Reactivos**:
+   * `IProteinGoalService` / `ProteinGoalService`: Meta por defecto de 60 g/dia, validacion de umbrales (> 0 g), persistencia atomica y evento `ProteinGoalChanged`.
+   * `ICalorieGoalService` / `CalorieGoalService`: Meta por defecto de 2000 kcal/dia, validacion de umbrales (> 0 kcal), persistencia atomica y evento `CalorieGoalChanged`.
+4. **Integracion en Pantalla de Ajustes (`SettingsViewModel` y `SettingsPage.xaml`)**:
+   * **Tarjeta de Meta Proteica**: Distintivo verde lima `PROT` (`MineralProteinContainer`), interruptor de activacion y campo numerico en gramos.
+   * **Tarjeta de Meta de Calorias**: Distintivo ambar calido `KCAL` (`EnergyCalorieContainer`), titulo formal "Meta Diaria de Calorias", subtitulo clinico "Aporte energetico objetivo para prevenir el desgaste energetico (KDOQI)", interruptor de activacion y campo numerico en kcal.
+   * Ambas metas se sincronizan y persisten de forma unificada al presionar "Guardar Limites Clinicos" y se restablecen a sus valores por defecto con "Restablecer Valores por Defecto".
+5. **Consumo Dinamico y Reactivo en Vistas**:
+   * **Conteo Diario (`MealTrackingViewModel` / `MealTrackingPage.xaml`)**:
+     * El contador de "Energia" muestra el total acumulado y la meta diaria (`{TotalCalories:N0} / {DailyCalorieGoal:N0} kcal`) cuando la meta esta habilitada, o solo el acumulado si esta desactivada.
+     * La "Barra de Cumplimiento del Plan Diario" calcula la fraccion porcentual en base a la meta de calorias configurada por el usuario.
+     * El badge "Meta Proteica" refleja `{Consumo} / {Meta} g`.
+     * Las propiedades se actualizan reactivamente al dispararse los eventos `CalorieGoalChanged` y `ProteinGoalChanged`.
+   * **Compositor de Comidas (`AddMealViewModel`)**:
+     * Inyecta `ICalorieGoalService` e `IProteinGoalService`.
+     * `RecalculateProjections()` calcula la cobertura proyectada de calorias y proteinas sobre las metas configuradas por el usuario, evitando valores hardcodeados.

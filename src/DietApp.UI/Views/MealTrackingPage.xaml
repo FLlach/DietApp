@@ -249,6 +249,13 @@
                                                FontSize="18"
                                                FontAttributes="Bold"
                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                        <Label Text="{Binding DailyCalorieGoal, StringFormat='/ {0:N0}'}"
+                                               FontFamily="Inter"
+                                               FontSize="13"
+                                               VerticalOptions="End"
+                                               Margin="0,0,0,2"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
+                                               IsVisible="{Binding IsCalorieGoalEnabled}" />
                                         <Label Text="kcal"
                                                FontFamily="Inter"
                                                FontSize="12"
