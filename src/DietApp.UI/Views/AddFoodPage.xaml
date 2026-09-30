@@ -200,8 +200,6 @@
                                     HeightRequest="48"
                                     Padding="12, 0">
                                 <Entry Text="{Binding FoodName, Mode=TwoWay}"
-                                       Placeholder="ej. Merluza al horno casera"
-                                       PlaceholderColor="{StaticResource StitchOutline}"
                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
                                        FontFamily="Inter"
                                        FontSize="13"
@@ -244,8 +242,6 @@
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Entry Grid.Column="0"
                                                Text="{Binding BarcodeText, Mode=TwoWay}"
-                                               Placeholder="ej. 7791234567890 o escanear"
-                                               PlaceholderColor="{StaticResource StitchOutline}"
                                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
                                                FontFamily="Inter"
                                                FontSize="13"
@@ -1171,8 +1167,6 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
                                     Padding="10">
                                 <Editor Text="{Binding ClinicalObservations, Mode=TwoWay}"
-                                        Placeholder="Añadir notas sobre biodisponibilidad mineral o cocción recomendada..."
-                                        PlaceholderColor="{StaticResource StitchOutline}"
                                         AutoSize="TextChanges"
                                         MinimumHeightRequest="60"
                                         FontFamily="Inter"

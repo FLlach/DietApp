@@ -29,7 +29,7 @@ public partial class AddFoodViewModel : ObservableObject
 
     // Datos Generales
     [ObservableProperty]
-    private string _foodName = "Merluza al horno casera";
+    private string _foodName = string.Empty;
 
     public List<string> Categories { get; } = new()
     {
@@ -81,47 +81,47 @@ public partial class AddFoodViewModel : ObservableObject
 
     // Macronutrientes Principales
     [ObservableProperty]
-    private string _caloriesText = "112";
+    private string _caloriesText = string.Empty;
 
     [ObservableProperty]
-    private string _proteinGramsText = "16.5";
+    private string _proteinGramsText = string.Empty;
 
     [ObservableProperty]
-    private string _carbohydratesGramsText = "1.2";
+    private string _carbohydratesGramsText = string.Empty;
 
     [ObservableProperty]
-    private string _fatsGramsText = "2.8";
+    private string _fatsGramsText = string.Empty;
 
     // 7 Minerales Críticos Cuantitativos
     [ObservableProperty]
-    private string _potassiumMgText = "280";
+    private string _potassiumMgText = string.Empty;
 
     [ObservableProperty]
-    private string _phosphorusMgText = "190";
+    private string _phosphorusMgText = string.Empty;
 
     [ObservableProperty]
-    private string _sodiumMgText = "68";
+    private string _sodiumMgText = string.Empty;
 
     [ObservableProperty]
-    private string _calciumMgText = "32";
+    private string _calciumMgText = string.Empty;
 
     [ObservableProperty]
-    private string _magnesiumMgText = "24";
+    private string _magnesiumMgText = string.Empty;
 
     [ObservableProperty]
-    private string _ironMgText = "0.9";
+    private string _ironMgText = string.Empty;
 
     [ObservableProperty]
-    private string _zincMgText = "0.5";
+    private string _zincMgText = string.Empty;
 
     // Dictamen Clínico y Advertencias
     [ObservableProperty]
-    private bool _isKdoqiRenalDietCompliant = true;
+    private bool _isKdoqiRenalDietCompliant;
 
     public ObservableCollection<ClinicalTagPillModel> ClinicalPills { get; } = new();
 
     [ObservableProperty]
-    private string _clinicalObservations = "Excelente ratio fósforo-proteína. Preparación al horno sin adición de salmueras.";
+    private string _clinicalObservations = string.Empty;
 
     // Estado Visual
     [ObservableProperty]
@@ -136,7 +136,7 @@ public partial class AddFoodViewModel : ObservableObject
     private void InitializeClinicalPills()
     {
         ClinicalPills.Clear();
-        ClinicalPills.Add(new ClinicalTagPillModel { Name = "Bajo en fósforo orgánico", IsSelected = true });
+        ClinicalPills.Add(new ClinicalTagPillModel { Name = "Bajo en fósforo orgánico", IsSelected = false });
         ClinicalPills.Add(new ClinicalTagPillModel { Name = "Requiere remojo doble", IsSelected = false });
         ClinicalPills.Add(new ClinicalTagPillModel { Name = "Sin sal añadida", IsSelected = false });
         ClinicalPills.Add(new ClinicalTagPillModel { Name = "Hervido con pérdida de K", IsSelected = false });
