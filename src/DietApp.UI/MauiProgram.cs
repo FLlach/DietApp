@@ -1,3 +1,4 @@
+using BarcodeScanning;
 using DietApp.Application.Services;
 using DietApp.Domain.Repositories;
 using DietApp.Domain.Services;
@@ -25,6 +26,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseBarcodeScanning()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

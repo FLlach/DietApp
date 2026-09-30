@@ -35,6 +35,25 @@ public class FoodRepository : IFoodRepository
         }
     }
 
+    public async Task<FoodItem?> GetByBarcodeAsync(string barcode)
+    {
+        if (string.IsNullOrWhiteSpace(barcode))
+        {
+            return null;
+        }
+
+        await _lock.WaitAsync();
+        try
+        {
+            string cleanBarcode = barcode.Trim();
+            return _foods.FirstOrDefault(f => !string.IsNullOrEmpty(f.Barcode) && f.Barcode.Equals(cleanBarcode, StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
     public async Task<IReadOnlyList<FoodItem>> GetAllAsync()
     {
         await _lock.WaitAsync();

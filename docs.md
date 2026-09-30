@@ -10,6 +10,7 @@ Permite:
 * Calcular el aporte acumulado de minerales, calorias y proteinas totales por cada comida y a nivel diario.
 * **Modulo de Recetas Nutricionales**: Crear y consultar preparaciones culinarias con titulo, imagen final de la receta terminada, subtitulo automatico de minerales, calorias y proteina por porcion calculado con base en los ingredientes, e instrucciones en pasos numerados con opcion de adjuntar imagenes en cada etapa.
 * **Registro de Recetas en la Ingesta Diaria**: Capacidad de registrar porciones de recetas directamente en el conteo diario de comidas (tanto desde la pantalla de detalle de la receta como desde el compositor de comidas), escalando proporcionalmente el aporte de minerales, proteinas y calorias consumidos.
+* **Escaneo y Persistencia de Codigos de Barra**: Posibilidad de escanear mediante camara o ingresar manualmente el codigo de barras (EAN/UPC/QR) al momento de registrar un nuevo alimento personalizado en la base de datos local SQLite, con campo estrictamente opcional.
 * **Persistencia Relacional en SQLite**: Almacenamiento local de alto rendimiento con indices B-Tree en columnas de minerales y proteinas, con precarga y backfill de nutrientes de la base oficial USDA FoodData Central Foundation Foods (incluyendo codigo de nutriente 203 de proteinas) normalizados a gramos.
 
 ---
@@ -42,23 +43,23 @@ Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 * **`Enums/MineralType.cs`**: Catalogo fuertemente tipado de minerales cuantificables (`Phosphorus`, `Potassium`, `Sodium`, `Calcium`, `Magnesium`, `Iron`, `Zinc`).
 * **`Enums/MealType.cs`**: Momentos de ingesta (`Breakfast`, `Lunch`, `Dinner`, `Snack`, `Other`).
 * **`ValueObjects/MineralAmount.cs`**: Objeto de valor inmutable que encapsula el tipo de mineral y su cantidad en miligramos (mg). Cuenta con atributos de serializacion JSON (`[JsonConstructor]`, `[JsonPropertyName]`, accesores `init`) para asegurar reconstruccion fiel desde campos JSON en SQLite.
-* **`Entities/FoodItem.cs`**: Entidad que representa un alimento en el catalogo con su perfil de minerales y calorias por porcion base normalizada de 100 gramos.
+* **`Entities/FoodItem.cs`**: Entidad que representa un alimento en el catalogo con su perfil de minerales, calorias por porcion base normalizada de 100 gramos, y codigo de barras opcional (`Barcode`) para identificacion rapida de productos comerciales.
 * **`Entities/MealItem.cs`**: Representa la ingesta de un item en una comida con su instantanea calculada de minerales. Incluye metodos de fabricacion `FromFoodItem(food, grams)` y `FromRecipe(recipe, servingsConsumed)` que escalan el aporte nutricional de forma exacta.
 * **`Entities/Meal.cs`**: Raiz de agregado (Aggregate Root) que agrupa los alimentos consumidos y calcula la sumatoria consolidada de minerales con `CalculateTotalMinerals()`.
 * **`Entities/Recipe.cs`**: Raiz de agregado para recetas culinarias con ingredientes dosificados, pasos numerados, porciones, imagen final y calculo nutricional por porcion.
 * **`Entities/RecipeIngredient.cs`**: Ingrediente dosificado con calculo de calorias y minerales.
 * **`Entities/RecipeStep.cs`**: Paso numerado con instruccion e imagen ilustrativa de la etapa.
 * **`Services/DailyMineralAggregatorService.cs`**: Servicio de dominio que consolida la suma total de minerales entre multiples comidas del dia.
-* **`Repositories/`**: Contratos `IFoodRepository.cs`, `IMealRepository.cs` e `IRecipeRepository.cs`.
+* **`Repositories/`**: Contratos `IFoodRepository.cs` (con soporte para `GetByBarcodeAsync`), `IMealRepository.cs` e `IRecipeRepository.cs`.
 
 ---
 
 ### 3.2. Capa de Aplicacion (`DietApp.Application`)
 Orquesta los casos de uso del sistema:
 
-* **`DTOs/`**: `FoodItemDto.cs`, `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion y coleccion de minerales por porcion), `RecipeIngredientDto.cs` (con resumen de minerales aportados por ingrediente), `RecipeStepDto.cs`.
-* **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol.
-* **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales.
+* **`DTOs/`**: `FoodItemDto.cs` (incluye propiedad opcional `Barcode`), `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion y coleccion de minerales por porcion), `RecipeIngredientDto.cs` (con resumen de minerales aportados por ingrediente), `RecipeStepDto.cs`.
+* **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol y preservacion del codigo de barras.
+* **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales, persistencia de alimentos con codigo de barras y consulta especializada por `GetFoodByBarcodeAsync`.
 * **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales. Soporta registro combinado de alimentos y recetas (`RecordMealWithMixedItemsAsync`) y registro rapido de recetas consumidas (`RecordRecipeInMealAsync`).
 * **`Services/RecipeService.cs`**: Casos de uso de creacion, consulta y busqueda de recetas culinarias.
 * **`Services/IProteinGoalStorage.cs` y `Services/IProteinGoalService.cs` (`ProteinGoalService.cs`)**: Gestion, validacion y notificacion reactiva de la meta diaria de proteina en gramos para balance nitrogenado y control en enfermedad renal cronica.
@@ -74,12 +75,12 @@ Implementa el acceso a datos mediante **SQLite**:
   * Extrae las porciones caseras (tazas, cucharadas, rebanadas) y las normaliza a su peso exacto en gramos (`gramWeight`).
   * Inserta 363 alimentos y 383 porciones en una sola transaccion atomica.
 * **`Data/Models/`**:
-  * `FoodEntity.cs`: Tabla relacional con indices en `PhosphorusMg`, `PotassiumMg` y `SodiumMg`.
+  * `FoodEntity.cs`: Tabla relacional con indices en `PhosphorusMg`, `PotassiumMg`, `SodiumMg` y `Barcode`.
   * `FoodPortionEntity.cs`: Tabla de porciones caseras normalizadas a gramos.
   * `MealEntity.cs` y `MealItemEntity.cs`: Tablas de comidas e items con instantanea JSON.
   * `RecipeEntity.cs`, `RecipeIngredientEntity.cs` y `RecipeStepEntity.cs`: Tablas relacionales para recetas.
 * **`Repositories/`**:
-  * `SqliteFoodRepository.cs`: Consultas SQL optimizadas por indices B-Tree.
+  * `SqliteFoodRepository.cs`: Consultas SQL optimizadas por indices B-Tree, implementando `GetByBarcodeAsync`.
   * `SqliteMealRepository.cs`: Transacciones de comidas e items consumidos.
   * `SqliteRecipeRepository.cs`: Persistencia relacional de recetas, ingredientes y pasos.
 
@@ -99,9 +100,9 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     * `AddRecipePage`: Compositor clinico de recetas con inicializacion limpia (formulario vacio con estados vacios para ingredientes, pasos y fotografia), dosificacion en tiempo real de alimentos y alinos, y proyecciones instantaneas de nutrientes por porcion.
     * `SeasoningsPage`: Vista de administracion de alinos y marinadas, accesible modularmente desde la seccion de recetas.
     * `AddMealPage`: Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones), invocable contextualmente desde el seguimiento diario.
-    * `AddFoodPage`: Formulario para ingresar alimentos adicionales al catalogo SQLite, invocable contextualmente desde el catalogo.
+    * `AddFoodPage`: Formulario para registrar alimentos adicionales al catalogo SQLite, incorporando captura opcional de codigo de barras con visor de camara nativo (`CameraView` de `BarcodeScanning.Native.Maui`), reticula de alineacion, control de linterna y fallback a entrada manual.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
-  * Registra `DietAppDbContext`, conecta los repositorios SQLite y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) y alertas de minerales (`IMineralAlertStorage`, `IMineralAlertService`) en el contenedor IoC.
+  * Registra `DietAppDbContext`, conecta los repositorios SQLite, inicializa `.UseBarcodeScanning()` y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) y alertas de minerales (`IMineralAlertStorage`, `IMineralAlertService`) en el contenedor IoC.
 
 ---
 

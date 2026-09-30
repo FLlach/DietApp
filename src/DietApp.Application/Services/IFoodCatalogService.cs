@@ -14,6 +14,7 @@ public interface IFoodCatalogService
     Task<IReadOnlyList<FoodItemDto>> GetAllFoodsAsync();
     Task<IReadOnlyList<FoodItemDto>> FilterFoodsAsync(MineralFilterCriteriaDto criteria);
     Task<FoodItemDto?> GetFoodByIdAsync(Guid id);
+    Task<FoodItemDto?> GetFoodByBarcodeAsync(string barcode);
     Task SaveFoodAsync(FoodItemDto foodDto);
     Task DeleteFoodAsync(Guid id);
 }

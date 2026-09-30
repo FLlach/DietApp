@@ -378,7 +378,17 @@ public class LocalizationService : ILocalizationService
         ["FoodCatalog_NewFood"] = "+ Nuevo Alimento",
         ["DailyTracking_AddMeal"] = "+ Registrar Comida",
         ["AddMeal_ChooseFoodPlaceholder"] = "Toca para elegir alimento...",
-        ["AddMeal_ChooseRecipePlaceholder"] = "Toca para elegir receta..."
+        ["AddMeal_ChooseRecipePlaceholder"] = "Toca para elegir receta...",
+        ["AddFood_BarcodeTitle"] = "Codigo de barras (opcional)",
+        ["AddFood_BarcodePlaceholder"] = "ej. 7791234567890 o escanear con camara",
+        ["AddFood_ScanBarcode"] = "Escanear",
+        ["AddFood_ScanningTitle"] = "Escanear Codigo de Barras",
+        ["AddFood_ScanningSubtitle"] = "Apunta la camara hacia el codigo de barras del producto",
+        ["AddFood_ScanningTorch"] = "Linterna",
+        ["AddFood_ScanningClose"] = "Cerrar",
+        ["AddFood_BarcodeFound"] = "Codigo detectado",
+        ["AddFood_CameraPermissionRequired"] = "Se requiere permiso de camara para escanear el codigo de barras.",
+        ["AddFood_ClearBarcode"] = "Borrar codigo"
     };
 
     private static readonly Dictionary<string, string> EnglishStrings = new(StringComparer.OrdinalIgnoreCase)
@@ -609,6 +619,16 @@ public class LocalizationService : ILocalizationService
         ["FoodCatalog_NewFood"] = "+ New Food",
         ["DailyTracking_AddMeal"] = "+ Log Meal",
         ["AddMeal_ChooseFoodPlaceholder"] = "Tap to choose food...",
-        ["AddMeal_ChooseRecipePlaceholder"] = "Tap to choose recipe..."
+        ["AddMeal_ChooseRecipePlaceholder"] = "Tap to choose recipe...",
+        ["AddFood_BarcodeTitle"] = "Barcode (optional)",
+        ["AddFood_BarcodePlaceholder"] = "e.g. 7791234567890 or scan with camera",
+        ["AddFood_ScanBarcode"] = "Scan",
+        ["AddFood_ScanningTitle"] = "Scan Barcode",
+        ["AddFood_ScanningSubtitle"] = "Point the camera at the product barcode",
+        ["AddFood_ScanningTorch"] = "Torch",
+        ["AddFood_ScanningClose"] = "Close",
+        ["AddFood_BarcodeFound"] = "Barcode detected",
+        ["AddFood_CameraPermissionRequired"] = "Camera permission is required to scan barcodes.",
+        ["AddFood_ClearBarcode"] = "Clear barcode"
     };
 }

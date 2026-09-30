@@ -83,6 +83,17 @@ public class FoodCatalogService : IFoodCatalogService
         return food?.ToDto();
     }
 
+    public async Task<FoodItemDto?> GetFoodByBarcodeAsync(string barcode)
+    {
+        if (string.IsNullOrWhiteSpace(barcode))
+        {
+            return null;
+        }
+
+        var food = await _foodRepository.GetByBarcodeAsync(barcode.Trim());
+        return food?.ToDto();
+    }
+
     public async Task SaveFoodAsync(FoodItemDto foodDto)
     {
         if (foodDto == null)
@@ -98,7 +109,8 @@ public class FoodCatalogService : IFoodCatalogService
             foodDto.ReferenceGrams,
             minerals,
             foodDto.Calories,
-            foodDto.ProteinGrams);
+            foodDto.ProteinGrams,
+            foodDto.Barcode);
 
         var existing = await _foodRepository.GetByIdAsync(food.Id);
         if (existing == null)

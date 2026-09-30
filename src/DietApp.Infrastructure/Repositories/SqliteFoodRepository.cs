@@ -29,6 +29,19 @@ public class SqliteFoodRepository : IFoodRepository
         return entity?.ToDomain();
     }
 
+    public async Task<FoodItem?> GetByBarcodeAsync(string barcode)
+    {
+        if (string.IsNullOrWhiteSpace(barcode))
+        {
+            return null;
+        }
+
+        await _dbContext.InitializeAsync();
+        string cleanBarcode = barcode.Trim();
+        var entity = await _dbContext.Connection.Table<FoodEntity>().FirstOrDefaultAsync(f => f.Barcode == cleanBarcode);
+        return entity?.ToDomain();
+    }
+
     public async Task<IReadOnlyList<FoodItem>> GetAllAsync()
     {
         await _dbContext.InitializeAsync();

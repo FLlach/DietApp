@@ -101,4 +101,9 @@ public static class MaterialIconFont
     public const string Lock = "\ue897";
     public const string PictureAsPdf = "\ue415";
     public const string ManageAccounts = "\uf02e";
+    public const string QrCodeScanner = "\ue069";
+    public const string BarcodeScanner = "\ue70b";
+    public const string FlashOn = "\ue3e7";
+    public const string FlashOff = "\ue3e6";
+    public const string Cameraswitch = "\uef47";
 }

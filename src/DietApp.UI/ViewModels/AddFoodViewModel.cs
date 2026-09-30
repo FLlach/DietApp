@@ -61,6 +61,24 @@ public partial class AddFoodViewModel : ObservableObject
     [ObservableProperty]
     private int _selectedUnitIndex = 0;
 
+    // Codigo de Barras (Opcional)
+    [ObservableProperty]
+    private string _barcodeText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasBarcode;
+
+    [ObservableProperty]
+    private bool _isScanning;
+
+    [ObservableProperty]
+    private bool _isTorchOn;
+
+    partial void OnBarcodeTextChanged(string value)
+    {
+        HasBarcode = !string.IsNullOrWhiteSpace(value);
+    }
+
     // Macronutrientes Principales
     [ObservableProperty]
     private string _caloriesText = "112";
@@ -153,6 +171,55 @@ public partial class AddFoodViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ClearBarcode()
+    {
+        BarcodeText = string.Empty;
+    }
+
+    [RelayCommand]
+    private void StartScan()
+    {
+        IsScanning = true;
+        IsTorchOn = false;
+    }
+
+    [RelayCommand]
+    private void StopScan()
+    {
+        IsScanning = false;
+        IsTorchOn = false;
+    }
+
+    [RelayCommand]
+    private void ToggleTorch()
+    {
+        IsTorchOn = !IsTorchOn;
+    }
+
+    /// <summary>
+    /// Procesa el resultado de lectura exitosa emitido por el escaner de codigo de barras.
+    /// Por que se tomo esta decision: Centraliza la recepcion del codigo leido, desactiva la camara
+    /// para liberar hardware y emite vibracion haptica para confirmacion sensorial.
+    /// </summary>
+    public void OnBarcodeDetected(string detectedBarcode)
+    {
+        if (string.IsNullOrWhiteSpace(detectedBarcode)) return;
+
+        BarcodeText = detectedBarcode.Trim();
+        IsScanning = false;
+        IsTorchOn = false;
+
+        try
+        {
+            HapticFeedback.Default.Perform(HapticFeedbackType.Click);
+        }
+        catch
+        {
+            // Omitir si la plataforma o dispositivo no soporta retroalimentacion haptica
+        }
+    }
+
+    [RelayCommand]
     private async Task CloseAsync()
     {
         if (Shell.Current != null)
@@ -207,6 +274,7 @@ public partial class AddFoodViewModel : ObservableObject
             double zn = ParseDouble(ZincMgText, 0.0);
 
             string category = Categories.ElementAtOrDefault(SelectedCategoryIndex) ?? "Otros";
+            string? barcode = string.IsNullOrWhiteSpace(BarcodeText) ? null : BarcodeText.Trim();
 
             var foodDto = new FoodItemDto
             {
@@ -216,6 +284,7 @@ public partial class AddFoodViewModel : ObservableObject
                 ReferenceGrams = refGrams > 0 ? refGrams : 100.0,
                 Calories = cals,
                 ProteinGrams = protein,
+                Barcode = barcode,
                 Minerals = new List<MineralAmountDto>
                 {
                     new() { Type = MineralType.Potassium, MineralName = "Potasio", Milligrams = k, Unit = "mg" },

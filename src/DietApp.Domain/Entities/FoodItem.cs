@@ -20,6 +20,7 @@ public class FoodItem
     public double Calories { get; private set; }
     public double ProteinGrams { get; private set; }
     public IReadOnlyList<MineralAmount> Minerals { get; private set; }
+    public string? Barcode { get; private set; }
 
     public FoodItem(
         Guid id,
@@ -28,7 +29,8 @@ public class FoodItem
         double referenceGrams,
         IEnumerable<MineralAmount> minerals,
         double calories = 0.0,
-        double proteinGrams = 0.0)
+        double proteinGrams = 0.0,
+        string? barcode = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -63,6 +65,17 @@ public class FoodItem
         Calories = calories;
         ProteinGrams = proteinGrams;
         Minerals = minerals?.ToList() ?? new List<MineralAmount>();
+        Barcode = string.IsNullOrWhiteSpace(barcode) ? null : barcode.Trim();
+    }
+
+    /// <summary>
+    /// Actualiza el codigo de barras del alimento.
+    /// Por que se tomo esta decision: Permite asociar o corregir el identificador de codigo de barras
+    /// sin tener que reconstruir la entidad completa de dominio.
+    /// </summary>
+    public void UpdateBarcode(string? barcode)
+    {
+        Barcode = string.IsNullOrWhiteSpace(barcode) ? null : barcode.Trim();
     }
 
     /// <summary>

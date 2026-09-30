@@ -96,6 +96,7 @@ public static class DomainDtoMapper
             ReferenceGrams = food.ReferenceGrams,
             Calories = food.Calories,
             ProteinGrams = food.ProteinGrams,
+            Barcode = food.Barcode,
             Minerals = food.Minerals.Select(m => m.ToDto()).ToList()
         };
     }

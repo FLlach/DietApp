@@ -34,6 +34,9 @@ public class FoodEntity
     public double ProteinGrams { get; set; }
 
     [Indexed]
+    public string? Barcode { get; set; }
+
+    [Indexed]
     public double PhosphorusMg { get; set; }
 
     [Indexed]
@@ -70,7 +73,8 @@ public class FoodEntity
             ReferenceGrams > 0 ? ReferenceGrams : 100.0,
             minerals,
             Calories,
-            ProteinGrams);
+            ProteinGrams,
+            Barcode);
     }
 
     public static FoodEntity FromDomain(FoodItem domainItem)
@@ -83,6 +87,7 @@ public class FoodEntity
             ReferenceGrams = domainItem.ReferenceGrams,
             Calories = domainItem.Calories,
             ProteinGrams = domainItem.ProteinGrams,
+            Barcode = domainItem.Barcode,
             PhosphorusMg = domainItem.GetMineralMilligrams(MineralType.Phosphorus),
             PotassiumMg = domainItem.GetMineralMilligrams(MineralType.Potassium),
             SodiumMg = domainItem.GetMineralMilligrams(MineralType.Sodium),

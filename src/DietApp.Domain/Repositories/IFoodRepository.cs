@@ -13,6 +13,7 @@ namespace DietApp.Domain.Repositories;
 public interface IFoodRepository
 {
     Task<FoodItem?> GetByIdAsync(Guid id);
+    Task<FoodItem?> GetByBarcodeAsync(string barcode);
     Task<IReadOnlyList<FoodItem>> GetAllAsync();
     Task<IReadOnlyList<FoodItem>> FilterByMineralRangeAsync(MineralType mineralType, double minimumMilligrams, double maximumMilligrams);
     Task<IReadOnlyList<FoodItem>> FilterByProteinRangeAsync(double minimumGrams, double maximumGrams);

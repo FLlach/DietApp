@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:DietApp.UI.ViewModels"
              xmlns:models="clr-namespace:DietApp.UI.Models"
              xmlns:helpers="clr-namespace:DietApp.UI.Helpers"
+             xmlns:scanner="clr-namespace:BarcodeScanning;assembly=BarcodeScanning.Native.Maui"
              x:Class="DietApp.UI.Views.AddFoodPage"
              x:DataType="vm:AddFoodViewModel"
              Title="Alta de Alimento"
@@ -207,6 +208,100 @@
                                        BackgroundColor="Transparent"
                                        VerticalOptions="Center" />
                             </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Codigo de barras (opcional) -->
+                        <VerticalStackLayout Spacing="4">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                    <Label Text="{x:Static helpers:MaterialIconFont.BarcodeScanner}"
+                                           Style="{StaticResource MaterialIconStyle}"
+                                           FontSize="15"
+                                           TextColor="{StaticResource StitchPrimary}" />
+                                    <Label Text="Código de barras (opcional)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource StitchOutline}" />
+                                </HorizontalStackLayout>
+                                <Label Grid.Column="1"
+                                       Text="EAN / UPC"
+                                       FontFamily="Inter"
+                                       FontSize="10"
+                                       TextColor="{StaticResource StitchOutlineVariant}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                <!-- Caja de texto editable -->
+                                <Border Grid.Column="0"
+                                        StrokeShape="RoundRectangle 12"
+                                        StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                        Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                        HeightRequest="48"
+                                        Padding="12, 0">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Entry Grid.Column="0"
+                                               Text="{Binding BarcodeText, Mode=TwoWay}"
+                                               Placeholder="ej. 7791234567890 o escanear"
+                                               PlaceholderColor="{StaticResource StitchOutline}"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                               FontFamily="Inter"
+                                               FontSize="13"
+                                               Keyboard="Numeric"
+                                               BackgroundColor="Transparent"
+                                               VerticalOptions="Center" />
+
+                                        <!-- Boton Limpiar -->
+                                        <Border Grid.Column="1"
+                                                IsVisible="{Binding HasBarcode}"
+                                                StrokeShape="RoundRectangle 9999"
+                                                StrokeThickness="0"
+                                                Background="Transparent"
+                                                WidthRequest="36"
+                                                HeightRequest="36"
+                                                VerticalOptions="Center">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding ClearBarcodeCommand}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="{x:Static helpers:MaterialIconFont.Close}"
+                                                   Style="{StaticResource MaterialIconStyle}"
+                                                   FontSize="18"
+                                                   TextColor="{StaticResource StitchOutline}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Boton Escanear con Camara -->
+                                <Border Grid.Column="1"
+                                        StrokeShape="RoundRectangle 12"
+                                        StrokeThickness="1"
+                                        Stroke="{StaticResource StitchPrimary}"
+                                        Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerHigh}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                                        HeightRequest="48"
+                                        Padding="14, 0"
+                                        VerticalOptions="Center">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnScanButtonTapped" />
+                                    </Border.GestureRecognizers>
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Label Text="{x:Static helpers:MaterialIconFont.QrCodeScanner}"
+                                               Style="{StaticResource MaterialIconStyle}"
+                                               FontSize="20"
+                                               TextColor="{StaticResource StitchPrimary}"
+                                               VerticalOptions="Center" />
+                                        <Label Text="Escanear"
+                                               FontFamily="Inter"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource StitchPrimary}"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
                         </VerticalStackLayout>
 
                         <!-- Categoria y Porcion en Cuadricula -->
@@ -1131,6 +1226,131 @@
 
             </Grid>
         </Border>
+
+        <!-- 3. Modal / Overlay de Escaneo de Codigo de Barras con Camara -->
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              IsVisible="{Binding IsScanning}"
+              BackgroundColor="#EE000000"
+              RowDefinitions="Auto, *, Auto"
+              ZIndex="999">
+
+            <!-- Cabecera del Escaner -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto, *, Auto"
+                  Padding="20, 16"
+                  BackgroundColor="#CC000000">
+
+                <!-- Boton Cerrar Escaner -->
+                <Border Grid.Column="0"
+                        StrokeShape="RoundRectangle 9999"
+                        StrokeThickness="0"
+                        Background="#33FFFFFF"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding StopScanCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static helpers:MaterialIconFont.Close}"
+                           Style="{StaticResource MaterialIconStyle}"
+                           FontSize="22"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Titulo y Guia -->
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="Escanear Código de Barras"
+                           FontFamily="PlusJakartaSans"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <Label Text="Enfoca el código del producto dentro del marco"
+                           FontFamily="Inter"
+                           FontSize="11"
+                           TextColor="#CCCCCC"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Boton Alternar Linterna -->
+                <Border Grid.Column="2"
+                        StrokeShape="RoundRectangle 9999"
+                        StrokeThickness="0"
+                        Background="#33FFFFFF"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleTorchCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static helpers:MaterialIconFont.FlashOn}"
+                           Style="{StaticResource MaterialIconStyle}"
+                           FontSize="22"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Visor de Camara con Reticula Central -->
+            <Grid Grid.Row="1">
+                <!-- Control Nativo de Camara -->
+                <scanner:CameraView x:Name="ScannerCameraView"
+                                    CameraEnabled="{Binding IsScanning}"
+                                    TorchOn="{Binding IsTorchOn}"
+                                    OnDetectionFinished="OnScannerDetectionFinished"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill" />
+
+                <!-- Reticula Guia con Borde Lima -->
+                <Grid HorizontalOptions="Center"
+                      VerticalOptions="Center"
+                      WidthRequest="290"
+                      HeightRequest="190">
+                    <Border StrokeShape="RoundRectangle 16"
+                            StrokeThickness="2.5"
+                            Stroke="{StaticResource StitchPrimary}"
+                            Background="Transparent">
+                        <Grid>
+                            <!-- Linea Guia Central -->
+                            <BoxView HeightRequest="2"
+                                     Color="{StaticResource StitchPrimary}"
+                                     Opacity="0.85"
+                                     VerticalOptions="Center"
+                                     HorizontalOptions="Fill" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- Barra Inferior de Cancelacion -->
+            <VerticalStackLayout Grid.Row="2"
+                                 Padding="24, 20"
+                                 Spacing="12"
+                                 BackgroundColor="#CC000000"
+                                 HorizontalOptions="Fill">
+                <Label Text="La detección es automática cuando el código se alinea con la línea verde."
+                       FontFamily="Inter"
+                       FontSize="11"
+                       TextColor="#AAAAAA"
+                       HorizontalOptions="Center" />
+
+                <Button Text="Cancelar Escaneo"
+                        Command="{Binding StopScanCommand}"
+                        BackgroundColor="#262626"
+                        TextColor="White"
+                        FontFamily="Inter"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        CornerRadius="12"
+                        HeightRequest="46"
+                        HorizontalOptions="Center"
+                        WidthRequest="220" />
+            </VerticalStackLayout>
+        </Grid>
 
     </Grid>
 
