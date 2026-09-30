@@ -6,7 +6,7 @@ namespace DietApp.UI.Views;
 /// <summary>
 /// Como funciona: Vista de formulario para registrar un alimento nuevo. Aloja la integracion
 /// del control CameraView para escaneo de codigos de barra (EAN/UPC) con solicitud asincrona
-/// de permisos de hardware en tiempo de ejecucion.
+/// de permisos de hardware en tiempo de ejecucion mediante Methods.AskForRequiredPermissionAsync().
 /// Por que se tomo esta decision: Permite encapsular los eventos de plataforma y ciclo de vida de la camara
 /// en el code-behind de la vista sin acoplar dependencias de hardware o interfaces graficas al ViewModel.
 /// </summary>
