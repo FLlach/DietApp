@@ -74,6 +74,15 @@ public class DietAppDbContext
             await _connection.CreateTableAsync<RecipeStepEntity>();
             await _connection.CreateTableAsync<SeasoningEntity>();
             await _connection.CreateTableAsync<SeasoningItemEntity>();
+            await _connection.CreateTableAsync<UserProfileEntity>();
+
+            // Validar si la tabla de perfiles de usuario esta vacia para inicializar el perfil predeterminado
+            int profileCount = await _connection.Table<UserProfileEntity>().CountAsync();
+            if (profileCount == 0)
+            {
+                var defaultProfile = UserProfile.CreateDefault();
+                await _connection.InsertAsync(UserProfileEntity.FromDomain(defaultProfile));
+            }
 
             // Validar si la tabla de alimentos esta vacia para importar datos
             int foodCount = await _connection.Table<FoodEntity>().CountAsync();

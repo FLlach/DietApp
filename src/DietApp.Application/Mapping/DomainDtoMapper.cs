@@ -208,4 +208,80 @@ public static class DomainDtoMapper
             Items = seasoning.Items.Select(i => i.ToDto()).ToList()
         };
     }
+
+    public static UserProfileDto ToDto(this UserProfile profile)
+    {
+        return new UserProfileDto
+        {
+            Id = profile.Id,
+            UserId = profile.UserId,
+            DisplayName = profile.DisplayName,
+            Email = profile.Email,
+            DietaryCondition = profile.DietaryCondition,
+            WeightKg = profile.WeightKg,
+            HeightCm = profile.HeightCm,
+            BirthDate = profile.BirthDate,
+            BiologicalSex = profile.BiologicalSex,
+            DailyCalorieTarget = profile.DailyCalorieTarget,
+            IsCalorieGoalEnabled = profile.IsCalorieGoalEnabled,
+            DailyProteinTargetGrams = profile.DailyProteinTargetGrams,
+            IsProteinGoalEnabled = profile.IsProteinGoalEnabled,
+            WarningThresholdPercentage = profile.WarningThresholdPercentage,
+            PotassiumLimitMg = profile.PotassiumLimitMg,
+            IsPotassiumEnabled = profile.IsPotassiumEnabled,
+            PhosphorusLimitMg = profile.PhosphorusLimitMg,
+            IsPhosphorusEnabled = profile.IsPhosphorusEnabled,
+            SodiumLimitMg = profile.SodiumLimitMg,
+            IsSodiumEnabled = profile.IsSodiumEnabled,
+            CalciumLimitMg = profile.CalciumLimitMg,
+            IsCalciumEnabled = profile.IsCalciumEnabled,
+            MagnesiumLimitMg = profile.MagnesiumLimitMg,
+            IsMagnesiumEnabled = profile.IsMagnesiumEnabled,
+            IronLimitMg = profile.IronLimitMg,
+            IsIronEnabled = profile.IsIronEnabled,
+            ZincLimitMg = profile.ZincLimitMg,
+            IsZincEnabled = profile.IsZincEnabled,
+            PreferredLanguage = profile.PreferredLanguage,
+            ThemePreference = profile.ThemePreference,
+            CreatedAt = profile.CreatedAt,
+            UpdatedAt = profile.UpdatedAt
+        };
+    }
+
+    public static UserProfile ToDomain(this UserProfileDto dto)
+    {
+        return new UserProfile(
+            id: dto.Id == Guid.Empty ? Guid.NewGuid() : dto.Id,
+            userId: dto.UserId,
+            displayName: dto.DisplayName,
+            email: dto.Email,
+            dietaryCondition: dto.DietaryCondition,
+            weightKg: dto.WeightKg,
+            heightCm: dto.HeightCm,
+            birthDate: dto.BirthDate,
+            biologicalSex: dto.BiologicalSex,
+            dailyCalorieTarget: dto.DailyCalorieTarget,
+            isCalorieGoalEnabled: dto.IsCalorieGoalEnabled,
+            dailyProteinTargetGrams: dto.DailyProteinTargetGrams,
+            isProteinGoalEnabled: dto.IsProteinGoalEnabled,
+            warningThresholdPercentage: dto.WarningThresholdPercentage,
+            potassiumLimitMg: dto.PotassiumLimitMg,
+            isPotassiumEnabled: dto.IsPotassiumEnabled,
+            phosphorusLimitMg: dto.PhosphorusLimitMg,
+            isPhosphorusEnabled: dto.IsPhosphorusEnabled,
+            sodiumLimitMg: dto.SodiumLimitMg,
+            isSodiumEnabled: dto.IsSodiumEnabled,
+            calciumLimitMg: dto.CalciumLimitMg,
+            isCalciumEnabled: dto.IsCalciumEnabled,
+            magnesiumLimitMg: dto.MagnesiumLimitMg,
+            isMagnesiumEnabled: dto.IsMagnesiumEnabled,
+            ironLimitMg: dto.IronLimitMg,
+            isIronEnabled: dto.IsIronEnabled,
+            zincLimitMg: dto.ZincLimitMg,
+            isZincEnabled: dto.IsZincEnabled,
+            preferredLanguage: dto.PreferredLanguage,
+            themePreference: dto.ThemePreference,
+            createdAt: dto.CreatedAt,
+            updatedAt: dto.UpdatedAt);
+    }
 }
