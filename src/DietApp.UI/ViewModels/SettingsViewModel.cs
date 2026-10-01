@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DietApp.Application.Services;
 using DietApp.Domain.Enums;
+using DietApp.Infrastructure.Supabase;
 using DietApp.UI.Localization;
 
 namespace DietApp.UI.ViewModels;
@@ -22,22 +23,35 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IProteinGoalService _proteinGoalService;
     private readonly ICalorieGoalService _calorieGoalService;
     private readonly IThemeService _themeService;
+    private readonly IUserProfileService _userProfileService;
 
     public SettingsViewModel(
         ILocalizationService localizationService,
         IMineralAlertService mineralAlertService,
         IProteinGoalService proteinGoalService,
         ICalorieGoalService calorieGoalService,
-        IThemeService themeService)
+        IThemeService themeService,
+        IUserProfileService userProfileService)
     {
         _localizationService = localizationService;
         _mineralAlertService = mineralAlertService;
         _proteinGoalService = proteinGoalService;
         _calorieGoalService = calorieGoalService;
         _themeService = themeService;
+        _userProfileService = userProfileService;
 
         LoadSettings();
     }
+
+    // 0. Informacion y Estado del Perfil
+    [ObservableProperty]
+    private string _displayName = "Usuario Principal";
+
+    [ObservableProperty]
+    private string _email = string.Empty;
+
+    [ObservableProperty]
+    private string _dietaryCondition = "Renal / KDOQI";
 
     // 1. Preferencias de Idioma
     [ObservableProperty]
@@ -231,6 +245,25 @@ public partial class SettingsViewModel : ObservableObject
             IsZincEnabled = true;
             ZincLimitMgText = "12";
         }
+
+        // Cargar Datos del Perfil desde IUserProfileService
+        Task.Run(async () =>
+        {
+            try
+            {
+                var profile = await _userProfileService.GetCurrentProfileAsync();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    DisplayName = profile.DisplayName;
+                    Email = profile.Email ?? string.Empty;
+                    DietaryCondition = profile.DietaryCondition;
+                });
+            }
+            catch
+            {
+                // Fallback silencioso ante inicializaciones asincronas en paralelo
+            }
+        });
     }
 
     [RelayCommand]
@@ -244,6 +277,9 @@ public partial class SettingsViewModel : ObservableObject
 
         _localizationService.SetLanguage(lang);
         LocalizationResourceManager.Instance.SetLanguage(lang);
+
+        string currentThemeStr = IsLightThemeSelected ? "Light" : (IsDarkThemeSelected ? "Dark" : "System");
+        _ = _userProfileService.UpdatePreferencesAsync(lang, currentThemeStr);
     }
 
     [RelayCommand]
@@ -261,6 +297,7 @@ public partial class SettingsViewModel : ObservableObject
         IsSystemThemeSelected = mode == ThemeMode.System;
 
         _themeService.SetTheme(mode);
+        _ = _userProfileService.UpdatePreferencesAsync(CurrentLanguage, themeModeStr);
     }
 
     [RelayCommand]
@@ -269,14 +306,18 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             // Guardar Meta de Calorias
-            if (double.TryParse(CalorieGoalText, NumberStyles.Any, CultureInfo.InvariantCulture, out var calories) && calories >= 0)
+            double calories = 2000.0;
+            if (double.TryParse(CalorieGoalText, NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedCalories) && parsedCalories >= 0)
             {
+                calories = parsedCalories;
                 _calorieGoalService.SetDailyCalorieGoal(calories, IsCalorieGoalEnabled);
             }
 
             // Guardar Meta de Proteina
-            if (double.TryParse(ProteinGoalGramsText, NumberStyles.Any, CultureInfo.InvariantCulture, out var protein) && protein >= 0)
+            double protein = 60.0;
+            if (double.TryParse(ProteinGoalGramsText, NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedProtein) && parsedProtein >= 0)
             {
+                protein = parsedProtein;
                 _proteinGoalService.SetDailyProteinGoal(protein, IsProteinGoalEnabled);
             }
 
@@ -296,9 +337,38 @@ public partial class SettingsViewModel : ObservableObject
 
             _mineralAlertService.SaveThresholds(dict);
 
+            // Persistir de forma consolidada en IUserProfileService
+            var currentProfile = await _userProfileService.GetCurrentProfileAsync();
+            currentProfile.DisplayName = string.IsNullOrWhiteSpace(DisplayName) ? currentProfile.DisplayName : DisplayName.Trim();
+            currentProfile.Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim();
+            currentProfile.DietaryCondition = string.IsNullOrWhiteSpace(DietaryCondition) ? currentProfile.DietaryCondition : DietaryCondition.Trim();
+            currentProfile.DailyCalorieTarget = calories;
+            currentProfile.IsCalorieGoalEnabled = IsCalorieGoalEnabled;
+            currentProfile.DailyProteinTargetGrams = protein;
+            currentProfile.IsProteinGoalEnabled = IsProteinGoalEnabled;
+            currentProfile.WarningThresholdPercentage = WarningThresholdPercent;
+            currentProfile.PotassiumLimitMg = dict[MineralType.Potassium] ?? currentProfile.PotassiumLimitMg;
+            currentProfile.IsPotassiumEnabled = IsPotassiumEnabled;
+            currentProfile.PhosphorusLimitMg = dict[MineralType.Phosphorus] ?? currentProfile.PhosphorusLimitMg;
+            currentProfile.IsPhosphorusEnabled = IsPhosphorusEnabled;
+            currentProfile.SodiumLimitMg = dict[MineralType.Sodium] ?? currentProfile.SodiumLimitMg;
+            currentProfile.IsSodiumEnabled = IsSodiumEnabled;
+            currentProfile.CalciumLimitMg = dict[MineralType.Calcium] ?? currentProfile.CalciumLimitMg;
+            currentProfile.IsCalciumEnabled = IsCalciumEnabled;
+            currentProfile.MagnesiumLimitMg = dict[MineralType.Magnesium] ?? currentProfile.MagnesiumLimitMg;
+            currentProfile.IsMagnesiumEnabled = IsMagnesiumEnabled;
+            currentProfile.IronLimitMg = dict[MineralType.Iron] ?? currentProfile.IronLimitMg;
+            currentProfile.IsIronEnabled = IsIronEnabled;
+            currentProfile.ZincLimitMg = dict[MineralType.Zinc] ?? currentProfile.ZincLimitMg;
+            currentProfile.IsZincEnabled = IsZincEnabled;
+            currentProfile.PreferredLanguage = CurrentLanguage;
+            currentProfile.ThemePreference = IsLightThemeSelected ? "Light" : (IsDarkThemeSelected ? "Dark" : "System");
+
+            await _userProfileService.SaveProfileAsync(currentProfile);
+
             if (Shell.Current != null)
             {
-                await Shell.Current.DisplayAlertAsync("Ajustes Guardados", "Los parámetros clínicos y alertas preventivas han sido actualizados exitosamente.", "Aceptar");
+                await Shell.Current.DisplayAlertAsync("Ajustes Guardados", "Los parámetros clínicos, perfil y alertas preventivas han sido actualizados exitosamente.", "Aceptar");
             }
         }
         catch (Exception ex)
@@ -323,6 +393,8 @@ public partial class SettingsViewModel : ObservableObject
 
         if (confirm)
         {
+            await _userProfileService.ResetToDefaultsAsync();
+
             _calorieGoalService.ResetToDefault();
             IsCalorieGoalEnabled = true;
             CalorieGoalText = "2000";
@@ -361,12 +433,22 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task SyncClinicalDataAsync()
     {
-        if (Shell.Current != null)
+        if (Shell.Current == null) return;
+
+        try
         {
-            await Shell.Current.DisplayAlertAsync(
-                "Sincronización Clínica",
-                "El motor local SQLite Cipher y los algoritmos de detección preventiva se encuentran sincronizados y operativos.",
-                "Aceptar");
+            var profile = await _userProfileService.GetCurrentProfileAsync();
+            await _userProfileService.SaveProfileAsync(profile);
+
+            string statusMessage = SupabaseConfig.IsConfigured
+                ? "Sincronización con Supabase (PostgreSQL) y SQLite local completada exitosamente."
+                : "Almacenamiento local SQLite operativo. Las credenciales de Supabase no están configuradas.";
+
+            await Shell.Current.DisplayAlertAsync("Sincronización Clínica", statusMessage, "Aceptar");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlertAsync("Sincronización", $"Error al conectar con la nube: {ex.Message}", "Aceptar");
         }
     }
 

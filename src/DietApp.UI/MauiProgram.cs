@@ -4,6 +4,8 @@ using DietApp.Domain.Repositories;
 using DietApp.Domain.Services;
 using DietApp.Infrastructure.Data;
 using DietApp.Infrastructure.Repositories;
+using DietApp.Infrastructure.Supabase;
+using DietApp.Infrastructure.Supabase.Repositories;
 using DietApp.UI.Localization;
 using DietApp.UI.Services;
 using DietApp.UI.ViewModels;
@@ -63,11 +65,16 @@ public static class MauiProgram
         // Capa de Dominio - Servicios de Dominio
         builder.Services.AddSingleton<DailyMineralAggregatorService>();
 
-        // Capa de Infraestructura - Repositorios SQLite
+        // Capa de Infraestructura - Repositorios SQLite y Cliente Supabase
         builder.Services.AddSingleton<IFoodRepository, SqliteFoodRepository>();
         builder.Services.AddSingleton<IMealRepository, SqliteMealRepository>();
         builder.Services.AddSingleton<IRecipeRepository, SqliteRecipeRepository>();
         builder.Services.AddSingleton<ISeasoningRepository, SqliteSeasoningRepository>();
+
+        // Persistencia de Perfil: Cliente Supabase hibrido con soporte Offline-First sobre SQLite
+        builder.Services.AddSingleton<SqliteUserProfileRepository>();
+        builder.Services.AddSingleton<ISupabaseClientProvider, SupabaseClientProvider>();
+        builder.Services.AddSingleton<IUserProfileRepository, SupabaseUserProfileRepository>();
 
         // Localizacion e Internacionalizacion
         builder.Services.AddSingleton<ILanguagePreferenceStorage, MauiPreferencesLanguageStorage>();
@@ -87,6 +94,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IThemeService, AppThemeService>();
 
         // Capa de Aplicacion - Casos de Uso y Servicios
+        builder.Services.AddSingleton<IUserProfileService, UserProfileService>();
         builder.Services.AddTransient<IFoodCatalogService, FoodCatalogService>();
         builder.Services.AddTransient<IMealTrackingService, MealTrackingService>();
         builder.Services.AddTransient<IRecipeService, RecipeService>();
@@ -122,6 +130,10 @@ public static class MauiProgram
 
         var localizationService = app.Services.GetRequiredService<ILocalizationService>();
         LocalizationResourceManager.Instance.Initialize(localizationService);
+
+        // Inicializacion del perfil y preferencias de usuario (Single Source of Truth)
+        var userProfileService = app.Services.GetRequiredService<IUserProfileService>();
+        Task.Run(async () => await userProfileService.GetCurrentProfileAsync());
 
         return app;
     }

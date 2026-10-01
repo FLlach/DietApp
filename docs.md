@@ -49,19 +49,22 @@ Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 * **`Entities/Recipe.cs`**: Raiz de agregado para recetas culinarias con ingredientes dosificados, pasos numerados, porciones, imagen final y calculo nutricional por porcion.
 * **`Entities/RecipeIngredient.cs`**: Ingrediente dosificado con calculo de calorias y minerales.
 * **`Entities/RecipeStep.cs`**: Paso numerado con instruccion e imagen ilustrativa de la etapa.
+* **`Entities/UserProfile.cs`**: Raiz de agregado (Aggregate Root) que encapsula el perfil clinico y antropometrico del paciente (peso, talla, fecha de nacimiento, sexo), metas diarias (calorias y proteinas), umbral preventivo porcentual, limites cuantitativos de los 7 minerales diana y preferencias de interfaz (idioma y tema visual). Mantiene el campo `UserId` para mapeo directo con Supabase Auth (`auth.uid()`).
 * **`Services/DailyMineralAggregatorService.cs`**: Servicio de dominio que consolida la suma total de minerales entre multiples comidas del dia.
-* **`Repositories/`**: Contratos `IFoodRepository.cs` (con soporte para `GetByBarcodeAsync`), `IMealRepository.cs` e `IRecipeRepository.cs`.
+* **`Repositories/`**: Contratos `IFoodRepository.cs` (con soporte para `GetByBarcodeAsync`), `IMealRepository.cs`, `IRecipeRepository.cs`, `ISeasoningRepository.cs` e `IUserProfileRepository.cs`.
 
 ---
 
 ### 3.2. Capa de Aplicacion (`DietApp.Application`)
 Orquesta los casos de uso del sistema:
 
-* **`DTOs/`**: `FoodItemDto.cs` (incluye propiedad opcional `Barcode`), `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs` (con subtitulo nutricional por porcion y coleccion de minerales por porcion), `RecipeIngredientDto.cs` (con resumen de minerales aportados por ingrediente), `RecipeStepDto.cs`.
-* **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol y preservacion del codigo de barras.
+* **`DTOs/`**: `FoodItemDto.cs` (incluye propiedad opcional `Barcode`), `MealDto.cs`, `MealItemDto.cs`, `MineralAmountDto.cs`, `MineralFilterCriteriaDto.cs`, `RecipeDto.cs`, `RecipeIngredientDto.cs`, `RecipeStepDto.cs`, `SeasoningDto.cs`, `SeasoningItemDto.cs` y `UserProfileDto.cs` (representacion plana para intercambio de perfil y preferencias).
+* **`Mapping/DomainDtoMapper.cs`**: Funciones puras de extension para transformar entidades a DTOs con traduccion de nombres a espanol, mapeo de `UserProfile` a `UserProfileDto` y viceversa, y preservacion del codigo de barras.
+* **`Services/UserProfileService.cs` e `IUserProfileService.cs`**: Servicio integral de aplicacion que actua como Fuente Unica de Verdad (Single Source of Truth) para el perfil y las preferencias. Sincroniza bidireccionalmente las metas de calorias, proteinas, limites de minerales, idioma y tema con los demas componentes y notifica reactivamente mediante el evento `ProfileChanged`.
 * **`Services/FoodCatalogService.cs`**: Casos de uso de consulta, busqueda y filtrado por rangos de minerales, persistencia de alimentos con codigo de barras y consulta especializada por `GetFoodByBarcodeAsync`.
 * **`Services/MealTrackingService.cs`**: Casos de uso de registro de comidas y balance diario de minerales. Soporta registro combinado de alimentos y recetas (`RecordMealWithMixedItemsAsync`) y registro rapido de recetas consumidas (`RecordRecipeInMealAsync`).
 * **`Services/RecipeService.cs`**: Casos de uso de creacion, consulta y busqueda de recetas culinarias.
+* **`Services/SeasoningService.cs`**: Casos de uso para gestion de alinos y marinadas.
 * **`Services/IProteinGoalStorage.cs` y `Services/IProteinGoalService.cs` (`ProteinGoalService.cs`)**: Gestion, validacion y notificacion reactiva de la meta diaria de proteina en gramos para balance nitrogenado y control en enfermedad renal cronica.
 * **`Services/ICalorieGoalStorage.cs` y `Services/ICalorieGoalService.cs` (`CalorieGoalService.cs`)**: Gestion, validacion y notificacion reactiva de la meta diaria energetica en calorias (kcal) con persistencia desacoplada y calculo sincronizado del plan diario.
 
@@ -70,20 +73,30 @@ Orquesta los casos de uso del sistema:
 ### 3.3. Capa de Infraestructura (`DietApp.Infrastructure`)
 Implementa el acceso a datos mediante **SQLite**:
 
-* **`Data/DietAppDbContext.cs`**: Administrador de la conexion SQLite asincrona (`SQLiteAsyncConnection`), responsable de la creacion de tablas relacionales indexadas y de la inicializacion automatica de datos.
+* **`Data/DietAppDbContext.cs`**: Administrador de la conexion SQLite asincrona (`SQLiteAsyncConnection`), responsable de la creacion de tablas relacionales indexadas (incluyendo `UserProfiles`), inicializacion de datos por defecto y migracion automatica.
 * **`Data/FoodDataCentralImporter.cs`**: Lector de alto rendimiento basado en `System.Text.Json.JsonDocument` que procesa el dataset oficial de USDA FoodData Central Foundation Foods (`FoodData_Central_foundation_food_json_2026-04-30.json`).
   * Normaliza la base de nutrientes y minerales a 100 gramos de referencia.
   * Extrae las porciones caseras (tazas, cucharadas, rebanadas) y las normaliza a su peso exacto en gramos (`gramWeight`).
   * Inserta 363 alimentos y 383 porciones en una sola transaccion atomica.
 * **`Data/Models/`**:
+  * `UserProfileEntity.cs`: Tabla relacional `UserProfiles` indexada por `UserId` para almacenar el perfil consolidado y preferencias en SQLite local.
   * `FoodEntity.cs`: Tabla relacional con indices en `PhosphorusMg`, `PotassiumMg`, `SodiumMg` y `Barcode`.
   * `FoodPortionEntity.cs`: Tabla de porciones caseras normalizadas a gramos.
   * `MealEntity.cs` y `MealItemEntity.cs`: Tablas de comidas e items con instantanea JSON.
   * `RecipeEntity.cs`, `RecipeIngredientEntity.cs` y `RecipeStepEntity.cs`: Tablas relacionales para recetas.
+  * `SeasoningEntity.cs` y `SeasoningItemEntity.cs`: Tablas para alinos y condimentos.
 * **`Repositories/`**:
+  * `SqliteUserProfileRepository.cs`: Implementacion de `IUserProfileRepository` con operaciones de Upsert sobre SQLite local.
   * `SqliteFoodRepository.cs`: Consultas SQL optimizadas por indices B-Tree, implementando `GetByBarcodeAsync`.
   * `SqliteMealRepository.cs`: Transacciones de comidas e items consumidos.
   * `SqliteRecipeRepository.cs`: Persistencia relacional de recetas, ingredientes y pasos.
+  * `SqliteSeasoningRepository.cs`: Persistencia relacional de alinos y condimentos.
+* **`Supabase/ (Integracion en la Nube con PostgreSQL)`**:
+  * `SupabaseConfig.cs`: Parametros de configuracion del cliente Supabase (`ProjectUrl` y `AnonKey`).
+  * `ISupabaseClientProvider.cs` y `SupabaseClientProvider.cs`: Proveedor singleton thread-safe para inicializar y suministrar `Supabase.Client`.
+  * `Models/SupabaseUserProfileModel.cs`: Mapeo PostgREST sobre la tabla `user_profiles` con atributos `[Table]` y `[Column]`.
+  * `Repositories/SupabaseUserProfileRepository.cs`: Repositorio hibrido (Offline-First) que sincroniza con PostgreSQL en la nube manteniendo persistencia local inmediata en SQLite.
+  * `docs/supabase_schema.sql`: Script DDL para creacion de tablas, claves foraneas, indices y politicas de seguridad RLS en Supabase.
 
 ---
 

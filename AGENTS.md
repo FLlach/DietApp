@@ -4,7 +4,7 @@
 > "Readability and Order > Speed and Complex Interconnections"
 
 1. Asegurar siempre bajo acoplamiento y alta cohesion entre modulos.
-2. Seguir estrictamente Domain-Driven Design (DDD) con separacion en cuatro capas (`DietApp.Domain`, `DietApp.Application`, `DietApp.Infrastructure`, `DietApp.UI`).
+2. Seguir estrictamente Domain-Driven Design (DDD) con separacion en cuatro capas.
 3. Mantener actualizado `.gitignore` ante cualquier directorio de datos sensibles o artefactos locales.
 4. Realizar commits detallados entre funcionalidades para preservar un historial coherente.
 5. Prohibido el uso de emojis en comentarios, codigo, commits y documentacion.
