@@ -174,7 +174,8 @@ public static class DomainDtoMapper
             TotalMinerals = totalMinerals.Select(m => m.ToDto()).ToList(),
             MineralsPerServing = mineralsPerServing.Select(m => m.ToDto()).ToList(),
             Ingredients = recipe.Ingredients.Select(i => i.ToDto()).ToList(),
-            Steps = recipe.Steps.Select(s => s.ToDto()).ToList()
+            Steps = recipe.Steps.Select(s => s.ToDto()).ToList(),
+            IsGlobal = recipe.IsGlobal
         };
     }
 

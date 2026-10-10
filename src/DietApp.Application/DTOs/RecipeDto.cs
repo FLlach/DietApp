@@ -17,6 +17,8 @@ public class RecipeDto
     public int Servings { get; set; } = 1;
     public string FinalImagePath { get; set; } = string.Empty;
     public bool HasFinalImage => !string.IsNullOrWhiteSpace(FinalImagePath);
+    public bool IsGlobal { get; set; }
+    public bool IsFavorite { get; set; }
 
     public double CaloriesPerServing { get; set; }
     public double TotalCalories { get; set; }

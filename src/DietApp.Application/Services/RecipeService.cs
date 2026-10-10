@@ -18,18 +18,27 @@ public class RecipeService : IRecipeService
 {
     private readonly IRecipeRepository _recipeRepository;
     private readonly IFoodRepository _foodRepository;
+    private readonly IRecipeFavoriteRepository _favoriteRepository;
 
     public RecipeService(
         IRecipeRepository recipeRepository,
-        IFoodRepository foodRepository)
+        IFoodRepository foodRepository,
+        IRecipeFavoriteRepository favoriteRepository)
     {
         _recipeRepository = recipeRepository ?? throw new ArgumentNullException(nameof(recipeRepository));
         _foodRepository = foodRepository ?? throw new ArgumentNullException(nameof(foodRepository));
+        _favoriteRepository = favoriteRepository ?? throw new ArgumentNullException(nameof(favoriteRepository));
     }
 
     public async Task<IReadOnlyList<RecipeDto>> GetAllRecipesAsync()
     {
         var recipes = await _recipeRepository.GetAllAsync();
+        return recipes.Select(recipe => recipe.ToDto()).ToList();
+    }
+
+    public async Task<IReadOnlyList<RecipeDto>> GetGlobalRecipesAsync()
+    {
+        var recipes = await _recipeRepository.GetGlobalRecipesAsync();
         return recipes.Select(recipe => recipe.ToDto()).ToList();
     }
 
@@ -43,6 +52,56 @@ public class RecipeService : IRecipeService
     {
         var recipes = await _recipeRepository.SearchByTitleAsync(query);
         return recipes.Select(recipe => recipe.ToDto()).ToList();
+    }
+
+    public async Task<IReadOnlyList<RecipeDto>> SearchGlobalRecipesAsync(string query)
+    {
+        var recipes = await _recipeRepository.SearchGlobalRecipesAsync(query);
+        return recipes.Select(recipe => recipe.ToDto()).ToList();
+    }
+
+    public async Task<IReadOnlyList<RecipeDto>> GetFavoriteRecipesAsync(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId)) return new List<RecipeDto>();
+
+        var favIds = await _favoriteRepository.GetFavoriteRecipeIdsAsync(userId);
+        if (favIds.Count == 0) return new List<RecipeDto>();
+
+        var allRecipes = await _recipeRepository.GetAllAsync();
+        var favSet = new HashSet<Guid>(favIds);
+
+        return allRecipes
+            .Where(r => favSet.Contains(r.Id))
+            .Select(r =>
+            {
+                var dto = r.ToDto();
+                dto.IsFavorite = true;
+                return dto;
+            })
+            .ToList();
+    }
+
+    public async Task<bool> IsFavoriteAsync(string userId, Guid recipeId)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || recipeId == Guid.Empty) return false;
+        return await _favoriteRepository.IsFavoriteAsync(userId, recipeId);
+    }
+
+    public async Task<bool> ToggleFavoriteAsync(string userId, Guid recipeId)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || recipeId == Guid.Empty) return false;
+
+        bool isFav = await _favoriteRepository.IsFavoriteAsync(userId, recipeId);
+        if (isFav)
+        {
+            await _favoriteRepository.RemoveFavoriteAsync(userId, recipeId);
+            return false;
+        }
+        else
+        {
+            await _favoriteRepository.AddFavoriteAsync(userId, recipeId);
+            return true;
+        }
     }
 
     public async Task<IReadOnlyList<RecipeDto>> GetRecipesSortedByMineralAsync(MineralType mineral, bool descending = true)

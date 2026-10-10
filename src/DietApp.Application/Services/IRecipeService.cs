@@ -13,8 +13,13 @@ namespace DietApp.Application.Services;
 public interface IRecipeService
 {
     Task<IReadOnlyList<RecipeDto>> GetAllRecipesAsync();
+    Task<IReadOnlyList<RecipeDto>> GetGlobalRecipesAsync();
     Task<RecipeDto?> GetRecipeByIdAsync(Guid id);
     Task<IReadOnlyList<RecipeDto>> SearchRecipesAsync(string query);
+    Task<IReadOnlyList<RecipeDto>> SearchGlobalRecipesAsync(string query);
+    Task<IReadOnlyList<RecipeDto>> GetFavoriteRecipesAsync(string userId);
+    Task<bool> IsFavoriteAsync(string userId, Guid recipeId);
+    Task<bool> ToggleFavoriteAsync(string userId, Guid recipeId);
     Task<IReadOnlyList<RecipeDto>> GetRecipesSortedByMineralAsync(MineralType mineral, bool descending = true);
     Task<RecipeDto> CreateRecipeAsync(
         string title,
