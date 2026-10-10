@@ -28,61 +28,75 @@
                 StrokeThickness="0,0,0,1"
                 Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
                 Background="{AppThemeBinding Light={StaticResource StitchSurface}, Dark={StaticResource StitchDarkSurface}}"
-                Padding="16, 12, 16, 14">
-            <VerticalStackLayout Spacing="10" MaximumWidthRequest="480" HorizontalOptions="Center">
-                <Grid ColumnDefinitions="*, Auto">
-                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                            <Label Text="{x:Static helpers:MaterialIconFont.Biotech}"
+                Padding="16, 12, 16, 12">
+            <VerticalStackLayout Spacing="10" MaximumWidthRequest="600" HorizontalOptions="Fill">
+                <!-- Fila Superior: Identidad, Titulo y Accion Primaria -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
+                        <Border StrokeShape="RoundRectangle 9999"
+                                StrokeThickness="0"
+                                Background="#1884CC16"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                VerticalOptions="Center">
+                            <Label Text="{x:Static helpers:MaterialIconFont.RestaurantMenu}"
                                    Style="{StaticResource MaterialIconStyle}"
-                                   FontSize="15"
-                                   TextColor="{StaticResource StitchPrimary}" />
-                            <Label Text="DIETAPP • METABOLIC MAUI"
-                                   FontFamily="Inter"
-                                   FontSize="11"
+                                   FontSize="20"
+                                   TextColor="{StaticResource StitchPrimary}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Spacing="1" VerticalOptions="Center">
+                            <Label Text="Recetas"
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="20"
                                    FontAttributes="Bold"
-                                   TextColor="{StaticResource StitchPrimary}" />
-                        </HorizontalStackLayout>
-                        <Label Text="Recetas Culinarias"
-                               FontFamily="PlusJakartaSans"
-                               FontSize="22"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                    </VerticalStackLayout>
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                            <Label Text="Recetas personalizadas"
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
 
-                    <!-- Boton + Nueva Receta (44dp) -->
+                    <!-- Boton + Nueva Receta -->
                     <Button Grid.Column="1"
                             Text="+ Nueva Receta"
                             Command="{Binding NavigateToAddRecipeCommand}"
                             Style="{StaticResource StitchPrimaryButtonStyle}"
-                            HeightRequest="44"
+                            HeightRequest="40"
                             CornerRadius="12"
-                            Padding="12, 0"
+                            Padding="14, 0"
+                            FontSize="13"
+                            VerticalOptions="Center"
                             SemanticProperties.Description="Crear nueva receta" />
                 </Grid>
 
-                <Label Text="Preparaciones dosificadas y control clínico."
-                       FontFamily="PlusJakartaSans"
-                       FontSize="12"
-                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
-
-                <!-- Buscador Clinico -->
+                <!-- Buscador Nativo Clinico a Todo el Ancho -->
                 <Border StrokeShape="RoundRectangle 12"
                         StrokeThickness="1"
                         Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
                         Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
-                        Padding="12, 2"
-                        HeightRequest="48">
-                    <Grid ColumnDefinitions="30, *">
+                        Padding="12, 0"
+                        HeightRequest="46"
+                        HorizontalOptions="Fill">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" VerticalOptions="Center">
                         <Label Grid.Column="0"
                                Text="{x:Static helpers:MaterialIconFont.Search}"
                                Style="{StaticResource MaterialIconStyle}"
                                FontSize="20"
-                               TextColor="{StaticResource StitchOutline}" />
+                               TextColor="{StaticResource StitchOutline}"
+                               VerticalOptions="Center" />
                         <Entry Grid.Column="1"
-                               Text="{Binding SearchQuery}"
+                               Text="{Binding SearchQuery, Mode=TwoWay}"
                                Placeholder="Buscar receta o ingrediente..."
-                               BackgroundColor="{StaticResource Transparent}">
+                               PlaceholderColor="{StaticResource StitchOutline}"
+                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                               FontFamily="Inter"
+                               FontSize="13"
+                               BackgroundColor="Transparent"
+                               VerticalOptions="Center"
+                               ClearButtonVisibility="WhileEditing">
                             <Entry.ReturnCommand>
                                 <Binding Path="SearchRecipesCommand" />
                             </Entry.ReturnCommand>
@@ -94,7 +108,7 @@
 
         <!-- 2. Contenido Principal Desplazable -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="16, 12, 16, 32" Spacing="16" MaximumWidthRequest="480" HorizontalOptions="Center">
+            <VerticalStackLayout Padding="16, 12, 16, 32" Spacing="16" MaximumWidthRequest="600" HorizontalOptions="Fill">
 
                 <!-- 2.1 Controles de Ordenamiento Nutricional y Filtros -->
                 <VerticalStackLayout Spacing="10">
@@ -328,24 +342,12 @@
                         </Border>
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                            <HorizontalStackLayout Spacing="6">
-                                <Border StrokeShape="RoundRectangle 4"
-                                        StrokeThickness="0"
-                                        Background="{StaticResource StitchPrimaryContainer}"
-                                        Padding="6, 2">
-                                    <Label Text="METABÓLICO"
-                                           FontFamily="Inter"
-                                           FontSize="9"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource StitchOnPrimaryContainer}" />
-                                </Border>
-                                <Label Text="Módulo de Aliños"
-                                       FontFamily="PlusJakartaSans"
-                                       FontSize="14"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                            </HorizontalStackLayout>
-                            <Label Text="Vinagretas y marinadas clínicas controladas."
+                            <Label Text="Módulo de Aliños"
+                                   FontFamily="PlusJakartaSans"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                            <Label Text="Vinagretas y marinadas"
                                    FontFamily="PlusJakartaSans"
                                    FontSize="11"
                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
@@ -381,12 +383,6 @@
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                         </HorizontalStackLayout>
-                        <Label Grid.Column="1"
-                               Text="Por ración calculada"
-                               FontFamily="Inter"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                               VerticalOptions="Center" />
                     </Grid>
 
                     <!-- Coleccion de Recetas -->
