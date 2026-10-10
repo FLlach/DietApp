@@ -94,9 +94,15 @@ Implementa el acceso a datos mediante **SQLite**:
 * **`Supabase/ (Integracion en la Nube con PostgreSQL)`**:
   * `SupabaseConfig.cs`: Parametros de configuracion del cliente Supabase (`ProjectUrl` y `AnonKey`).
   * `ISupabaseClientProvider.cs` y `SupabaseClientProvider.cs`: Proveedor singleton thread-safe para inicializar y suministrar `Supabase.Client`.
-  * `Models/SupabaseUserProfileModel.cs`: Mapeo PostgREST sobre la tabla `user_profiles` con atributos `[Table]` y `[Column]`.
+  * `Models/`: Modelos PostgREST que mapean directamente las tablas PostgreSQL en la nube con herencia de `BaseModel`:
+    * `SupabaseUserProfileModel.cs`: Mapeo sobre la tabla `user_profiles` vinculado a `auth.users(id)`.
+    * `SupabaseFoodModel.cs`: Mapeo sobre la tabla `foods` con densidad mineral, calorias, proteinas y codigo de barras.
+    * `SupabaseFoodPortionModel.cs`: Mapeo sobre la tabla `food_portions` con medidas y peso en gramos.
+    * `SupabaseMealModel.cs` y `SupabaseMealItemModel.cs`: Mapeo sobre `meals` y `meal_items` para sincronizacion de ingestas.
+    * `SupabaseRecipeModel.cs`, `SupabaseRecipeIngredientModel.cs` y `SupabaseRecipeStepModel.cs`: Mapeo para persistencia en la nube del modulo de recetas.
   * `Repositories/SupabaseUserProfileRepository.cs`: Repositorio hibrido (Offline-First) que sincroniza con PostgreSQL en la nube manteniendo persistencia local inmediata en SQLite.
-  * `docs/supabase_schema.sql`: Script DDL para creacion de tablas, claves foraneas, indices y politicas de seguridad RLS en Supabase.
+  * `docs/supabase_schema.sql`: Script DDL para creacion de las 10 tablas relacionales, claves foraneas, indices B-Tree, soporte de autenticacion/login con trigger automatico sobre `auth.users`, politicas de seguridad RLS (Row Level Security) y permisos.
+  * `docs/supabase_migration_full.sql`: Script integral de migracion que genera el esquema DDL y transfiere la base de datos completa (363 alimentos con proteinas normalizadas de USDA FoodData Central, 383 porciones y recetas base) hacia PostgreSQL.
 
 ---
 
