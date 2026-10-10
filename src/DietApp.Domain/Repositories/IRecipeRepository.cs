@@ -11,8 +11,10 @@ namespace DietApp.Domain.Repositories;
 public interface IRecipeRepository
 {
     Task<IReadOnlyList<Recipe>> GetAllAsync();
+    Task<IReadOnlyList<Recipe>> GetGlobalRecipesAsync();
     Task<Recipe?> GetByIdAsync(Guid id);
     Task<IReadOnlyList<Recipe>> SearchByTitleAsync(string query);
+    Task<IReadOnlyList<Recipe>> SearchGlobalRecipesAsync(string query);
     Task SaveAsync(Recipe recipe);
     Task DeleteAsync(Guid id);
 }

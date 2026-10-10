@@ -22,6 +22,7 @@ public class Recipe
     public string Description { get; private set; }
     public int Servings { get; private set; }
     public string FinalImagePath { get; private set; }
+    public bool IsGlobal { get; private set; }
     public IReadOnlyList<RecipeIngredient> Ingredients => _ingredients.AsReadOnly();
     public IReadOnlyList<RecipeStep> Steps => _steps.AsReadOnly();
 
@@ -32,7 +33,8 @@ public class Recipe
         int servings,
         string finalImagePath = "",
         IEnumerable<RecipeIngredient>? ingredients = null,
-        IEnumerable<RecipeStep>? steps = null)
+        IEnumerable<RecipeStep>? steps = null,
+        bool isGlobal = false)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
@@ -49,8 +51,14 @@ public class Recipe
         Description = description?.Trim() ?? string.Empty;
         Servings = servings;
         FinalImagePath = finalImagePath?.Trim() ?? string.Empty;
+        IsGlobal = isGlobal;
         _ingredients = ingredients?.ToList() ?? new List<RecipeIngredient>();
         _steps = steps?.OrderBy(s => s.StepNumber).ToList() ?? new List<RecipeStep>();
+    }
+
+    public void SetGlobal(bool isGlobal)
+    {
+        IsGlobal = isGlobal;
     }
 
     public void AddIngredient(RecipeIngredient ingredient)
