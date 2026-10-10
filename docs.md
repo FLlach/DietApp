@@ -89,11 +89,14 @@ Implementa el acceso a datos mediante **SQLite**:
   * `MealEntity.cs` y `MealItemEntity.cs`: Tablas de comidas e items con instantanea JSON.
   * `RecipeEntity.cs`, `RecipeIngredientEntity.cs` y `RecipeStepEntity.cs`: Tablas relacionales para recetas.
   * `SeasoningEntity.cs` y `SeasoningItemEntity.cs`: Tablas para alinos y condimentos.
+  * `UserRecipeFavoriteEntity.cs`: Tabla de favoritos de recetas por identificador de perfil de usuario (`UserId` y `RecipeId`).
+  * **Migraciones Automaticas de Esquema (`ApplySchemaMigrationsAsync`)**: `DietAppDbContext` ejecuta sentencias incrementales `ALTER TABLE` para anadir columnas agregadas en versiones posteriores (`Recipes.IsGlobal`, `Foods.ProteinGrams`, `Foods.Barcode`, `MealItems.CalculatedCalories`, `MealItems.CalculatedProtein`, `RecipeIngredients.CalculatedProtein`, etc.) previniendo excepciones `SQLiteException: no such column` en bases de datos locales ya desplegadas.
 * **`Repositories/`**:
   * `SqliteUserProfileRepository.cs`: Implementacion de `IUserProfileRepository` con operaciones de Upsert sobre SQLite local.
   * `SqliteFoodRepository.cs`: Consultas SQL optimizadas por indices B-Tree, implementando `GetByBarcodeAsync`.
   * `SqliteMealRepository.cs`: Transacciones de comidas e items consumidos.
-  * `SqliteRecipeRepository.cs`: Persistencia relacional de recetas, ingredientes y pasos.
+  * `SqliteRecipeRepository.cs`: Persistencia relacional de recetas, ingredientes y pasos con soporte de recetas globales locales.
+  * `SqliteRecipeFavoriteRepository.cs`: Persistencia local de recetas favoritas indexadas por perfil.
   * `SqliteSeasoningRepository.cs`: Persistencia relacional de alinos y condimentos.
 * **`Supabase/ (Integracion en la Nube con PostgreSQL y Auth)`**:
   * `SupabaseConfig.cs`: Parametros de configuracion del cliente Supabase (`ProjectUrl` y `AnonKey`).
