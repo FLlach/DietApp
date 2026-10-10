@@ -106,4 +106,15 @@ public static class MaterialIconFont
     public const string FlashOn = "\ue3e7";
     public const string FlashOff = "\ue3e6";
     public const string Cameraswitch = "\uef47";
+    public const string VitalSigns = "\ue297";
+    public const string Badge = "\uea67";
+    public const string Key = "\ue73c";
+    public const string Visibility = "\ue8f4";
+    public const string VisibilityOff = "\ue8f5";
+    public const string Fingerprint = "\ue90d";
+    public const string WifiOff = "\ue648";
+    public const string ArrowForward = "\ue5c8";
+    public const string Login = "\uea77";
+    public const string Logout = "\ue9ba";
+    public const string TouchApp = "\ue913";
 }
