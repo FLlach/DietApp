@@ -71,6 +71,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<IRecipeRepository, SqliteRecipeRepository>();
         builder.Services.AddSingleton<ISeasoningRepository, SqliteSeasoningRepository>();
 
+        // Autenticacion y Sesion de Usuario (Supabase Auth / Offline)
+        builder.Services.AddSingleton<IUserSessionStorage, MauiPreferencesUserSessionStorage>();
+        builder.Services.AddSingleton<IAuthService, SupabaseAuthService>();
+
         // Persistencia de Perfil: Cliente Supabase hibrido con soporte Offline-First sobre SQLite
         builder.Services.AddSingleton<SqliteUserProfileRepository>();
         builder.Services.AddSingleton<ISupabaseClientProvider, SupabaseClientProvider>();
@@ -101,6 +105,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ISeasoningService, SeasoningService>();
 
         // Capa de Presentacion - ViewModels
+        builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<FoodCatalogViewModel>();
         builder.Services.AddTransient<MealTrackingViewModel>();
         builder.Services.AddTransient<AddFoodViewModel>();
@@ -112,6 +117,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsViewModel>();
 
         // Capa de Presentacion - Vistas (Pages)
+        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<FoodCatalogPage>();
         builder.Services.AddTransient<MealTrackingPage>();
         builder.Services.AddTransient<AddFoodPage>();

@@ -22,6 +22,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(SeasoningsPage), typeof(SeasoningsPage));
         Routing.RegisterRoute(nameof(AddMealPage), typeof(AddMealPage));
         Routing.RegisterRoute(nameof(AddFoodPage), typeof(AddFoodPage));
+        Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
 
         LocalizationResourceManager.Instance.PropertyChanged += (s, e) =>
         {
