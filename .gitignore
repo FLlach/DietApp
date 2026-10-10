@@ -42,3 +42,6 @@ desktop.ini
 ## Graphify generated files
 graphify-out/
 
+## Local AI and Agent files
+.claude/
+agent/

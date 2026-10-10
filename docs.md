@@ -50,7 +50,11 @@ Contiene las entidades, enumeraciones, objetos de valor y servicios del dominio:
 * **`Entities/RecipeIngredient.cs`**: Ingrediente dosificado con calculo de calorias y minerales.
 * **`Entities/RecipeStep.cs`**: Paso numerado con instruccion e imagen ilustrativa de la etapa.
 * **`Entities/UserProfile.cs`**: Raiz de agregado (Aggregate Root) que encapsula el perfil clinico y antropometrico del paciente (peso, talla, fecha de nacimiento, sexo), metas diarias (calorias y proteinas), umbral preventivo porcentual, limites cuantitativos de los 7 minerales diana y preferencias de interfaz (idioma y tema visual). Mantiene el campo `UserId` para mapeo directo con Supabase Auth (`auth.uid()`).
+* **`Entities/UserSession.cs`**: Entidad de dominio que representa la sesion de autenticacion del usuario (identificador, correo, nombre para mostrar, flags de sesion activa y modo offline).
+* **`Entities/AuthResult.cs`**: Objeto de valor inmutable que encapsula el resultado de las operaciones de autenticacion (exito, sesion resultante y mensaje de error clinico).
 * **`Services/DailyMineralAggregatorService.cs`**: Servicio de dominio que consolida la suma total de minerales entre multiples comidas del dia.
+* **`Services/IAuthService.cs`**: Contrato de dominio para inicio de sesion, registro con Gotrue, acceso biometrico simulado, continuidad offline y cierre de sesion.
+* **`Services/IUserSessionStorage.cs`**: Contrato de persistencia para guardar y restaurar sesiones recordadas entre ejecuciones de la app.
 * **`Repositories/`**: Contratos `IFoodRepository.cs` (con soporte para `GetByBarcodeAsync`), `IMealRepository.cs`, `IRecipeRepository.cs`, `ISeasoningRepository.cs` e `IUserProfileRepository.cs`.
 
 ---
@@ -91,9 +95,10 @@ Implementa el acceso a datos mediante **SQLite**:
   * `SqliteMealRepository.cs`: Transacciones de comidas e items consumidos.
   * `SqliteRecipeRepository.cs`: Persistencia relacional de recetas, ingredientes y pasos.
   * `SqliteSeasoningRepository.cs`: Persistencia relacional de alinos y condimentos.
-* **`Supabase/ (Integracion en la Nube con PostgreSQL)`**:
+* **`Supabase/ (Integracion en la Nube con PostgreSQL y Auth)`**:
   * `SupabaseConfig.cs`: Parametros de configuracion del cliente Supabase (`ProjectUrl` y `AnonKey`).
   * `ISupabaseClientProvider.cs` y `SupabaseClientProvider.cs`: Proveedor singleton thread-safe para inicializar y suministrar `Supabase.Client`.
+  * `SupabaseAuthService.cs`: Implementacion de `IAuthService` que ejecuta `SignInWithPassword` y `SignUp` con Gotrue, maneja persistencia de sesion mediante `IUserSessionStorage` y provee desacoplamiento transparente para operar offline sin conexion a red.
   * `Models/`: Modelos PostgREST que mapean directamente las tablas PostgreSQL en la nube con herencia de `BaseModel`:
     * `SupabaseUserProfileModel.cs`: Mapeo sobre la tabla `user_profiles` vinculado a `auth.users(id)`.
     * `SupabaseFoodModel.cs`: Mapeo sobre la tabla `foods` con densidad mineral, calorias, proteinas y codigo de barras.
@@ -114,15 +119,16 @@ Construida con .NET MAUI y **CommunityToolkit.Mvvm**:
     1. **Conteo Diario** (`MealTrackingPage`): Totales diarios de minerales, cumplimiento porcentual dinamico del plan diario (iniciado en 0% al no haber ingestas y recalculado reactivamente con cada comida registrada), banner reactivo de advertencias si se superan los limites maximos fijados por el usuario, detalle por comida y boton de accion rapida "+ Registrar Comida".
     2. **Recetas** (`RecipesPage`): Catalogo de recetas con buscador de texto, selector interactivo para ordenar por cantidad de cualquier mineral por porcion (ascendente o descendente), tarjeta con imagen final, subtitulo y badges visuales con el aporte de los 7 minerales por porcion organizados en 2 columnas con solo simbolo quimico para legibilidad movil, y apartado integrado para gestionar y abrir los **Alinos y Marinadas** (`SeasoningsPage`).
     3. **Catalogo y Filtro** (`FoodCatalogPage`): Filtrado avanzado por umbrales minimos y maximos de minerales y boton de accion "+ Nuevo Alimento".
-    4. **Ajustes** (`SettingsPage`): Selector de idioma (Espanol / Ingles), selector de tema visual (Claro / Oscuro / Sistema), configuracion de las metas diarias cuantitativas de proteina (en gramos) y de calorias (en kcal), calibracion del umbral preventivo y limites maximos diarios de minerales con activacion de alertas.
+    4. **Ajustes** (`SettingsPage`): Bento card de Sesion y Acceso Clinico con boton de inicio/cierre de sesion e indicador de estado de red, selector de idioma (Espanol / Ingles), selector de tema visual (Claro / Oscuro / Sistema), configuracion de las metas diarias cuantitativas de proteina (en gramos) y de calorias (en kcal), calibracion del umbral preventivo y limites maximos diarios de minerales con activacion de alertas.
   * Rutas registradas:
+    * `LoginPage`: Pantalla de inicio de sesion clinica segun prototipo Stitch con soporte para correo/PIN, registro de nuevos usuarios, acceso rapido con sensor biometrico, modo offline y badges de cifrado clinico.
     * `RecipeDetailPage`: Detalle de receta con imagen final, panel de los 7 minerales clinicos por porcion en cuadricula de 2 columnas con simbolo quimico, selector para ordenar ingredientes segun el mineral aportado, pasos numerados con imagenes y modulo interactivo para registrar el consumo en la ingesta diaria.
     * `AddRecipePage`: Compositor clinico de recetas con inicializacion limpia (formulario vacio con estados vacios para ingredientes, pasos y fotografia), dosificacion en tiempo real de alimentos y alinos, captura directa con camara (`MediaPicker.CapturePhotoAsync`) o seleccion desde galeria tanto para la foto del plato como para cada paso de elaboracion, previsualizacion con descarte y proyecciones instantaneas de nutrientes por porcion.
     * `SeasoningsPage`: Vista de administracion de alinos y marinadas, accesible modularmente desde la seccion de recetas.
     * `AddMealPage`: Composicion de comidas con soporte mixto de alimentos (en gramos) y recetas culinarias (en porciones), invocable contextualmente desde el seguimiento diario.
     * `AddFoodPage`: Formulario para registrar alimentos adicionales al catalogo SQLite con apertura en estado limpio (sin datos de prueba precargados ni textos de relleno en marcas de agua), incorporando captura opcional de codigo de barras con visor de camara nativo (`CameraView` de `BarcodeScanning.Native.Maui`), reticula de alineacion, control de linterna y fallback a entrada manual.
 * **Inyeccion de Dependencias (`MauiProgram.cs`)**:
-  * Registra `DietAppDbContext`, conecta los repositorios SQLite, inicializa `.UseBarcodeScanning()` y registra los servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`) y alertas de minerales (`IMineralAlertStorage`, `IMineralAlertService`) en el contenedor IoC.
+  * Registra `DietAppDbContext`, repositorios SQLite, cliente Supabase, autenticacion (`IUserSessionStorage`, `IAuthService`), servicios de localizacion (`ILanguagePreferenceStorage`, `ILocalizationService`), alertas de minerales (`IMineralAlertStorage`, `IMineralAlertService`), ViewModels y Vistas en el contenedor IoC.
 
 ---
 
