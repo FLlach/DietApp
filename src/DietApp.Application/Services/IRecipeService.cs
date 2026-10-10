@@ -28,5 +28,12 @@ public interface IRecipeService
         string finalImagePath,
         IEnumerable<(Guid foodId, double grams)> ingredients,
         IEnumerable<(string instruction, string imagePath)> steps);
+    Task<RecipeDto> CreateRecipeAsync(
+        string title,
+        string description,
+        int servings,
+        string finalImagePath,
+        IEnumerable<RecipeIngredientCreateDto> ingredients,
+        IEnumerable<(string instruction, string imagePath)> steps);
     Task DeleteRecipeAsync(Guid id);
 }

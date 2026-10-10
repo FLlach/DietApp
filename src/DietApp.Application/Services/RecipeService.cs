@@ -3,6 +3,7 @@ using DietApp.Application.Mapping;
 using DietApp.Domain.Entities;
 using DietApp.Domain.Enums;
 using DietApp.Domain.Repositories;
+using DietApp.Domain.ValueObjects;
 
 namespace DietApp.Application.Services;
 
@@ -120,6 +121,23 @@ public class RecipeService : IRecipeService
         IEnumerable<(Guid foodId, double grams)> ingredients,
         IEnumerable<(string instruction, string imagePath)> steps)
     {
+        var dtos = ingredients.Select(i => new RecipeIngredientCreateDto
+        {
+            FoodId = i.foodId,
+            Grams = i.grams
+        });
+
+        return await CreateRecipeAsync(title, description, servings, finalImagePath, dtos, steps);
+    }
+
+    public async Task<RecipeDto> CreateRecipeAsync(
+        string title,
+        string description,
+        int servings,
+        string finalImagePath,
+        IEnumerable<RecipeIngredientCreateDto> ingredients,
+        IEnumerable<(string instruction, string imagePath)> steps)
+    {
         var recipe = new Recipe(
             Guid.NewGuid(),
             title,
@@ -127,14 +145,37 @@ public class RecipeService : IRecipeService
             servings,
             finalImagePath);
 
-        foreach (var (foodId, grams) in ingredients)
+        foreach (var item in ingredients)
         {
-            var food = await _foodRepository.GetByIdAsync(foodId);
-            if (food != null)
+            if (item.FoodId != Guid.Empty)
             {
-                var ingredient = RecipeIngredient.FromFoodItem(food, grams);
-                recipe.AddIngredient(ingredient);
+                var food = await _foodRepository.GetByIdAsync(item.FoodId);
+                if (food != null)
+                {
+                    var ingredient = RecipeIngredient.FromFoodItem(food, item.Grams);
+                    recipe.AddIngredient(ingredient);
+                    continue;
+                }
             }
+
+            // Ingrediente ad-hoc o no presente en la base de datos de alimentos
+            var minerals = new List<MineralAmount>
+            {
+                new(MineralType.Sodium, item.SodiumMg),
+                new(MineralType.Potassium, item.PotassiumMg),
+                new(MineralType.Phosphorus, item.PhosphorusMg)
+            };
+
+            var customIngredient = new RecipeIngredient(
+                Guid.NewGuid(),
+                item.FoodId == Guid.Empty ? Guid.NewGuid() : item.FoodId,
+                string.IsNullOrWhiteSpace(item.Name) ? "Ingrediente" : item.Name.Trim(),
+                item.Grams <= 0 ? 1.0 : item.Grams,
+                item.Calories,
+                minerals,
+                item.ProteinGrams);
+
+            recipe.AddIngredient(customIngredient);
         }
 
         int stepNumber = 1;
