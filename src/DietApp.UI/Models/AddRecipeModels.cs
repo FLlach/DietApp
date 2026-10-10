@@ -23,6 +23,8 @@ public class RecipeIngredientDraftModel
     public string IconGlyph { get; set; } = Helpers.MaterialIconFont.Restaurant;
     public bool IsFromSeasoning { get; set; }
     public string SeasoningBadgeText { get; set; } = "ALIÑO";
+    public bool IsCustomFood { get; set; }
+    public string CustomBadgeText { get; set; } = "PERSONALIZADO";
 
     public string SubtitleLine =>
         $"{Grams:N0} g • {Calories:N0} kcal • P: {PhosphorusMg:N0}mg • K: {PotassiumMg:N0}mg";

@@ -146,6 +146,38 @@ public partial class AddRecipeViewModel : ObservableObject
 
     public ObservableCollection<SeasoningDto> AvailableSeasonings { get; } = new();
 
+    // Modo del modal: Catalogo vs Alimento Personalizado
+    [ObservableProperty]
+    private bool _isCatalogTabActive = true;
+
+    [ObservableProperty]
+    private bool _isCustomFoodTabActive = false;
+
+    // Campos para Alimento Personalizado no registrado en la base de datos
+    [ObservableProperty]
+    private string _customFoodName = string.Empty;
+
+    [ObservableProperty]
+    private double _customFoodGrams = 100.0;
+
+    [ObservableProperty]
+    private double _customFoodCalories = 50.0;
+
+    [ObservableProperty]
+    private double _customFoodProtein = 2.0;
+
+    [ObservableProperty]
+    private double _customFoodSodium = 10.0;
+
+    [ObservableProperty]
+    private double _customFoodPotassium = 150.0;
+
+    [ObservableProperty]
+    private double _customFoodPhosphorus = 50.0;
+
+    [ObservableProperty]
+    private bool _saveCustomFoodToCatalog = true;
+
     private void UpdateCounts()
     {
         IngredientsCountDisplay = $"{IngredientsList.Count} {(IngredientsList.Count == 1 ? "agregado" : "agregados")}";
@@ -322,8 +354,32 @@ public partial class AddRecipeViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void SwitchToCatalogTab()
+    {
+        IsCatalogTabActive = true;
+        IsCustomFoodTabActive = false;
+    }
+
+    [RelayCommand]
+    private void SwitchToCustomFoodTab()
+    {
+        IsCatalogTabActive = false;
+        IsCustomFoodTabActive = true;
+    }
+
+    [RelayCommand]
+    private void OpenAddCustomFoodModal()
+    {
+        IsCatalogTabActive = false;
+        IsCustomFoodTabActive = true;
+        IsFoodPickerVisible = true;
+    }
+
+    [RelayCommand]
     private async Task OpenAddFoodModalAsync()
     {
+        IsCatalogTabActive = true;
+        IsCustomFoodTabActive = false;
         try
         {
             IsBusy = true;
@@ -393,6 +449,104 @@ public partial class AddRecipeViewModel : ObservableObject
             IconGlyph = glyph,
             IsFromSeasoning = false
         });
+
+        IsFoodPickerVisible = false;
+        UpdateCounts();
+        RecalculateProjections();
+    }
+
+    [RelayCommand]
+    private async Task AddCustomFoodItemAsync()
+    {
+        if (string.IsNullOrWhiteSpace(CustomFoodName))
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlertAsync("Validación", "Por favor ingresa el nombre del ingrediente.", "Aceptar");
+            }
+            return;
+        }
+
+        double grams = CustomFoodGrams > 0 ? CustomFoodGrams : 100.0;
+        double calories = Math.Max(0.0, CustomFoodCalories);
+        double protein = Math.Max(0.0, CustomFoodProtein);
+        double sodium = Math.Max(0.0, CustomFoodSodium);
+        double potassium = Math.Max(0.0, CustomFoodPotassium);
+        double phosphorus = Math.Max(0.0, CustomFoodPhosphorus);
+
+        Guid foodId = Guid.NewGuid();
+
+        if (SaveCustomFoodToCatalog)
+        {
+            try
+            {
+                double factor100 = grams > 0 ? (100.0 / grams) : 1.0;
+                var foodDto = new FoodItemDto
+                {
+                    Id = foodId,
+                    Name = CustomFoodName.Trim(),
+                    Category = "Personalizado",
+                    ReferenceGrams = 100.0,
+                    Calories = calories * factor100,
+                    ProteinGrams = protein * factor100,
+                    Minerals = new List<MineralAmountDto>
+                    {
+                        new() { Type = MineralType.Sodium, Milligrams = sodium * factor100 },
+                        new() { Type = MineralType.Potassium, Milligrams = potassium * factor100 },
+                        new() { Type = MineralType.Phosphorus, Milligrams = phosphorus * factor100 },
+                        new() { Type = MineralType.Calcium, Milligrams = 0.0 },
+                        new() { Type = MineralType.Magnesium, Milligrams = 0.0 },
+                        new() { Type = MineralType.Iron, Milligrams = 0.0 },
+                        new() { Type = MineralType.Zinc, Milligrams = 0.0 }
+                    }
+                };
+
+                await _catalogService.SaveFoodAsync(foodDto);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AddRecipeViewModel] Error guardando alimento en catalogo: {ex}");
+            }
+        }
+
+        string glyph = MaterialIconFont.Restaurant;
+        string lower = CustomFoodName.ToLowerInvariant();
+        if (lower.Contains("aceite") || lower.Contains("oil") || lower.Contains("vinagre") || lower.Contains("salsa"))
+        {
+            glyph = MaterialIconFont.Opacity;
+        }
+        else if (lower.Contains("verdura") || lower.Contains("hoja") || lower.Contains("hierba") || lower.Contains("fruta") || lower.Contains("cebolla") || lower.Contains("ajo"))
+        {
+            glyph = MaterialIconFont.Eco;
+        }
+        else if (lower.Contains("pollo") || lower.Contains("pescado") || lower.Contains("carne") || lower.Contains("huevo"))
+        {
+            glyph = MaterialIconFont.DinnerDining;
+        }
+
+        IngredientsList.Add(new RecipeIngredientDraftModel
+        {
+            FoodId = foodId,
+            Name = CustomFoodName.Trim(),
+            Grams = grams,
+            Calories = calories,
+            ProteinGrams = protein,
+            SodiumMg = sodium,
+            PotassiumMg = potassium,
+            PhosphorusMg = phosphorus,
+            IconGlyph = glyph,
+            IsFromSeasoning = false,
+            IsCustomFood = true,
+            CustomBadgeText = SaveCustomFoodToCatalog ? "CATÁLOGO" : "NO ALMACENADO"
+        });
+
+        // Limpiar formulario personalizado
+        CustomFoodName = string.Empty;
+        CustomFoodCalories = 50.0;
+        CustomFoodProtein = 2.0;
+        CustomFoodSodium = 10.0;
+        CustomFoodPotassium = 150.0;
+        CustomFoodPhosphorus = 50.0;
 
         IsFoodPickerVisible = false;
         UpdateCounts();
@@ -783,7 +937,17 @@ public partial class AddRecipeViewModel : ObservableObject
         {
             IsBusy = true;
 
-            var ingredientsTuples = IngredientsList.Select(i => (foodId: i.FoodId, grams: i.Grams));
+            var ingredientsDtos = IngredientsList.Select(i => new RecipeIngredientCreateDto
+            {
+                FoodId = i.FoodId,
+                Name = i.Name,
+                Grams = i.Grams,
+                Calories = i.Calories,
+                ProteinGrams = i.ProteinGrams,
+                SodiumMg = i.SodiumMg,
+                PotassiumMg = i.PotassiumMg,
+                PhosphorusMg = i.PhosphorusMg
+            });
             var stepsTuples = StepsList.Select(s => (instruction: s.Instruction, imagePath: s.ImagePath ?? string.Empty));
 
             await _recipeService.CreateRecipeAsync(
@@ -791,7 +955,7 @@ public partial class AddRecipeViewModel : ObservableObject
                 Description?.Trim() ?? string.Empty,
                 Math.Max(1, Servings),
                 ImageUrl ?? string.Empty,
-                ingredientsTuples,
+                ingredientsDtos,
                 stepsTuples);
 
             if (Shell.Current != null)

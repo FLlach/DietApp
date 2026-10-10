@@ -446,25 +446,25 @@
                             </Border>
                         </Grid>
 
-                        <!-- Botones de Acción Rápida: Añadir Alimento y Aliño Guardado -->
-                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                        <!-- Botones de Acción Rápida: Catálogo, Directo / No Guardado y Aliño Guardado -->
+                        <Grid ColumnDefinitions="*, *, *" ColumnSpacing="6">
                             <Border Grid.Column="0"
                                     StrokeShape="RoundRectangle 12"
                                     StrokeThickness="1"
                                     Stroke="{StaticResource StitchPrimaryContainer}"
                                     Background="#2084CC16"
-                                    Padding="10, 8">
+                                    Padding="6, 8">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenAddFoodModalCommand}" />
                                 </Border.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
                                     <Label Text="{x:Static helpers:MaterialIconFont.AddCircle}"
                                            Style="{StaticResource MaterialIconStyle}"
-                                           FontSize="18"
+                                           FontSize="16"
                                            TextColor="{StaticResource StitchPrimary}" />
-                                    <Label Text="+ Añadir Alimento"
+                                    <Label Text="+ Catálogo"
                                            FontFamily="Inter"
-                                           FontSize="12"
+                                           FontSize="11"
                                            FontAttributes="Bold"
                                            TextColor="{StaticResource StitchPrimary}" />
                                 </HorizontalStackLayout>
@@ -473,20 +473,42 @@
                             <Border Grid.Column="1"
                                     StrokeShape="RoundRectangle 12"
                                     StrokeThickness="1"
+                                    Stroke="{StaticResource StitchSecondaryContainer}"
+                                    Background="#200284C7"
+                                    Padding="6, 8">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenAddCustomFoodModalCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="{x:Static helpers:MaterialIconFont.Add}"
+                                           Style="{StaticResource MaterialIconStyle}"
+                                           FontSize="16"
+                                           TextColor="#0284C7" />
+                                    <Label Text="+ Directo"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="#0284C7" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border Grid.Column="2"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
                                     Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerHigh}, Dark={StaticResource StitchDarkSurfaceContainer}}"
-                                    Padding="10, 8">
+                                    Padding="6, 8">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenSeasoningPickerCommand}" />
                                 </Border.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
                                     <Label Text="{x:Static helpers:MaterialIconFont.Blender}"
                                            Style="{StaticResource MaterialIconStyle}"
-                                           FontSize="18"
+                                           FontSize="16"
                                            TextColor="{StaticResource StitchTertiary}" />
-                                    <Label Text="Aliño Guardado"
+                                    <Label Text="Aliño"
                                            FontFamily="Inter"
-                                           FontSize="12"
+                                           FontSize="11"
                                            FontAttributes="Bold"
                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                 </HorizontalStackLayout>
@@ -539,6 +561,17 @@
                                                                FontSize="9"
                                                                FontAttributes="Bold"
                                                                TextColor="{StaticResource StitchTertiary}" />
+                                                    </Border>
+                                                    <Border StrokeShape="RoundRectangle 4"
+                                                            StrokeThickness="0"
+                                                            Background="#200284C7"
+                                                            Padding="4, 1"
+                                                            IsVisible="{Binding IsCustomFood}">
+                                                        <Label Text="{Binding CustomBadgeText}"
+                                                               FontFamily="Inter"
+                                                               FontSize="9"
+                                                               FontAttributes="Bold"
+                                                               TextColor="#0284C7" />
                                                     </Border>
                                                 </HorizontalStackLayout>
                                                 <Label Text="{Binding SubtitleLine}"
@@ -1075,7 +1108,7 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- MODAL 1: Selector de Alimentos del Catálogo -->
+        <!-- MODAL 1: Selector y Creación de Ingredientes (Catálogo o No Almacenado) -->
         <Grid Grid.RowSpan="3"
               BackgroundColor="#80000000"
               IsVisible="{Binding IsFoodPickerVisible}">
@@ -1087,9 +1120,10 @@
                     MaximumWidthRequest="400"
                     VerticalOptions="Center">
                 <VerticalStackLayout Spacing="12">
+                    <!-- Cabecera del Modal -->
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Grid.Column="0"
-                               Text="Añadir Alimento a la Receta"
+                               Text="Añadir Ingrediente"
                                FontFamily="PlusJakartaSans"
                                FontSize="16"
                                FontAttributes="Bold"
@@ -1106,87 +1140,369 @@
                                 HeightRequest="32" />
                     </Grid>
 
-                    <!-- Buscador -->
-                    <Border StrokeShape="RoundRectangle 10"
+                    <!-- Selector de Modo / Pestañas (Catálogo vs No Almacenado) -->
+                    <Border StrokeShape="RoundRectangle 12"
                             StrokeThickness="1"
                             Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                            Padding="8, 2">
-                        <Grid ColumnDefinitions="Auto, *">
-                            <Label Grid.Column="0"
-                                   Text="{x:Static helpers:MaterialIconFont.Search}"
-                                   Style="{StaticResource MaterialIconStyle}"
-                                   FontSize="18"
-                                   TextColor="{StaticResource StitchOutline}"
-                                   VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
-                                   Text="{Binding FoodSearchQuery}"
-                                   Placeholder="Buscar alimento..."
-                                   FontFamily="Inter"
-                                   FontSize="13"
-                                   ReturnCommand="{Binding SearchFoodsCommand}" />
+                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                            Padding="3">
+                        <Grid ColumnDefinitions="*, *">
+                            <!-- Pestaña 1: Catálogo Base -->
+                            <Border Grid.Column="0"
+                                    StrokeShape="RoundRectangle 9"
+                                    StrokeThickness="0"
+                                    Padding="6, 7"
+                                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsCatalogTabActive}" Value="False">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SwitchToCatalogTabCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                                    <Label Text="{x:Static helpers:MaterialIconFont.RestaurantMenu}"
+                                           Style="{StaticResource MaterialIconStyle}"
+                                           FontSize="15"
+                                           TextColor="{StaticResource StitchPrimary}" />
+                                    <Label Text="Catálogo"
+                                           FontFamily="PlusJakartaSans"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <!-- Pestaña 2: No Almacenado / Directo -->
+                            <Border Grid.Column="1"
+                                    StrokeShape="RoundRectangle 9"
+                                    StrokeThickness="0"
+                                    Padding="6, 7"
+                                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsCustomFoodTabActive}" Value="False">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SwitchToCustomFoodTabCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                                    <Label Text="{x:Static helpers:MaterialIconFont.Add}"
+                                           Style="{StaticResource MaterialIconStyle}"
+                                           FontSize="15"
+                                           TextColor="#0284C7" />
+                                    <Label Text="+ No Almacenado"
+                                           FontFamily="PlusJakartaSans"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                </HorizontalStackLayout>
+                            </Border>
                         </Grid>
                     </Border>
 
-                    <!-- Gramaje a Añadir -->
-                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                        <Label Grid.Column="0"
-                               Text="Gramos a dosificar:"
-                               FontFamily="Inter"
-                               FontSize="12"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                        <HorizontalStackLayout Grid.Column="1" Spacing="4">
-                            <Entry Text="{Binding FoodGramsToAdd}"
-                                   Keyboard="Numeric"
-                                   FontFamily="Inter"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   WidthRequest="50"
-                                   HorizontalTextAlignment="End" />
-                            <Label Text="g"
+                    <!-- VISTA 1: Catálogo de Alimentos Registrados -->
+                    <VerticalStackLayout Spacing="10" IsVisible="{Binding IsCatalogTabActive}">
+                        <!-- Buscador -->
+                        <Border StrokeShape="RoundRectangle 10"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                Padding="8, 2">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label Grid.Column="0"
+                                       Text="{x:Static helpers:MaterialIconFont.Search}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="18"
+                                       TextColor="{StaticResource StitchOutline}"
+                                       VerticalOptions="Center" />
+                                <Entry Grid.Column="1"
+                                       Text="{Binding FoodSearchQuery}"
+                                       Placeholder="Buscar alimento..."
+                                       FontFamily="Inter"
+                                       FontSize="13"
+                                       ReturnCommand="{Binding SearchFoodsCommand}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Gramaje a Añadir -->
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <Label Grid.Column="0"
+                                   Text="Gramos a dosificar:"
                                    FontFamily="Inter"
                                    FontSize="12"
-                                   VerticalOptions="Center" />
-                        </HorizontalStackLayout>
-                    </Grid>
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                            <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                                <Entry Text="{Binding FoodGramsToAdd}"
+                                       Keyboard="Numeric"
+                                       FontFamily="Inter"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       WidthRequest="60"
+                                       HorizontalTextAlignment="End" />
+                                <Label Text="g"
+                                       FontFamily="Inter"
+                                       FontSize="12"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Grid>
 
-                    <!-- Lista de Alimentos -->
-                    <ScrollView HeightRequest="220">
-                        <VerticalStackLayout Spacing="6"
-                                             BindableLayout.ItemsSource="{Binding AvailableFoods}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="dtos:FoodItemDto">
+                        <!-- Lista de Alimentos -->
+                        <ScrollView HeightRequest="200">
+                            <VerticalStackLayout Spacing="6"
+                                                 BindableLayout.ItemsSource="{Binding AvailableFoods}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="dtos:FoodItemDto">
+                                        <Border StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="1"
+                                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                                Padding="10, 8">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddRecipeViewModel}}, Path=SelectFoodItemCommand}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                    <Label Text="{Binding Name}"
+                                                           FontFamily="PlusJakartaSans"
+                                                           FontSize="13"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                                    <Label Text="{Binding SubtitleSummary}"
+                                                           FontFamily="Inter"
+                                                           FontSize="10"
+                                                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                                </VerticalStackLayout>
+                                                <Label Grid.Column="1"
+                                                       Text="{x:Static helpers:MaterialIconFont.Add}"
+                                                       Style="{StaticResource MaterialIconStyle}"
+                                                       FontSize="20"
+                                                       TextColor="{StaticResource StitchPrimary}"
+                                                       VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </ScrollView>
+
+                        <!-- Botón de Acceso a Ingrediente No Almacenado -->
+                        <Border StrokeShape="RoundRectangle 10"
+                                StrokeThickness="1"
+                                Stroke="#400284C7"
+                                Background="#120284C7"
+                                Padding="10, 8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SwitchToCustomFoodTabCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                <Label Grid.Column="0"
+                                       Text="{x:Static helpers:MaterialIconFont.AddCircle}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="18"
+                                       TextColor="#0284C7" />
+                                <Label Grid.Column="1"
+                                       Text="¿No está en la lista? Añadir no registrado"
+                                       FontFamily="Inter"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="#0284C7" />
+                                <Label Grid.Column="2"
+                                       Text="{x:Static helpers:MaterialIconFont.ChevronRight}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="16"
+                                       TextColor="#0284C7" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- VISTA 2: Formulario de Alimento No Almacenado Directo -->
+                    <ScrollView HeightRequest="340" IsVisible="{Binding IsCustomFoodTabActive}">
+                        <VerticalStackLayout Spacing="10" Padding="0, 0, 0, 8">
+                            <Label Text="Añade un ingrediente directamente a la receta sin requerir que exista en la base de datos."
+                                   FontFamily="Inter"
+                                   FontSize="11"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+
+                            <!-- Nombre del Alimento -->
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="Nombre del Ingrediente *"
+                                       FontFamily="Inter"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Border StrokeShape="RoundRectangle 10"
+                                        StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                        Padding="10, 3">
+                                    <Entry Text="{Binding CustomFoodName}"
+                                           Placeholder="Ej. Crema agria casera, Guiso de verduras..."
+                                           FontFamily="Inter"
+                                           FontSize="13" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Gramaje en la Receta -->
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="Cantidad en la receta (g) *"
+                                       FontFamily="Inter"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Border StrokeShape="RoundRectangle 10"
+                                        StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                        Padding="10, 3">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Entry Grid.Column="0"
+                                               Text="{Binding CustomFoodGrams}"
+                                               Keyboard="Numeric"
+                                               FontFamily="Inter"
+                                               FontSize="13" />
+                                        <Label Grid.Column="1"
+                                               Text="gramos"
+                                               FontFamily="Inter"
+                                               FontSize="11"
+                                               TextColor="{StaticResource StitchOutline}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Macronutrientes Básicos -->
+                            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                    <Label Text="Calorías (kcal)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                    <Border StrokeShape="RoundRectangle 10"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Padding="10, 3">
+                                        <Entry Text="{Binding CustomFoodCalories}"
+                                               Keyboard="Numeric"
+                                               FontFamily="Inter"
+                                               FontSize="13" />
+                                    </Border>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                    <Label Text="Proteína (g)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                    <Border StrokeShape="RoundRectangle 10"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Padding="10, 3">
+                                        <Entry Text="{Binding CustomFoodProtein}"
+                                               Keyboard="Numeric"
+                                               FontFamily="Inter"
+                                               FontSize="13" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Minerales Clave -->
+                            <Label Text="Minerales Estimados (mg en esta porción)"
+                                   FontFamily="Inter"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+
+                            <Grid ColumnDefinitions="*, *, *" ColumnSpacing="6">
+                                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                    <Label Text="Sodio (Na)"
+                                           FontFamily="Inter"
+                                           FontSize="10"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Border StrokeShape="RoundRectangle 8"
                                             StrokeThickness="1"
                                             Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                                            Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
-                                            Padding="10, 8">
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddRecipeViewModel}}, Path=SelectFoodItemCommand}"
-                                                                  CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Grid ColumnDefinitions="*, Auto">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                                <Label Text="{Binding Name}"
-                                                       FontFamily="PlusJakartaSans"
-                                                       FontSize="13"
-                                                       FontAttributes="Bold"
-                                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                                <Label Text="{Binding SubtitleSummary}"
-                                                       FontFamily="Inter"
-                                                       FontSize="10"
-                                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
-                                            </VerticalStackLayout>
-                                            <Label Grid.Column="1"
-                                                   Text="{x:Static helpers:MaterialIconFont.Add}"
-                                                   Style="{StaticResource MaterialIconStyle}"
-                                                   FontSize="20"
-                                                   TextColor="{StaticResource StitchPrimary}"
-                                                   VerticalOptions="Center" />
-                                        </Grid>
+                                            Padding="6, 3">
+                                        <Entry Text="{Binding CustomFoodSodium}"
+                                               Keyboard="Numeric"
+                                               FontFamily="Inter"
+                                               FontSize="12" />
                                     </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                    <Label Text="Potasio (K)"
+                                           FontFamily="Inter"
+                                           FontSize="10"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                    <Border StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Padding="6, 3">
+                                        <Entry Text="{Binding CustomFoodPotassium}"
+                                               Keyboard="Numeric"
+                                               FontFamily="Inter"
+                                               FontSize="12" />
+                                    </Border>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="2" Spacing="3">
+                                    <Label Text="Fósforo (P)"
+                                           FontFamily="Inter"
+                                           FontSize="10"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                    <Border StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                            Padding="6, 3">
+                                        <Entry Text="{Binding CustomFoodPhosphorus}"
+                                               Keyboard="Numeric"
+                                               FontFamily="Inter"
+                                               FontSize="12" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Opción Guardar en Catálogo -->
+                            <Border StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceLow}}"
+                                    Padding="10, 8">
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="Guardar también en catálogo"
+                                               FontFamily="Inter"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                        <Label Text="Disponible para reutilizar en futuras recetas"
+                                               FontFamily="Inter"
+                                               FontSize="10"
+                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                    </VerticalStackLayout>
+                                    <Switch Grid.Column="1"
+                                            IsToggled="{Binding SaveCustomFoodToCatalog}"
+                                            OnColor="{StaticResource StitchPrimary}" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Botón Confirmar Adición -->
+                            <Button Text="+ Añadir a la Receta"
+                                    Command="{Binding AddCustomFoodItemCommand}"
+                                    FontFamily="PlusJakartaSans"
+                                    FontSize="13"
+                                    FontAttributes="Bold"
+                                    HeightRequest="44"
+                                    CornerRadius="12"
+                                    BackgroundColor="{StaticResource StitchPrimary}"
+                                    TextColor="{StaticResource StitchOnPrimary}" />
                         </VerticalStackLayout>
                     </ScrollView>
                 </VerticalStackLayout>
