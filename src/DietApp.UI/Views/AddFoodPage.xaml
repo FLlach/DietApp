@@ -64,10 +64,6 @@
                                  CornerRadius="3"
                                  Color="{StaticResource StitchPrimary}"
                                  VerticalOptions="Center" />
-                        <Label Text="Base de Datos Local SQLite"
-                               FontFamily="Inter"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
 
@@ -78,11 +74,6 @@
                         Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerHigh}, Dark={StaticResource StitchDarkSurfaceContainer}}"
                         Padding="8, 3"
                         VerticalOptions="Center">
-                    <Label Text=".NET MAUI"
-                           FontFamily="Inter"
-                           FontSize="10"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource StitchPrimary}" />
                 </Border>
 
             </Grid>
@@ -145,13 +136,13 @@
                                        Style="{StaticResource MaterialIconStyle}"
                                        FontSize="16"
                                        TextColor="{StaticResource StitchPrimary}" />
-                                <Label Text="REGISTRO CLÍNICO DIETÉTICO"
+                                <Label Text="REGISTRO DIETÉTICO"
                                        FontFamily="Inter"
                                        FontSize="11"
                                        FontAttributes="Bold"
                                        TextColor="{StaticResource StitchPrimary}" />
                             </HorizontalStackLayout>
-                            <Label Text="Introduce la composición bromatológica estandarizada por porción de ingesta."
+                            <Label Text="Introduce la composición estandarizada por porción de ingesta."
                                    FontFamily="Inter"
                                    FontSize="12"
                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
@@ -651,16 +642,12 @@
                                            Style="{StaticResource MaterialIconStyle}"
                                            FontSize="18"
                                            TextColor="{StaticResource StitchPrimary}" />
-                                    <Label Text="7 Minerales Críticos"
+                                    <Label Text="Minerales"
                                            FontFamily="PlusJakartaSans"
                                            FontSize="14"
                                            FontAttributes="Bold"
                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                 </HorizontalStackLayout>
-                                <Label Text="Control de micro-nutrientes y electrolitos diana"
-                                       FontFamily="Inter"
-                                       FontSize="10"
-                                       TextColor="{StaticResource StitchOutline}" />
                             </VerticalStackLayout>
 
                             <Border Grid.Column="1"
@@ -688,24 +675,11 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
                                 <VerticalStackLayout Spacing="6">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Text="Potasio (K)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Border Grid.Column="1"
-                                                StrokeShape="RoundRectangle 4"
-                                                StrokeThickness="0"
-                                                Background="{StaticResource StitchSecondaryFixed}"
-                                                Padding="4, 1">
-                                            <Label Text="Renal"
-                                                   FontFamily="Inter"
-                                                   FontSize="9"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{StaticResource StitchOnSecondaryFixed}" />
-                                        </Border>
-                                    </Grid>
+                                    <Label Text="Potasio (K)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Border Grid.Column="0"
                                                 StrokeShape="RoundRectangle 8"
@@ -743,24 +717,11 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
                                 <VerticalStackLayout Spacing="6">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Text="Fósforo (P)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Border Grid.Column="1"
-                                                StrokeShape="RoundRectangle 4"
-                                                StrokeThickness="0"
-                                                Background="{StaticResource StitchTertiaryFixed}"
-                                                Padding="4, 1">
-                                            <Label Text="Óseo"
-                                                   FontFamily="Inter"
-                                                   FontSize="9"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{StaticResource StitchOnTertiaryFixed}" />
-                                        </Border>
-                                    </Grid>
+                                    <Label Text="Fósforo (P)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Border Grid.Column="0"
                                                 StrokeShape="RoundRectangle 8"
@@ -798,24 +759,11 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
                                 <VerticalStackLayout Spacing="6">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Text="Sodio (Na)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Border Grid.Column="1"
-                                                StrokeShape="RoundRectangle 4"
-                                                StrokeThickness="0"
-                                                Background="{StaticResource StitchErrorContainer}"
-                                                Padding="4, 1">
-                                            <Label Text="Tensión"
-                                                   FontFamily="Inter"
-                                                   FontSize="9"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{StaticResource StitchOnErrorContainer}" />
-                                        </Border>
-                                    </Grid>
+                                    <Label Text="Sodio (Na)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Border Grid.Column="0"
                                                 StrokeShape="RoundRectangle 8"
@@ -853,18 +801,11 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
                                 <VerticalStackLayout Spacing="6">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Text="Calcio (Ca)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Label Grid.Column="1"
-                                               Text="Básico"
-                                               FontFamily="Inter"
-                                               FontSize="10"
-                                               TextColor="{StaticResource StitchOutline}" />
-                                    </Grid>
+                                    <Label Text="Calcio (Ca)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Border Grid.Column="0"
                                                 StrokeShape="RoundRectangle 8"
@@ -902,18 +843,11 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
                                 <VerticalStackLayout Spacing="6">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Text="Magnesio (Mg)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Label Grid.Column="1"
-                                               Text="Muscular"
-                                               FontFamily="Inter"
-                                               FontSize="10"
-                                               TextColor="{StaticResource StitchOutline}" />
-                                    </Grid>
+                                    <Label Text="Magnesio (Mg)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Border Grid.Column="0"
                                                 StrokeShape="RoundRectangle 8"
@@ -951,18 +885,11 @@
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
                                 <VerticalStackLayout Spacing="6">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Text="Hierro (Fe)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Label Grid.Column="1"
-                                               Text="Anemia"
-                                               FontFamily="Inter"
-                                               FontSize="10"
-                                               TextColor="{StaticResource StitchOutline}" />
-                                    </Grid>
+                                    <Label Text="Hierro (Fe)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Border Grid.Column="0"
                                                 StrokeShape="RoundRectangle 8"
@@ -999,22 +926,16 @@
                                     Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
                                     Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
                                     Padding="10">
-                                <Grid ColumnDefinitions="Auto, *, Auto">
-                                    <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
-                                        <Label Text="Zinc (Zn)"
-                                               FontFamily="Inter"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
-                                               VerticalOptions="Center" />
-                                        <Label Text="Inmune &amp; Metabolismo"
-                                               FontFamily="Inter"
-                                               FontSize="10"
-                                               TextColor="{StaticResource StitchOutline}"
-                                               VerticalOptions="Center" />
-                                    </HorizontalStackLayout>
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0"
+                                           Text="Zinc (Zn)"
+                                           FontFamily="Inter"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
+                                           VerticalOptions="Center" />
 
-                                    <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                                         <Border StrokeShape="RoundRectangle 8"
                                                 StrokeThickness="1"
                                                 Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}"
@@ -1064,31 +985,6 @@
                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                         </HorizontalStackLayout>
 
-                        <!-- Interruptor Apto Dieta Renal (KDOQI) -->
-                        <Border StrokeShape="RoundRectangle 12"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
-                                Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
-                                Padding="12">
-                            <Grid ColumnDefinitions="*, Auto">
-                                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center" Margin="0, 0, 10, 0">
-                                    <Label Text="Apto Dieta Renal (KDOQI)"
-                                           FontFamily="Inter"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                    <Label Text="Adecuado para protocolos de enfermedad renal crónica estadios 3-5"
-                                           FontFamily="Inter"
-                                           FontSize="10"
-                                           TextColor="{StaticResource StitchOutline}" />
-                                </VerticalStackLayout>
-                                <Switch Grid.Column="1"
-                                        IsToggled="{Binding IsKdoqiRenalDietCompliant, Mode=TwoWay}"
-                                        OnColor="{StaticResource StitchPrimaryContainer}"
-                                        ThumbColor="{StaticResource StitchPrimary}"
-                                        VerticalOptions="Center" />
-                            </Grid>
-                        </Border>
 
                         <!-- Pastillas de Advertencias Clinicas -->
                         <VerticalStackLayout Spacing="6" Margin="0, 4, 0, 0">
@@ -1189,7 +1085,7 @@
                 Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
                 Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
                 Padding="16, 12">
-            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" MaximumWidthRequest="540" HorizontalOptions="Center">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" MaximumWidthRequest="540" HorizontalOptions="Fill">
 
                 <!-- Accion Secundaria: Descartar -->
                 <Button Grid.Column="0"
@@ -1197,26 +1093,26 @@
                         Command="{Binding DiscardCommand}"
                         FontFamily="Inter"
                         FontSize="13"
+                        FontAttributes="Bold"
+                        WidthRequest="100"
                         HeightRequest="46"
                         CornerRadius="12"
                         BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
                         TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
                         BorderColor="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}"
                         BorderWidth="1"
-                        Padding="18, 0" />
+                        Padding="0"
+                        SemanticProperties.Description="Descartar y volver" />
 
-                <!-- Accion Principal: + Guardar en Catalogo Local -->
+                <!-- Accion Principal: + Guardar en Catálogo -->
                 <Button Grid.Column="1"
-                        Text="+ Guardar en Catálogo Local"
+                        Text="+ Guardar en Catálogo"
                         Command="{Binding SaveFoodCommand}"
-                        FontFamily="Inter"
-                        FontSize="13"
-                        FontAttributes="Bold"
+                        Style="{StaticResource StitchPrimaryButtonStyle}"
                         HeightRequest="46"
                         CornerRadius="12"
-                        BackgroundColor="{StaticResource StitchPrimaryContainer}"
-                        TextColor="{StaticResource StitchOnPrimaryContainer}"
-                        SemanticProperties.Description="Guardar alimento en la base de datos local" />
+                        FontSize="13"
+                        SemanticProperties.Description="Guardar alimento en el catálogo" />
 
             </Grid>
         </Border>
