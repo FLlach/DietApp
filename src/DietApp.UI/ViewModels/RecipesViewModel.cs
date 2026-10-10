@@ -18,11 +18,15 @@ namespace DietApp.UI.ViewModels;
 public partial class RecipesViewModel : ObservableObject
 {
     private readonly IRecipeService _recipeService;
+    private readonly IUserProfileService _userProfileService;
     private List<RecipeDto> _allRecipes = new();
 
-    public RecipesViewModel(IRecipeService recipeService)
+    public RecipesViewModel(
+        IRecipeService recipeService,
+        IUserProfileService userProfileService)
     {
-        _recipeService = recipeService;
+        _recipeService = recipeService ?? throw new ArgumentNullException(nameof(recipeService));
+        _userProfileService = userProfileService ?? throw new ArgumentNullException(nameof(userProfileService));
 
         SortOptions = new List<string>
         {
@@ -81,8 +85,32 @@ public partial class RecipesViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            var list = await _recipeService.GetAllRecipesAsync();
-            _allRecipes = list.ToList();
+            var profile = await _userProfileService.GetCurrentProfileAsync();
+            string userId = profile?.UserId ?? "local_user";
+
+            var favList = await _recipeService.GetFavoriteRecipesAsync(userId);
+            var favIds = new HashSet<Guid>(favList.Select(f => f.Id));
+
+            IReadOnlyList<RecipeDto> list;
+            if (SelectedFilterChip == "Globales")
+            {
+                list = await _recipeService.GetGlobalRecipesAsync();
+            }
+            else if (SelectedFilterChip == "Favoritos")
+            {
+                list = favList;
+            }
+            else
+            {
+                list = await _recipeService.GetAllRecipesAsync();
+            }
+
+            _allRecipes = list.Select(r =>
+            {
+                r.IsFavorite = favIds.Contains(r.Id);
+                return r;
+            }).ToList();
+
             ApplyFilterAndSort();
         }
         finally
@@ -92,17 +120,69 @@ public partial class RecipesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SearchRecipes(string query)
+    private async Task SearchRecipesAsync(string query)
     {
         SearchQuery = query;
+
+        if (SelectedFilterChip == "Globales" && !string.IsNullOrWhiteSpace(query))
+        {
+            try
+            {
+                IsBusy = true;
+                var profile = await _userProfileService.GetCurrentProfileAsync();
+                string userId = profile?.UserId ?? "local_user";
+                var favList = await _recipeService.GetFavoriteRecipesAsync(userId);
+                var favIds = new HashSet<Guid>(favList.Select(f => f.Id));
+
+                var globalResults = await _recipeService.SearchGlobalRecipesAsync(query);
+                _allRecipes = globalResults.Select(r =>
+                {
+                    r.IsFavorite = favIds.Contains(r.Id);
+                    return r;
+                }).ToList();
+
+                ApplyFilterAndSort();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+            return;
+        }
+
         ApplyFilterAndSort();
     }
 
     [RelayCommand]
-    private void SelectFilterChip(string chipName)
+    private async Task SelectFilterChipAsync(string chipName)
     {
         SelectedFilterChip = (SelectedFilterChip == chipName) ? "Todos" : chipName;
-        ApplyFilterAndSort();
+        await LoadRecipesAsync();
+    }
+
+    [RelayCommand]
+    private async Task ToggleFavoriteAsync(RecipeCardDisplayModel card)
+    {
+        if (card == null) return;
+
+        var profile = await _userProfileService.GetCurrentProfileAsync();
+        string userId = profile?.UserId ?? "local_user";
+
+        bool isFav = await _recipeService.ToggleFavoriteAsync(userId, card.Id);
+        card.IsFavorite = isFav;
+
+        var match = _allRecipes.FirstOrDefault(r => r.Id == card.Id);
+        if (match != null)
+        {
+            match.IsFavorite = isFav;
+        }
+
+        if (SelectedFilterChip == "Favoritos" && !isFav)
+        {
+            Recipes.Remove(card);
+            CatalogSummaryText = $"Catálogo Dosificado ({Recipes.Count} preparaciones)";
+            HasRecipes = Recipes.Count > 0;
+        }
     }
 
     partial void OnSelectedSortOptionChanged(string value) => ApplyFilterAndSort();
@@ -122,7 +202,19 @@ public partial class RecipesViewModel : ObservableObject
         }
 
         // 2. Filtrado por chip rapido
-        if (SelectedFilterChip == "Bajo en Potasio (<300mg)")
+        if (SelectedFilterChip == "Mis Recetas")
+        {
+            query = query.Where(r => !r.IsGlobal);
+        }
+        else if (SelectedFilterChip == "Globales")
+        {
+            query = query.Where(r => r.IsGlobal);
+        }
+        else if (SelectedFilterChip == "Favoritos")
+        {
+            query = query.Where(r => r.IsFavorite);
+        }
+        else if (SelectedFilterChip == "Bajo en Potasio (<300mg)")
         {
             query = query.Where(r => r.GetMineralAmountPerServing(MineralType.Potassium) < 300);
         }
@@ -194,23 +286,25 @@ public partial class RecipesViewModel : ObservableObject
             Id = recipe.Id,
             Title = recipe.Title,
             ImageUrl = recipe.FinalImagePath,
-            EnergyBadge = $"⚡ {recipe.CaloriesPerServing:N0} kcal / porción",
+            EnergyBadge = $"{recipe.CaloriesPerServing:N0} kcal / porción",
             ProteinBadge = $"{recipe.ProteinPerServing:0.#} g Proteína",
             PrepTimeDisplay = "25 min",
-            ServingsDisplay = recipe.Servings == 1 ? "1 ración clínica" : $"{recipe.Servings} raciones"
+            ServingsDisplay = recipe.Servings == 1 ? "1 ración clínica" : $"{recipe.Servings} raciones",
+            IsGlobal = recipe.IsGlobal,
+            IsFavorite = recipe.IsFavorite
         };
 
         // Estado clinico
         if (sodio < 200 && fosforo < 200)
         {
-            card.ClinicalStatusBadge = "✓ Apto Bajo Sodio y Fósforo";
+            card.ClinicalStatusBadge = "Apto Bajo Sodio y Fósforo";
             card.ClinicalStatusBackground = Color.FromArgb("#F0FDF4");
             card.ClinicalStatusBorderColor = Color.FromArgb("#86EFAC");
             card.ClinicalStatusTextColor = Color.FromArgb("#166534");
         }
         else if (potasio < 300)
         {
-            card.ClinicalStatusBadge = "✓ Bajo en Potasio (< 300 mg)";
+            card.ClinicalStatusBadge = "Bajo en Potasio (< 300 mg)";
             card.ClinicalStatusBackground = Color.FromArgb("#F7FEE7");
             card.ClinicalStatusBorderColor = Color.FromArgb("#84CC16");
             card.ClinicalStatusTextColor = Color.FromArgb("#315200");

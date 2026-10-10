@@ -170,6 +170,63 @@
                                 </Button.Triggers>
                             </Button>
 
+                            <!-- Chip: Globales -->
+                            <Button Text="Globales"
+                                    Command="{Binding SelectFilterChipCommand}"
+                                    CommandParameter="Globales"
+                                    FontFamily="Inter"
+                                    FontSize="11"
+                                    HeightRequest="36"
+                                    CornerRadius="18"
+                                    Padding="14, 0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding SelectedFilterChip}" Value="Globales">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource StitchPrimaryContainer}" />
+                                        <Setter Property="TextColor" Value="{StaticResource StitchOnPrimaryContainer}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <!-- Chip: Favoritos -->
+                            <Button Text="Favoritos"
+                                    Command="{Binding SelectFilterChipCommand}"
+                                    CommandParameter="Favoritos"
+                                    FontFamily="Inter"
+                                    FontSize="11"
+                                    HeightRequest="36"
+                                    CornerRadius="18"
+                                    Padding="14, 0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding SelectedFilterChip}" Value="Favoritos">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource StitchPrimaryContainer}" />
+                                        <Setter Property="TextColor" Value="{StaticResource StitchOnPrimaryContainer}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <!-- Chip: Mis Recetas -->
+                            <Button Text="Mis Recetas"
+                                    Command="{Binding SelectFilterChipCommand}"
+                                    CommandParameter="Mis Recetas"
+                                    FontFamily="Inter"
+                                    FontSize="11"
+                                    HeightRequest="36"
+                                    CornerRadius="18"
+                                    Padding="14, 0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
+                                    TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding SelectedFilterChip}" Value="Mis Recetas">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource StitchPrimaryContainer}" />
+                                        <Setter Property="TextColor" Value="{StaticResource StitchOnPrimaryContainer}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
                             <!-- Chip: Bajo en Potasio -->
                             <Button Text="Bajo en Potasio (&lt;300mg)"
                                     Command="{Binding SelectFilterChipCommand}"
@@ -415,30 +472,45 @@
                                                        FontAttributes="Bold"
                                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                                 <Button Grid.Column="1"
-                                                        Text="{x:Static helpers:MaterialIconFont.BookmarkBorder}"
+                                                        Text="{Binding BookmarkGlyph}"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecipesViewModel}}, Path=ToggleFavoriteCommand}"
+                                                        CommandParameter="{Binding .}"
                                                         FontFamily="MaterialSymbols"
                                                         FontSize="20"
                                                         BackgroundColor="{StaticResource Transparent}"
-                                                        TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutlineVariant}}"
+                                                        TextColor="{Binding BookmarkColor}"
                                                         Padding="0"
                                                         WidthRequest="36"
                                                         HeightRequest="36"
-                                                        CornerRadius="18" />
+                                                        CornerRadius="18"
+                                                        SemanticProperties.Description="Alternar favorito de receta" />
                                             </Grid>
 
-                                            <!-- Badge de Estado Clinico -->
-                                            <Border StrokeShape="RoundRectangle 9999"
-                                                    Stroke="{Binding ClinicalStatusBorderColor}"
-                                                    StrokeThickness="1"
-                                                    Background="{Binding ClinicalStatusBackground}"
-                                                    Padding="10, 4"
-                                                    HorizontalOptions="Start">
-                                                <Label Text="{Binding ClinicalStatusBadge}"
-                                                       FontFamily="Inter"
-                                                       FontSize="11"
-                                                       FontAttributes="Bold"
-                                                       TextColor="{Binding ClinicalStatusTextColor}" />
-                                            </Border>
+                                            <!-- Badges de Estado Clinico y Origen -->
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Border StrokeShape="RoundRectangle 9999"
+                                                        Stroke="{Binding ClinicalStatusBorderColor}"
+                                                        StrokeThickness="1"
+                                                        Background="{Binding ClinicalStatusBackground}"
+                                                        Padding="10, 4">
+                                                    <Label Text="{Binding ClinicalStatusBadge}"
+                                                           FontFamily="Inter"
+                                                           FontSize="11"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{Binding ClinicalStatusTextColor}" />
+                                                </Border>
+
+                                                <Border StrokeShape="RoundRectangle 9999"
+                                                        StrokeThickness="0"
+                                                        Background="{Binding OriginBadgeBackground}"
+                                                        Padding="10, 4">
+                                                    <Label Text="{Binding OriginBadge}"
+                                                           FontFamily="Inter"
+                                                           FontSize="11"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{Binding OriginBadgeTextColor}" />
+                                                </Border>
+                                            </HorizontalStackLayout>
 
                                             <!-- Fila de los 7 Minerales Criticos en 2 Columnas -->
                                             <VerticalStackLayout Spacing="6">

@@ -55,12 +55,12 @@
                                 SemanticProperties.Description="Cerrar ficha" />
 
                         <HorizontalStackLayout Grid.Column="2" Spacing="8">
-                            <Button Text="{x:Static helpers:MaterialIconFont.Bookmark}"
+                            <Button Text="{Binding BookmarkGlyph}"
                                     Command="{Binding ToggleBookmarkCommand}"
                                     FontFamily="MaterialSymbols"
                                     FontSize="20"
                                     BackgroundColor="#CCFFFFFF"
-                                    TextColor="#131B2E"
+                                    TextColor="{Binding BookmarkTextColor}"
                                     Padding="0"
                                     WidthRequest="44"
                                     HeightRequest="44"
@@ -104,7 +104,7 @@
                                     StrokeThickness="0"
                                     Background="#B0FFFFFF"
                                     Padding="8, 4">
-                                <Label Text="METABÓLICO NIVEL 1"
+                                <Label Text="{Binding OriginBadge}"
                                        FontFamily="Inter"
                                        FontSize="10"
                                        FontAttributes="Bold"

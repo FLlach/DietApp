@@ -21,15 +21,18 @@ public partial class RecipeDetailViewModel : ObservableObject, IQueryAttributabl
     private readonly IRecipeService _recipeService;
     private readonly IMineralAlertService _mineralAlertService;
     private readonly IMealTrackingService _mealTrackingService;
+    private readonly IUserProfileService _userProfileService;
 
     public RecipeDetailViewModel(
         IRecipeService recipeService,
         IMineralAlertService mineralAlertService,
-        IMealTrackingService mealTrackingService)
+        IMealTrackingService mealTrackingService,
+        IUserProfileService userProfileService)
     {
         _recipeService = recipeService;
         _mineralAlertService = mineralAlertService;
         _mealTrackingService = mealTrackingService;
+        _userProfileService = userProfileService;
 
         UpdateDateDisplay();
     }
@@ -100,7 +103,26 @@ public partial class RecipeDetailViewModel : ObservableObject, IQueryAttributabl
     private string _phosphorusPctText = "20% CDR";
 
     [ObservableProperty]
-    private string _clinicalAuditText = "✓ Apto para tu límite diario de fósforo. Atención: Aporta el 32% del cupo de potasio diario previsto en tu pauta.";
+    private string _clinicalAuditText = "Apto para tu límite diario de fósforo. Atención: Aporta el 32% del cupo de potasio diario previsto en tu pauta.";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BookmarkGlyph))]
+    [NotifyPropertyChangedFor(nameof(BookmarkTextColor))]
+    private bool _isFavorite;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(OriginBadge))]
+    private bool _isGlobal;
+
+    public string OriginBadge => IsGlobal ? "Global • Nube" : "Personal";
+
+    public string BookmarkGlyph => IsFavorite
+        ? Helpers.MaterialIconFont.Bookmark
+        : Helpers.MaterialIconFont.BookmarkBorder;
+
+    public Color BookmarkTextColor => IsFavorite
+        ? Color.FromArgb("#84CC16")
+        : Color.FromArgb("#131B2E");
 
     [ObservableProperty]
     private DateTime _selectedDate = DateTime.Today;
@@ -200,6 +222,18 @@ public partial class RecipeDetailViewModel : ObservableObject, IQueryAttributabl
             ImageUrl = recipe.FinalImagePath;
             HasImage = !string.IsNullOrWhiteSpace(ImageUrl);
             HasNoImage = !HasImage;
+            IsGlobal = recipe.IsGlobal;
+
+            try
+            {
+                var profile = await _userProfileService.GetCurrentProfileAsync();
+                string currentUserId = profile?.UserId ?? "local_user";
+                IsFavorite = await _recipeService.IsFavoriteAsync(currentUserId, id);
+            }
+            catch
+            {
+                IsFavorite = false;
+            }
 
             EnergyBadge = $"{recipe.CaloriesPerServing:N0} kcal por porción";
             ProteinBadge = $"{recipe.ProteinPerServing:0.#} g Proteína";
@@ -229,11 +263,11 @@ public partial class RecipeDetailViewModel : ObservableObject, IQueryAttributabl
             // Auditoria clinica
             if (kHigh)
             {
-                ClinicalAuditText = $"✓ Apto para tu límite diario de fósforo. Atención: Aporta el {Math.Round((k / 2000.0) * 100, 0)}% del cupo de potasio diario previsto en tu pauta.";
+                ClinicalAuditText = $"Apto para tu límite diario de fósforo. Atención: Aporta el {Math.Round((k / 2000.0) * 100, 0)}% del cupo de potasio diario previsto en tu pauta.";
             }
             else
             {
-                ClinicalAuditText = "✓ Apto para tu pauta renal y metabólica: perfil balanceado de potasio y fósforo bajo control.";
+                ClinicalAuditText = "Apto para tu pauta renal y metabólica: perfil balanceado de potasio y fósforo bajo control.";
             }
 
             // 2. Ingredientes
@@ -418,9 +452,32 @@ public partial class RecipeDetailViewModel : ObservableObject, IQueryAttributabl
     [RelayCommand]
     private async Task ToggleBookmarkAsync()
     {
-        if (Shell.Current != null)
+        if (RecipeId == Guid.Empty) return;
+
+        try
         {
-            await Shell.Current.DisplayAlertAsync("Receta Guardada", $"La receta '{Title}' fue añadida a tus favoritos.", "Aceptar");
+            var profile = await _userProfileService.GetCurrentProfileAsync();
+            string currentUserId = profile?.UserId ?? "local_user";
+            bool newStatus = await _recipeService.ToggleFavoriteAsync(currentUserId, RecipeId);
+            IsFavorite = newStatus;
+
+            if (Shell.Current != null)
+            {
+                string alertMessage = newStatus
+                    ? $"La receta '{Title}' fue añadida a tus favoritos."
+                    : $"La receta '{Title}' fue quitada de tus favoritos.";
+                await Shell.Current.DisplayAlertAsync(
+                    newStatus ? "Receta Guardada" : "Receta Removida",
+                    alertMessage,
+                    "Aceptar");
+            }
+        }
+        catch (Exception ex)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlertAsync("Error", $"No se pudo actualizar favoritos: {ex.Message}", "Aceptar");
+            }
         }
     }
 
