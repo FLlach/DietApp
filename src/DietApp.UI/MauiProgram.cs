@@ -66,9 +66,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<DailyMineralAggregatorService>();
 
         // Capa de Infraestructura - Repositorios SQLite y Cliente Supabase
+        builder.Services.AddSingleton<ISupabaseClientProvider, SupabaseClientProvider>();
         builder.Services.AddSingleton<IFoodRepository, SqliteFoodRepository>();
         builder.Services.AddSingleton<IMealRepository, SqliteMealRepository>();
-        builder.Services.AddSingleton<IRecipeRepository, SqliteRecipeRepository>();
+        builder.Services.AddSingleton<SqliteRecipeRepository>();
+        builder.Services.AddSingleton<IRecipeRepository, SupabaseRecipeRepository>();
+        builder.Services.AddSingleton<SqliteRecipeFavoriteRepository>();
+        builder.Services.AddSingleton<IRecipeFavoriteRepository, SupabaseRecipeFavoriteRepository>();
         builder.Services.AddSingleton<ISeasoningRepository, SqliteSeasoningRepository>();
 
         // Autenticacion y Sesion de Usuario (Supabase Auth / Offline)
@@ -77,7 +81,6 @@ public static class MauiProgram
 
         // Persistencia de Perfil: Cliente Supabase hibrido con soporte Offline-First sobre SQLite
         builder.Services.AddSingleton<SqliteUserProfileRepository>();
-        builder.Services.AddSingleton<ISupabaseClientProvider, SupabaseClientProvider>();
         builder.Services.AddSingleton<IUserProfileRepository, SupabaseUserProfileRepository>();
 
         // Localizacion e Internacionalizacion
