@@ -103,6 +103,128 @@
                                  MaximumWidthRequest="560"
                                  HorizontalOptions="Center">
 
+                <!-- 2.0 Sesión y Acceso Clínico (Bento 0) -->
+                <Border Style="{StaticResource StitchCardBorderStyle}"
+                        Padding="16"
+                        StrokeShape="RoundRectangle 16">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                            <Border Grid.Column="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0"
+                                    Background="{AppThemeBinding Light={StaticResource StitchSurfaceContainer}, Dark={StaticResource StitchDarkSurfaceContainer}}"
+                                    WidthRequest="42"
+                                    HeightRequest="42"
+                                    VerticalOptions="Center">
+                                <Label Text="{x:Static helpers:MaterialIconFont.Badge}"
+                                       Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="22"
+                                       TextColor="{StaticResource StitchPrimary}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="Sesión y Acceso Clínico"
+                                       FontFamily="PlusJakartaSans"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
+                                <Label Text="{Binding Email, TargetNullValue='Modo local offline / Invitado'}"
+                                       FontFamily="Inter"
+                                       FontSize="11"
+                                       TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
+                                       LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+
+                            <!-- Badge de Estado de Sesión -->
+                            <Border Grid.Column="2"
+                                    StrokeShape="RoundRectangle 9999"
+                                    StrokeThickness="1"
+                                    Padding="10, 4"
+                                    VerticalOptions="Center">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsUserLoggedIn}" Value="True">
+                                        <Setter Property="Stroke" Value="{StaticResource StitchPrimaryContainer}" />
+                                        <Setter Property="Background" Value="#2584CC16" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsUserLoggedIn}" Value="False">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label FontFamily="Inter"
+                                       FontSize="10"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUserLoggedIn}" Value="True">
+                                            <Setter Property="Text" Value="En línea" />
+                                            <Setter Property="TextColor" Value="{StaticResource StitchPrimary}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUserLoggedIn}" Value="False">
+                                            <Setter Property="Text" Value="Modo Local" />
+                                            <Setter Property="TextColor" Value="{StaticResource StitchOutline}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+
+                        <!-- Boton de Iniciar / Cerrar Sesion -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                HeightRequest="44"
+                                Padding="16, 0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ManageAuthCommand}" />
+                            </Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsUserLoggedIn}" Value="True">
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutlineVariant}}" />
+                                    <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsUserLoggedIn}" Value="False">
+                                    <Setter Property="Stroke" Value="{StaticResource StitchPrimaryContainer}" />
+                                    <Setter Property="Background" Value="{StaticResource StitchPrimaryContainer}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Style="{StaticResource MaterialIconStyle}"
+                                       FontSize="18"
+                                       VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUserLoggedIn}" Value="True">
+                                            <Setter Property="Text" Value="{x:Static helpers:MaterialIconFont.Logout}" />
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUserLoggedIn}" Value="False">
+                                            <Setter Property="Text" Value="{x:Static helpers:MaterialIconFont.Login}" />
+                                            <Setter Property="TextColor" Value="#0F172A" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Label Text="{Binding AuthButtonText}"
+                                       FontFamily="Inter"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUserLoggedIn}" Value="True">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUserLoggedIn}" Value="False">
+                                            <Setter Property="TextColor" Value="#0F172A" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- 2.1 Preferencias de Interfaz (Bento 1) -->
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto" Padding="2, 0">

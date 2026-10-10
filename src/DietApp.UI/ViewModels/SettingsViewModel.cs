@@ -6,15 +6,18 @@ using DietApp.Domain.Enums;
 using DietApp.Infrastructure.Supabase;
 using DietApp.UI.Localization;
 
+using DietApp.Domain.Services;
+using DietApp.UI.Views;
+
 namespace DietApp.UI.ViewModels;
 
 /// <summary>
 /// Como funciona: ViewModel para la pantalla de Configuracion y Ajustes (SettingsPage) segun prototipo Stitch.
 /// Gestiona las preferencias de interfaz (idioma y modo visual), calibracion del umbral preventivo de alerta
 /// con barra deslizadora (50% a 95%), limites diarios cuantitativos de los 7 minerales diana (K, P, Na, Ca, Mg, Fe, Zn)
-/// con interruptores individuales de activacion, restauracion a directrices KDOQI/USDA y auditoria de la base local.
+/// con interruptores individuales de activacion, restauracion a directrices KDOQI/USDA, autenticacion y auditoria de la base local.
 /// Por que se tomo esta decision: Centraliza en la capa de presentacion la configuracion del paciente
-/// garantizando sincronizacion en tiempo real con ILocalizationService, IThemeService, IMineralAlertService e IProteinGoalService.
+/// garantizando sincronizacion en tiempo real con ILocalizationService, IThemeService, IMineralAlertService, IProteinGoalService e IAuthService.
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
@@ -24,6 +27,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ICalorieGoalService _calorieGoalService;
     private readonly IThemeService _themeService;
     private readonly IUserProfileService _userProfileService;
+    private readonly IAuthService _authService;
 
     public SettingsViewModel(
         ILocalizationService localizationService,
@@ -31,7 +35,8 @@ public partial class SettingsViewModel : ObservableObject
         IProteinGoalService proteinGoalService,
         ICalorieGoalService calorieGoalService,
         IThemeService themeService,
-        IUserProfileService userProfileService)
+        IUserProfileService userProfileService,
+        IAuthService authService)
     {
         _localizationService = localizationService;
         _mineralAlertService = mineralAlertService;
@@ -39,9 +44,43 @@ public partial class SettingsViewModel : ObservableObject
         _calorieGoalService = calorieGoalService;
         _themeService = themeService;
         _userProfileService = userProfileService;
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+
+        _authService.AuthStateChanged += (s, session) =>
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                UpdateAuthStatus();
+            });
+        };
 
         LoadSettings();
+        UpdateAuthStatus();
     }
+
+    private void UpdateAuthStatus()
+    {
+        Task.Run(async () =>
+        {
+            bool isAuth = await _authService.IsAuthenticatedAsync();
+            string? email = await _authService.GetCurrentUserEmailAsync();
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                IsUserLoggedIn = isAuth;
+                AuthButtonText = isAuth ? "Cerrar Sesión" : "Iniciar Sesión";
+                if (isAuth && !string.IsNullOrWhiteSpace(email))
+                {
+                    Email = email;
+                }
+            });
+        });
+    }
+
+    [ObservableProperty]
+    private bool _isUserLoggedIn = false;
+
+    [ObservableProperty]
+    private string _authButtonText = "Iniciar Sesión";
 
     // 0. Informacion y Estado del Perfil
     [ObservableProperty]
@@ -479,6 +518,35 @@ public partial class SettingsViewModel : ObservableObject
                 "Exportar Informe",
                 "Generando resumen clínico del paciente y parámetros de filtración en formato PDF...",
                 "Aceptar");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ManageAuthAsync()
+    {
+        if (IsUserLoggedIn)
+        {
+            bool confirm = await Shell.Current.DisplayAlertAsync(
+                "Cerrar Sesión",
+                "¿Deseas cerrar la sesión activa? La app volverá a modo local offline.",
+                "Cerrar Sesión",
+                "Cancelar");
+
+            if (confirm)
+            {
+                await _authService.SignOutAsync();
+                IsUserLoggedIn = false;
+                AuthButtonText = "Iniciar Sesión";
+                DisplayName = "Usuario Principal";
+                Email = string.Empty;
+            }
+        }
+        else
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(nameof(LoginPage));
+            }
         }
     }
 }
