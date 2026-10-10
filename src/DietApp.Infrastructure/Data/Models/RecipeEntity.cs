@@ -24,6 +24,9 @@ public class RecipeEntity
 
     public string FinalImagePath { get; set; } = string.Empty;
 
+    [Indexed]
+    public bool IsGlobal { get; set; } = false;
+
     public Recipe ToDomain(IEnumerable<RecipeIngredient> ingredients, IEnumerable<RecipeStep> steps)
     {
         return new Recipe(
@@ -33,7 +36,8 @@ public class RecipeEntity
             Servings,
             FinalImagePath,
             ingredients,
-            steps);
+            steps,
+            IsGlobal);
     }
 
     public static RecipeEntity FromDomain(Recipe recipe)
@@ -44,7 +48,8 @@ public class RecipeEntity
             Title = recipe.Title,
             Description = recipe.Description,
             Servings = recipe.Servings,
-            FinalImagePath = recipe.FinalImagePath
+            FinalImagePath = recipe.FinalImagePath,
+            IsGlobal = recipe.IsGlobal
         };
     }
 }

@@ -30,6 +30,9 @@ public class SupabaseRecipeModel : BaseModel
     [Column("final_image_path")]
     public string FinalImagePath { get; set; } = string.Empty;
 
+    [Column("is_global")]
+    public bool IsGlobal { get; set; } = true;
+
     public Recipe ToDomain(IEnumerable<RecipeIngredient> ingredients, IEnumerable<RecipeStep> steps)
     {
         Guid.TryParse(Id, out var parsedId);
@@ -40,7 +43,8 @@ public class SupabaseRecipeModel : BaseModel
             Servings,
             FinalImagePath,
             ingredients,
-            steps);
+            steps,
+            IsGlobal);
     }
 
     public static SupabaseRecipeModel FromDomain(Recipe recipe, string? userId = null)
@@ -52,7 +56,8 @@ public class SupabaseRecipeModel : BaseModel
             Title = recipe.Title,
             Description = recipe.Description,
             Servings = recipe.Servings,
-            FinalImagePath = recipe.FinalImagePath
+            FinalImagePath = recipe.FinalImagePath,
+            IsGlobal = recipe.IsGlobal
         };
     }
 }

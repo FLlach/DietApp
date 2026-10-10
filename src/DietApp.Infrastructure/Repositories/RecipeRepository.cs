@@ -34,6 +34,41 @@ public class RecipeRepository : IRecipeRepository
         }
     }
 
+    public async Task<IReadOnlyList<Recipe>> GetGlobalRecipesAsync()
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            return _recipes.Where(r => r.IsGlobal).ToList();
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    public async Task<IReadOnlyList<Recipe>> SearchGlobalRecipesAsync(string query)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return _recipes.Where(r => r.IsGlobal).ToList();
+            }
+
+            string normalized = query.Trim().ToLowerInvariant();
+            return _recipes
+                .Where(r => r.IsGlobal && (r.Title.ToLowerInvariant().Contains(normalized) ||
+                                           r.Description.ToLowerInvariant().Contains(normalized)))
+                .ToList();
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
     public async Task<Recipe?> GetByIdAsync(Guid id)
     {
         await _lock.WaitAsync();

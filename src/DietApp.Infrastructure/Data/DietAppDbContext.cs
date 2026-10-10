@@ -75,6 +75,17 @@ public class DietAppDbContext
             await _connection.CreateTableAsync<SeasoningEntity>();
             await _connection.CreateTableAsync<SeasoningItemEntity>();
             await _connection.CreateTableAsync<UserProfileEntity>();
+            await _connection.CreateTableAsync<UserRecipeFavoriteEntity>();
+
+            // Actualizar recetas existentes para asegurar soporte de IsGlobal
+            try
+            {
+                await _connection.ExecuteAsync("UPDATE Recipes SET IsGlobal = 1 WHERE Id IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')");
+            }
+            catch
+            {
+                // Columna creada automaticamente por CreateTableAsync
+            }
 
             // Validar si la tabla de perfiles de usuario esta vacia para inicializar el perfil predeterminado
             int profileCount = await _connection.Table<UserProfileEntity>().CountAsync();

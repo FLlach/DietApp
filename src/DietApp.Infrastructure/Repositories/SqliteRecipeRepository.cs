@@ -48,6 +48,68 @@ public class SqliteRecipeRepository : IRecipeRepository
         return recipes;
     }
 
+    public async Task<IReadOnlyList<Recipe>> GetGlobalRecipesAsync()
+    {
+        await _dbContext.InitializeAsync();
+
+        var recipeEntities = await _dbContext.Connection.Table<RecipeEntity>()
+            .Where(r => r.IsGlobal)
+            .OrderBy(r => r.Title)
+            .ToListAsync();
+
+        var recipes = new List<Recipe>(recipeEntities.Count);
+        foreach (var entity in recipeEntities)
+        {
+            var ingredients = await _dbContext.Connection.Table<RecipeIngredientEntity>()
+                .Where(i => i.RecipeId == entity.Id)
+                .ToListAsync();
+
+            var steps = await _dbContext.Connection.Table<RecipeStepEntity>()
+                .Where(s => s.RecipeId == entity.Id)
+                .OrderBy(s => s.StepNumber)
+                .ToListAsync();
+
+            recipes.Add(entity.ToDomain(
+                ingredients.Select(i => i.ToDomain()),
+                steps.Select(s => s.ToDomain())));
+        }
+
+        return recipes;
+    }
+
+    public async Task<IReadOnlyList<Recipe>> SearchGlobalRecipesAsync(string query)
+    {
+        await _dbContext.InitializeAsync();
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return await GetGlobalRecipesAsync();
+        }
+
+        string pattern = $"%{query.Trim()}%";
+        string sql = "SELECT * FROM Recipes WHERE IsGlobal = 1 AND (Title LIKE ? OR Description LIKE ?) ORDER BY Title ASC";
+        var recipeEntities = await _dbContext.Connection.QueryAsync<RecipeEntity>(sql, pattern, pattern);
+
+        var recipes = new List<Recipe>(recipeEntities.Count);
+        foreach (var entity in recipeEntities)
+        {
+            var ingredients = await _dbContext.Connection.Table<RecipeIngredientEntity>()
+                .Where(i => i.RecipeId == entity.Id)
+                .ToListAsync();
+
+            var steps = await _dbContext.Connection.Table<RecipeStepEntity>()
+                .Where(s => s.RecipeId == entity.Id)
+                .OrderBy(s => s.StepNumber)
+                .ToListAsync();
+
+            recipes.Add(entity.ToDomain(
+                ingredients.Select(i => i.ToDomain()),
+                steps.Select(s => s.ToDomain())));
+        }
+
+        return recipes;
+    }
+
     public async Task<Recipe?> GetByIdAsync(Guid id)
     {
         await _dbContext.InitializeAsync();
