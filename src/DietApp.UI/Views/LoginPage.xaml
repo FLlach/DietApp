@@ -10,11 +10,11 @@
              BackgroundColor="{AppThemeBinding Light={StaticResource StitchBackground}, Dark={StaticResource StitchDarkBackground}}">
 
     <!--
-    Como funciona: Pantalla de inicio de sesion (LoginPage) disenada en Stitch bajo el sistema 'Clinical Nutrition Ergonomics'.
-    Implementa soporte completo para modo claro y modo oscuro OLED, acceso con correo/PIN, registro de nuevos usuarios,
-    acceso rapido biometrico simulado (BiometricPrompt), continuacion en modo offline local y cifrado clinico.
+    Como funciona: Pantalla de inicio de sesion (LoginPage) disenada bajo el sistema 'Clinical Nutrition Ergonomics'.
+    Implementa soporte completo para modo claro y modo oscuro OLED, acceso seguro con correo electronico y contrasena,
+    registro de nuevos usuarios, visibilidad alternable de contrasena y proteccion de datos clinicos.
     Por que se tomo esta decision: Asegura fidelidad visual total con los prototipos Stitch preservando ergonomia tactil
-    de 48dp+ y adaptabilidad a telefonos y tabletas Android y Windows.
+    de 48dp+ y adaptabilidad fluida a telefonos y tabletas Android y Windows.
     -->
 
     <Grid>
@@ -148,7 +148,7 @@
                                     <Entry Grid.Column="1"
                                            Text="{Binding DisplayName}"
                                            Placeholder="Ej. María González"
-                                           PlaceholderColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
+                                           PlaceholderColor="{AppThemeBinding Light='#80505A69', Dark='#808F9BA8'}"
                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
                                            FontFamily="PlusJakartaSans"
                                            FontSize="14"
@@ -157,9 +157,9 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Campo: Correo Electronico o ID de Paciente -->
+                        <!-- Campo: Correo Electronico -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Correo electrónico o ID de Paciente"
+                            <Label Text="Correo electrónico"
                                    FontFamily="Inter"
                                    FontSize="12"
                                    FontAttributes="Bold"
@@ -173,16 +173,16 @@
                                     Padding="12,0">
                                 <Grid ColumnDefinitions="32,*">
                                     <Label Grid.Column="0"
-                                           Text="{x:Static helpers:MaterialIconFont.Badge}"
+                                           Text="{x:Static helpers:MaterialIconFont.Mail}"
                                            FontFamily="MaterialSymbols"
                                            FontSize="20"
                                            TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
                                            VerticalOptions="Center" />
                                     <Entry Grid.Column="1"
-                                           Text="{Binding EmailOrPatientId}"
+                                           Text="{Binding Email}"
                                            Keyboard="Email"
-                                           Placeholder="paciente@hospital.org o ID"
-                                           PlaceholderColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
+                                           Placeholder="ejemplo@correo.com"
+                                           PlaceholderColor="{AppThemeBinding Light='#80505A69', Dark='#808F9BA8'}"
                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
                                            FontFamily="PlusJakartaSans"
                                            FontSize="14"
@@ -191,17 +191,17 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Campo: Contraseña o PIN Clinico -->
+                        <!-- Campo: Contraseña -->
                         <VerticalStackLayout Spacing="6">
                             <Grid ColumnDefinitions="*,Auto">
                                 <Label Grid.Column="0"
-                                       Text="Contraseña o PIN Clínico"
+                                       Text="Contraseña"
                                        FontFamily="Inter"
                                        FontSize="12"
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
                                 <Label Grid.Column="1"
-                                       Text="¿Olvidaste tu PIN?"
+                                       Text="¿Olvidaste tu contraseña?"
                                        FontFamily="Inter"
                                        FontSize="11"
                                        TextColor="{AppThemeBinding Light={StaticResource StitchPrimary}, Dark={StaticResource StitchPrimaryContainer}}"
@@ -229,7 +229,7 @@
                                            Text="{Binding Password}"
                                            IsPassword="{Binding IsPasswordHidden}"
                                            Placeholder="••••••••••••"
-                                           PlaceholderColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
+                                           PlaceholderColor="{AppThemeBinding Light='#80505A69', Dark='#808F9BA8'}"
                                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
                                            FontFamily="PlusJakartaSans"
                                            FontSize="14"
@@ -257,7 +257,7 @@
                                        FontSize="12"
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                <Label Text="Cifrado biométrico seguro y almacenamiento local"
+                                <Label Text="Almacenamiento local seguro y cifrado"
                                        FontFamily="PlusJakartaSans"
                                        FontSize="11"
                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
@@ -295,114 +295,19 @@
                                 Padding="0"
                                 Margin="0,-4,0,0" />
 
-                        <!-- 3. Acceso Rapido Biometrico -->
-                        <VerticalStackLayout Spacing="10" Margin="0,8,0,0">
-                            <!-- Separador 'o accede con autenticacion rapida' -->
-                            <Grid ColumnDefinitions="*,Auto,*">
-                                <BoxView Grid.Column="0"
-                                         HeightRequest="1"
-                                         BackgroundColor="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutline}}"
-                                         VerticalOptions="Center" />
-                                <Label Grid.Column="1"
-                                       Text="  o accede con autenticación rápida  "
-                                       FontFamily="Inter"
-                                       FontSize="10"
-                                       TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
-                                       VerticalOptions="Center" />
-                                <BoxView Grid.Column="2"
-                                         HeightRequest="1"
-                                         BackgroundColor="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutline}}"
-                                         VerticalOptions="Center" />
-                            </Grid>
-
-                            <!-- Boton Biometrico Grande -->
-                            <Border StrokeShape="RoundRectangle 14"
-                                    HeightRequest="56"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
-                                    Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutline}}"
-                                    StrokeThickness="1"
-                                    Padding="12,6">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenBiometricModalCommand}" />
-                                </Border.GestureRecognizers>
-                                <Grid ColumnDefinitions="44,*" VerticalOptions="Center">
-                                    <Border Grid.Column="0"
-                                            WidthRequest="36"
-                                            HeightRequest="36"
-                                            StrokeShape="RoundRectangle 10"
-                                            BackgroundColor="{StaticResource StitchPrimaryContainer}"
-                                            Opacity="0.85"
-                                            Stroke="Transparent"
-                                            HorizontalOptions="Start">
-                                        <Label Text="{x:Static helpers:MaterialIconFont.Fingerprint}"
-                                               FontFamily="MaterialSymbols"
-                                               FontSize="22"
-                                               TextColor="#0F172A"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center" />
-                                    </Border>
-                                    <VerticalStackLayout Grid.Column="1"
-                                                         Spacing="1"
-                                                         VerticalOptions="Center"
-                                                         Margin="8,0,0,0">
-                                        <Label Text="Acceso Biométrico Rápido"
-                                               FontFamily="Inter"
-                                               FontSize="13"
-                                               FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                                        <Label Text="BiometricPrompt • Huella o Reconocimiento Facial"
-                                               FontFamily="PlusJakartaSans"
-                                               FontSize="10"
-                                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
-                                    </VerticalStackLayout>
-                                </Grid>
-                            </Border>
-                        </VerticalStackLayout>
-
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- 4. Modo Invitado / Exploracion Offline -->
-                <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,4,0,0">
-                    <Border StrokeShape="RoundRectangle 999"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
-                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutline}}"
-                            StrokeThickness="1"
-                            Padding="16,10">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ContinueOfflineCommand}" />
-                        </Border.GestureRecognizers>
-                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                            <Label Text="{x:Static helpers:MaterialIconFont.WifiOff}"
-                                   FontFamily="MaterialSymbols"
-                                   FontSize="18"
-                                   TextColor="{StaticResource StitchPrimary}"
-                                   VerticalOptions="Center" />
-                            <Label Text="Continuar en Modo Offline (Solo Consulta Local)"
-                                   FontFamily="Inter"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
-                                   VerticalOptions="Center" />
-                        </HorizontalStackLayout>
-                    </Border>
-                    <Label Text="Acceso seguro a tablas de alimentos KDOQI sin conexión"
-                           FontFamily="PlusJakartaSans"
-                           FontSize="10"
-                           TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-
-                <!-- 5. Pie de Pantalla / Privacidad y Cifrado Clinico -->
+                <!-- 3. Pie de Pantalla / Privacidad y Cifrado Clinico -->
                 <HorizontalStackLayout Spacing="6"
                                        HorizontalOptions="Center"
-                                       Margin="0,8,0,0">
+                                       Margin="0,12,0,0">
                     <Label Text="{x:Static helpers:MaterialIconFont.VerifiedUser}"
                            FontFamily="MaterialSymbols"
                            FontSize="16"
                            TextColor="{StaticResource StitchPrimary}"
                            VerticalOptions="Center" />
-                    <Label Text="Datos cifrados localmente bajo estándares de privacidad médica"
+                    <Label Text="Datos cifrados bajo estándares de privacidad médica"
                            FontFamily="PlusJakartaSans"
                            FontSize="10"
                            TextColor="{AppThemeBinding Light={StaticResource StitchOutline}, Dark={StaticResource StitchDarkOutline}}"
@@ -411,129 +316,6 @@
 
             </VerticalStackLayout>
         </ScrollView>
-
-        <!-- 6. Modal Bottom Sheet Simulador Biometrico -->
-        <Grid IsVisible="{Binding IsBiometricModalVisible}"
-              BackgroundColor="#80000000"
-              VerticalOptions="Fill"
-              HorizontalOptions="Fill">
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding CloseBiometricModalCommand}" />
-            </Grid.GestureRecognizers>
-
-            <Border StrokeShape="RoundRectangle 24 24 0 0"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLowest}, Dark={StaticResource StitchDarkSurfaceLowest}}"
-                    Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutline}}"
-                    StrokeThickness="1"
-                    VerticalOptions="End"
-                    Padding="24,18,24,28"
-                    MaximumWidthRequest="460">
-                <Border.GestureRecognizers>
-                    <!-- Bloquear propagacion de tap para no cerrar al tocar dentro -->
-                    <TapGestureRecognizer />
-                </Border.GestureRecognizers>
-
-                <VerticalStackLayout Spacing="16">
-                    <!-- Asa superior del Bottom Sheet -->
-                    <BoxView WidthRequest="48"
-                             HeightRequest="4"
-                             CornerRadius="2"
-                             BackgroundColor="{AppThemeBinding Light={StaticResource StitchOutlineVariant}, Dark={StaticResource StitchDarkOutline}}"
-                             HorizontalOptions="Center" />
-
-                    <!-- Cabecera del Modal -->
-                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                        <Border WidthRequest="44"
-                                HeightRequest="44"
-                                StrokeShape="RoundRectangle 12"
-                                BackgroundColor="{StaticResource StitchPrimaryContainer}"
-                                Opacity="0.9">
-                            <Label Text="{x:Static helpers:MaterialIconFont.Fingerprint}"
-                                   FontFamily="MaterialSymbols"
-                                   FontSize="26"
-                                   TextColor="#0F172A"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
-                        </Border>
-                        <VerticalStackLayout Spacing="1" VerticalOptions="Center">
-                            <Label Text="Autenticación Biométrica"
-                                   FontFamily="PlusJakartaSans"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                            <Label Text="DietApp para .NET MAUI Android"
-                                   FontFamily="PlusJakartaSans"
-                                   FontSize="12"
-                                   TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-
-                    <!-- Mensaje explicativo -->
-                    <Border StrokeShape="RoundRectangle 12"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
-                            Stroke="{AppThemeBinding Light={StaticResource StitchOutlineVariantSoft}, Dark={StaticResource StitchDarkOutline}}"
-                            StrokeThickness="1"
-                            Padding="12,10">
-                        <Label Text="Confirma tu identidad usando el sensor de huella dactilar para desencriptar tu base de datos clínica."
-                               FontFamily="PlusJakartaSans"
-                               FontSize="12"
-                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}"
-                               LineBreakMode="WordWrap" />
-                    </Border>
-
-                    <!-- Sensor interactivo simulado -->
-                    <Border WidthRequest="72"
-                            HeightRequest="72"
-                            StrokeShape="RoundRectangle 36"
-                            Stroke="{StaticResource StitchPrimaryContainer}"
-                            StrokeThickness="2"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
-                            HorizontalOptions="Center"
-                            Margin="0,8">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ConfirmBiometricCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static helpers:MaterialIconFont.TouchApp}"
-                               FontFamily="MaterialSymbols"
-                               FontSize="36"
-                               TextColor="{StaticResource StitchPrimaryContainer}"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center" />
-                    </Border>
-
-                    <Label Text="Toca el sensor para autenticarte"
-                           FontFamily="Inter"
-                           FontSize="12"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource StitchPrimary}"
-                           HorizontalOptions="Center" />
-
-                    <!-- Botones de accion del Modal -->
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
-                        <Button Grid.Column="0"
-                                Text="Cancelar"
-                                FontFamily="Inter"
-                                FontSize="13"
-                                HeightRequest="46"
-                                CornerRadius="12"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource StitchSurfaceContainerLow}, Dark={StaticResource StitchDarkSurfaceContainerLow}}"
-                                TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}"
-                                Command="{Binding CloseBiometricModalCommand}" />
-
-                        <Button Grid.Column="1"
-                                Text="Confirmar Huella"
-                                FontFamily="Inter"
-                                FontSize="13"
-                                FontAttributes="Bold"
-                                HeightRequest="46"
-                                CornerRadius="12"
-                                BackgroundColor="{StaticResource StitchPrimaryContainer}"
-                                TextColor="#0F172A"
-                                Command="{Binding ConfirmBiometricCommand}" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
-        </Grid>
     </Grid>
 
 </ContentPage>

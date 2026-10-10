@@ -117,4 +117,6 @@ public static class MaterialIconFont
     public const string Login = "\uea77";
     public const string Logout = "\ue9ba";
     public const string TouchApp = "\ue913";
+    public const string Mail = "\ue158";
+    public const string AlternateEmail = "\ue0e6";
 }

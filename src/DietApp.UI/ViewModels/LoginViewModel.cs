@@ -8,10 +8,9 @@ using DietApp.UI.Localization;
 namespace DietApp.UI.ViewModels;
 
 /// <summary>
-/// Como funciona: ViewModel para la pantalla de Inicio de Sesion (LoginPage) segun prototipo Stitch.
-/// Gestiona la captura del correo o ID de paciente, contrasena o PIN clinico, alternancia de visibilidad de contrasena,
-/// modo de registro vs login, simulacion de autenticacion biometrica (Android BiometricPrompt),
-/// continuacion en modo offline y retroalimentacion de errores clinicos.
+/// Como funciona: ViewModel para la pantalla de Inicio de Sesion (LoginPage).
+/// Gestiona la captura de correo electronico y contrasena, alternancia de visibilidad de contrasena,
+/// modo de registro vs login y retroalimentacion de errores clinicos.
 /// Por que se tomo esta decision: Orquesta el flujo de autenticacion mediante IAuthService desacoplando la UI
 /// de los detalles de red y permitiendo navegacion fluida con AppShell.
 /// </summary>
@@ -22,7 +21,13 @@ public partial class LoginViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
 
     [ObservableProperty]
-    private string _emailOrPatientId = "renaldiet.kdoqi@clinic.org";
+    private string _email = string.Empty;
+
+    public string EmailOrPatientId
+    {
+        get => Email;
+        set => Email = value;
+    }
 
     [ObservableProperty]
     private string _password = string.Empty;
@@ -47,9 +52,6 @@ public partial class LoginViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _hasError = false;
-
-    [ObservableProperty]
-    private bool _isBiometricModalVisible = false;
 
     public string PasswordToggleIcon => IsPasswordHidden
         ? MaterialIconFont.Visibility
@@ -106,17 +108,17 @@ public partial class LoginViewModel : ObservableObject
         HasError = false;
         ErrorMessage = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(EmailOrPatientId))
+        if (string.IsNullOrWhiteSpace(Email))
         {
             HasError = true;
-            ErrorMessage = "Ingresa tu correo electrónico o ID de paciente.";
+            ErrorMessage = "Ingresa tu correo electrónico.";
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Password))
         {
             HasError = true;
-            ErrorMessage = "Ingresa tu contraseña o PIN clínico.";
+            ErrorMessage = "Ingresa tu contraseña.";
             return;
         }
 
@@ -125,7 +127,7 @@ public partial class LoginViewModel : ObservableObject
         {
             if (IsSignUpMode)
             {
-                var signUpResult = await _authService.SignUpWithEmailAsync(EmailOrPatientId, Password, DisplayName);
+                var signUpResult = await _authService.SignUpWithEmailAsync(Email, Password, DisplayName);
                 if (signUpResult.Success && signUpResult.Session != null)
                 {
                     await _userProfileService.GetCurrentProfileAsync();
@@ -139,7 +141,7 @@ public partial class LoginViewModel : ObservableObject
             }
             else
             {
-                var loginResult = await _authService.SignInWithEmailAsync(EmailOrPatientId, Password, RememberSession);
+                var loginResult = await _authService.SignInWithEmailAsync(Email, Password, RememberSession);
                 if (loginResult.Success && loginResult.Session != null)
                 {
                     await _userProfileService.GetCurrentProfileAsync();
@@ -164,66 +166,13 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenBiometricModal()
-    {
-        IsBiometricModalVisible = true;
-    }
-
-    [RelayCommand]
-    private void CloseBiometricModal()
-    {
-        IsBiometricModalVisible = false;
-    }
-
-    [RelayCommand]
-    private async Task ConfirmBiometricAsync()
-    {
-        IsBiometricModalVisible = false;
-        IsBusy = true;
-        try
-        {
-            var result = await _authService.SignInBiometricAsync();
-            if (result.Success)
-            {
-                await _userProfileService.GetCurrentProfileAsync();
-                await NavigateToMainAppAsync();
-            }
-            else
-            {
-                HasError = true;
-                ErrorMessage = "Autenticación biométrica no completada.";
-            }
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task ContinueOfflineAsync()
-    {
-        IsBusy = true;
-        try
-        {
-            await _authService.SignInOfflineAsync();
-            await _userProfileService.GetCurrentProfileAsync();
-            await NavigateToMainAppAsync();
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
     private async Task ForgotPasswordAsync()
     {
         if (Shell.Current != null)
         {
             await Shell.Current.DisplayAlertAsync(
-                "Recuperación de Acceso",
-                "Para restablecer tu contraseña o PIN clínico, contacta a tu especialista en nutrición o revisa el correo de verificación enviado por Supabase.",
+                "Recuperación de Contraseña",
+                "Para restablecer tu contraseña, contacta a tu especialista en nutrición o revisa el correo de verificación enviado por Supabase.",
                 "Entendido");
         }
     }
