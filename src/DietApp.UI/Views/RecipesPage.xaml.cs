@@ -22,6 +22,13 @@ public partial class RecipesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.InitializeAsync();
+        try
+        {
+            await _viewModel.InitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[RecipesPage] Error en OnAppearing: {ex}");
+        }
     }
 }

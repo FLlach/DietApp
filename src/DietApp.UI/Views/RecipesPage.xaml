@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:DietApp.UI.Models"
              xmlns:helpers="clr-namespace:DietApp.UI.Helpers"
              x:Class="DietApp.UI.Views.RecipesPage"
+             x:Name="ThisPage"
              x:DataType="vm:RecipesViewModel"
              Title="Recetas"
              Shell.NavBarIsVisible="False"
@@ -473,7 +474,7 @@
                                                        TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
                                                 <Button Grid.Column="1"
                                                         Text="{Binding BookmarkGlyph}"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecipesViewModel}}, Path=ToggleFavoriteCommand}"
+                                                        Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.ToggleFavoriteCommand}"
                                                         CommandParameter="{Binding .}"
                                                         FontFamily="MaterialSymbols"
                                                         FontSize="20"
@@ -491,7 +492,7 @@
                                                 <Border StrokeShape="RoundRectangle 9999"
                                                         Stroke="{Binding ClinicalStatusBorderColor}"
                                                         StrokeThickness="1"
-                                                        Background="{Binding ClinicalStatusBackground}"
+                                                        BackgroundColor="{Binding ClinicalStatusBackground}"
                                                         Padding="10, 4">
                                                     <Label Text="{Binding ClinicalStatusBadge}"
                                                            FontFamily="Inter"
@@ -502,7 +503,7 @@
 
                                                 <Border StrokeShape="RoundRectangle 9999"
                                                         StrokeThickness="0"
-                                                        Background="{Binding OriginBadgeBackground}"
+                                                        BackgroundColor="{Binding OriginBadgeBackground}"
                                                         Padding="10, 4">
                                                     <Label Text="{Binding OriginBadge}"
                                                            FontFamily="Inter"
@@ -528,7 +529,7 @@
                                                             <Border StrokeShape="RoundRectangle 8"
                                                                     Stroke="{Binding BorderColor}"
                                                                     StrokeThickness="1"
-                                                                    Background="{Binding BackgroundColor}"
+                                                                    BackgroundColor="{Binding BackgroundColor}"
                                                                     Padding="8, 4"
                                                                     Margin="0, 0, 0, 6"
                                                                     FlexLayout.Basis="48%">
@@ -565,7 +566,7 @@
 
                                                 <Button Grid.Column="1"
                                                         Text="Detalles Clínicos"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecipesViewModel}}, Path=NavigateToRecipeDetailCommand}"
+                                                        Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.NavigateToRecipeDetailCommand}"
                                                         CommandParameter="{Binding Id}"
                                                         FontFamily="Inter"
                                                         FontSize="12"

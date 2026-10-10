@@ -113,6 +113,25 @@ public partial class RecipesViewModel : ObservableObject
 
             ApplyFilterAndSort();
         }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[RecipesViewModel] Error cargando recetas: {ex}");
+            try
+            {
+                // Fallback seguro a recetas locales
+                var localList = await _recipeService.GetAllRecipesAsync();
+                _allRecipes = localList.ToList();
+                ApplyFilterAndSort();
+            }
+            catch (Exception fallbackEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RecipesViewModel] Fallback local falló: {fallbackEx}");
+                _allRecipes = new List<RecipeDto>();
+                Recipes.Clear();
+                CatalogSummaryText = "Catálogo Dosificado (0 preparaciones)";
+                HasRecipes = false;
+            }
+        }
         finally
         {
             IsBusy = false;
@@ -143,6 +162,10 @@ public partial class RecipesViewModel : ObservableObject
 
                 ApplyFilterAndSort();
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RecipesViewModel] Error buscando recetas globales: {ex}");
+            }
             finally
             {
                 IsBusy = false;
@@ -165,23 +188,30 @@ public partial class RecipesViewModel : ObservableObject
     {
         if (card == null) return;
 
-        var profile = await _userProfileService.GetCurrentProfileAsync();
-        string userId = profile?.UserId ?? "local_user";
-
-        bool isFav = await _recipeService.ToggleFavoriteAsync(userId, card.Id);
-        card.IsFavorite = isFav;
-
-        var match = _allRecipes.FirstOrDefault(r => r.Id == card.Id);
-        if (match != null)
+        try
         {
-            match.IsFavorite = isFav;
+            var profile = await _userProfileService.GetCurrentProfileAsync();
+            string userId = profile?.UserId ?? "local_user";
+
+            bool isFav = await _recipeService.ToggleFavoriteAsync(userId, card.Id);
+            card.IsFavorite = isFav;
+
+            var match = _allRecipes.FirstOrDefault(r => r.Id == card.Id);
+            if (match != null)
+            {
+                match.IsFavorite = isFav;
+            }
+
+            if (SelectedFilterChip == "Favoritos" && !isFav)
+            {
+                Recipes.Remove(card);
+                CatalogSummaryText = $"Catálogo Dosificado ({Recipes.Count} preparaciones)";
+                HasRecipes = Recipes.Count > 0;
+            }
         }
-
-        if (SelectedFilterChip == "Favoritos" && !isFav)
+        catch (Exception ex)
         {
-            Recipes.Remove(card);
-            CatalogSummaryText = $"Catálogo Dosificado ({Recipes.Count} preparaciones)";
-            HasRecipes = Recipes.Count > 0;
+            System.Diagnostics.Debug.WriteLine($"[RecipesViewModel] Error alternando favorito: {ex}");
         }
     }
 
