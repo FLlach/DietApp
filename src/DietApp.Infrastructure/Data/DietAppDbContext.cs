@@ -230,42 +230,11 @@ public class DietAppDbContext
                 }
             }
 
-            // Validar si la tabla de recetas esta vacia para precargar recetas de ejemplo
-            int recipeCount = await _connection.Table<RecipeEntity>().CountAsync();
-            if (recipeCount == 0)
-            {
-                var foods = await _connection.Table<FoodEntity>().Take(50).ToListAsync();
-                var domainFoods = foods.Select(f => f.ToDomain()).ToList();
-                var seedRecipes = InitialRecipeSeed.GetPreloadedRecipes(domainFoods);
-
-                foreach (var recipe in seedRecipes)
-                {
-                    await _connection.InsertAsync(RecipeEntity.FromDomain(recipe));
-
-                    foreach (var ing in recipe.Ingredients)
-                    {
-                        await _connection.InsertAsync(RecipeIngredientEntity.FromDomain(recipe.Id, ing));
-                    }
-
-                    foreach (var step in recipe.Steps)
-                    {
-                        await _connection.InsertAsync(RecipeStepEntity.FromDomain(recipe.Id, step));
-                    }
-                }
-            }
-            else
-            {
-                // Sincronizar fotografias reales en recetas existentes para descartar placeholders genericos
-                int placeholderImages = await _connection.Table<RecipeEntity>().Where(r => r.FinalImagePath == "dotnet_bot.png").CountAsync();
-                if (placeholderImages > 0)
-                {
-                    await _connection.ExecuteAsync("UPDATE Recipes SET FinalImagePath = 'recipe_hero_dish.jpg', Title = 'Receta ABCDE' WHERE Id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'");
-                    await _connection.ExecuteAsync("UPDATE Recipes SET FinalImagePath = 'recipe_hero_dish.jpg' WHERE FinalImagePath = 'dotnet_bot.png'");
-                    await _connection.ExecuteAsync("UPDATE RecipeSteps SET ImagePath = 'food_potatoes.jpg' WHERE StepNumber = 1 AND ImagePath = 'dotnet_bot.png'");
-                    await _connection.ExecuteAsync("UPDATE RecipeSteps SET ImagePath = 'food_chicken.jpg' WHERE StepNumber = 2 AND ImagePath = 'dotnet_bot.png'");
-                    await _connection.ExecuteAsync("UPDATE RecipeSteps SET ImagePath = 'recipe_hero_dish.jpg' WHERE StepNumber = 3 AND ImagePath = 'dotnet_bot.png'");
-                }
-            }
+            // Purgar recetas de prueba preexistentes para mantener el catalogo limpio
+            await _connection.ExecuteAsync("DELETE FROM RecipeIngredients WHERE RecipeId IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'dddddddd-dddd-dddd-dddd-dddddddddddd')");
+            await _connection.ExecuteAsync("DELETE FROM RecipeSteps WHERE RecipeId IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'dddddddd-dddd-dddd-dddd-dddddddddddd')");
+            await _connection.ExecuteAsync("DELETE FROM UserRecipeFavorites WHERE RecipeId IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'dddddddd-dddd-dddd-dddd-dddddddddddd')");
+            await _connection.ExecuteAsync("DELETE FROM Recipes WHERE Id IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'dddddddd-dddd-dddd-dddd-dddddddddddd') OR Title IN ('Receta ABCDE', 'Receta ABCD', 'Ensalada Vital Mediterranea', 'Bowl Calido Energetico', 'Crema Suave de Calabacín Renal', 'Salmón Pochado con Eneldo Fresco')");
 
             // Validar si la tabla de alinos esta vacia para precargar alinos de ejemplo
             int seasoningCount = await _connection.Table<SeasoningEntity>().CountAsync();
