@@ -367,7 +367,7 @@ adb shell monkey -p com.companyname.dietapp -c android.intent.category.LAUNCHER 
 ### 10.2. Vista A: Ficha de Detalle de Receta (`RecipeDetailPage`)
 * **Hero Visual y Overlay**:
   * Contenedor superior con imagen culinaria real (`recipe_hero_dish.jpg`) de 260dp de altura.
-  * Boton circular translucido flotante en la esquina superior izquierda (48dp x 48dp, radio 24dp) con icono de cierre ('✕') que ejecuta `CloseCommand` para retornar (`Shell.Current.GoToAsync("..")`).
+  * Boton circular translucido flotante en la esquina superior izquierda (48dp x 48dp, radio 24dp) con icono de cierre ('X') que ejecuta `CloseCommand` para retornar (`Shell.Current.GoToAsync("..")`).
   * Barra inferior flotante oscura superpuesta sobre el borde de la fotografia con el titulo de la receta y badge energetico en verde lima clinico (`#84cc16`).
 * **Pildoras de Minerales Criticos**:
   * Fila horizontal que resalta el balance clinico con pastillas nutricionales (`Sodio` en azul cobalto `#2563eb`, `Potasio` en naranja coral `#ef713f`, `Fosforo` en amatista `#8b5cf6`).
@@ -469,4 +469,63 @@ Para ambas metas (proteina y calorias) se sigue el mismo patron de diseno para m
      * Las propiedades se actualizan reactivamente al dispararse los eventos `CalorieGoalChanged` y `ProteinGoalChanged`.
    * **Compositor de Comidas (`AddMealViewModel`)**:
      * Inyecta `ICalorieGoalService` e `IProteinGoalService`.
-     * `RecalculateProjections()` calcula la cobertura proyectada de calorias y proteinas sobre las metas configuradas por el usuario, evitando valores hardcodeados.
+     * `RecalculateProjections()` calcula la cobertura proyectada de calorias y proteinas sobre las metas configuradas por el usuario, evitando valores hardcodeados.
+
+
+---
+
+## 13. Catalogo de Recetas Globales y Sistema de Favoritos por Perfil
+
+### 13.1. Requerimiento y Arquitectura
+Permite descubrir recetas comunitarias y clinicas publicadas globalmente en la nube (Supabase PostgreSQL) y marcarlas como favoritas de forma personalizada para cada perfil de usuario (UserId), manteniendo operacion ininterrumpida sin conexion a red (Offline-First).
+
+### 13.2. Capa de Dominio (DietApp.Domain)
+* Entities/UserRecipeFavorite.cs: Entidad inmutable que vincula UserId (identificador del perfil) con RecipeId (identificador de la receta) y marca temporal CreatedAt.
+* Entities/Recipe.cs: Incorpora la propiedad IsGlobal para distinguir entre preparaciones publicas comunitarias y recetas personales privadas del usuario.
+* Repositories/IRecipeFavoriteRepository.cs: Contrato de dominio que define:
+  * Task<bool> IsFavoriteAsync(string userId, Guid recipeId)
+  * Task AddFavoriteAsync(string userId, Guid recipeId)
+  * Task RemoveFavoriteAsync(string userId, Guid recipeId)
+  * Task<IReadOnlyList<Guid>> GetFavoriteRecipeIdsAsync(string userId)
+* Repositories/IRecipeRepository.cs: Incorpora GetGlobalRecipesAsync() y SearchGlobalRecipesAsync(string query).
+
+### 13.3. Capa de Aplicacion (DietApp.Application)
+* DTOs/RecipeDto.cs: Expone las banderas booleanas IsGlobal e IsFavorite.
+* Services/IRecipeService.cs y RecipeService.cs: Inyecta IRecipeFavoriteRepository y orquesta:
+  * GetGlobalRecipesAsync(): Recupera recetas comunitarias globales de la nube.
+  * SearchGlobalRecipesAsync(string query): Filtro por texto y terminos clinicos en recetas globales.
+  * GetFavoriteRecipesAsync(string userId): Obtiene el conjunto de recetas marcadas como favoritas por el usuario activo.
+  * IsFavoriteAsync(string userId, Guid recipeId): Consulta el estado actual de favorito.
+  * ToggleFavoriteAsync(string userId, Guid recipeId): Conmuta de forma atomica el estado de favorito, anadiendo o removiendo el registro segun corresponda.
+
+### 13.4. Capa de Infraestructura (DietApp.Infrastructure)
+* Base de Datos SQLite:
+  * UserRecipeFavoriteEntity.cs: Tabla relacional UserRecipeFavorites con indices compuestos sobre UserId y RecipeId.
+  * RecipeEntity.cs: Columna indexada IsGlobal para particionado eficiente de consultas.
+  * SqliteRecipeFavoriteRepository.cs: Implementacion local con consultas directas en SQLite.
+  * SqliteRecipeRepository.cs: Filtros locales por IsGlobal.
+* Persistencia en la Nube (Supabase PostgreSQL):
+  * Tabla public.user_recipe_favorites con clave foranea a auth.users(id) y public.recipes(id), restriccion unica uq_user_recipe_favorites(user_id, recipe_id) y politicas de seguridad RLS (favorites_select_own, favorites_insert_own, favorites_delete_own).
+  * Columna is_global BOOLEAN NOT NULL DEFAULT TRUE con indice B-Tree idx_recipes_is_global en public.recipes.
+  * SupabaseRecipeFavoriteModel.cs: Modelo PostgREST para la sincronizacion de favoritos.
+  * SupabaseRecipeModel.cs: Mapeo de la columna is_global.
+  * SupabaseRecipeRepository.cs: Repositorio hibrido que consulta recetas globales de Supabase y las almacena en la cache local de SQLite.
+  * SupabaseRecipeFavoriteRepository.cs: Repositorio hibrido con soporte Offline-First: persiste de forma instantanea en SQLite y sincroniza en segundo plano con Supabase si el usuario se encuentra autenticado.
+
+### 13.5. Capa de Presentacion (DietApp.UI)
+* RecipeCardDisplayModel.cs: Modelo de presentacion reactivo que deriva de ObservableObject, exponiendo IsFavorite, IsGlobal, OriginBadge (Global / Personal), BookmarkGlyph y colores dinamicos.
+* RecipesViewModel.cs:
+  * Inyecta IUserProfileService para identificar el perfil activo.
+  * Filtros rapidos ampliados mediante chips: Todos, Globales, Favoritos, Mis Recetas, Bajo en Potasio, etc.
+  * Comando reactivo ToggleFavoriteCommand que conmuta la estrella/marcador al vuelo sin recargar la lista completa.
+* RecipeDetailViewModel.cs:
+  * Inyecta IUserProfileService.
+  * Verifica el estado de favorito al cargar la ficha y expone ToggleBookmarkCommand para agregar o quitar de favoritos con notificacion visual al usuario.
+  * Muestra el badge de origen (Global / Personal).
+* RecipesPage.xaml:
+  * Chips de filtrado interactivo para Globales, Favoritos y Mis Recetas.
+  * Boton de favorito en cada tarjeta enlazado a BookmarkGlyph y BookmarkColor.
+  * Badge visual de origen de la receta.
+* RecipeDetailPage.xaml:
+  * Boton flotante de guardado en el hero superior enlazado dinamicamente a BookmarkGlyph y BookmarkTextColor.
+  * Badge de origen de la receta integrado en la cabecera.

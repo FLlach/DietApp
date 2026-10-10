@@ -165,10 +165,26 @@ CREATE TABLE IF NOT EXISTS public.recipes (
     description TEXT NOT NULL DEFAULT '',
     servings INTEGER NOT NULL DEFAULT 1,
     final_image_path TEXT NOT NULL DEFAULT '',
+    is_global BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_recipes_user_id ON public.recipes(user_id);
+CREATE INDEX IF NOT EXISTS idx_recipes_is_global ON public.recipes(is_global);
+
+-- -----------------------------------------------------------------------------
+-- 6.1 Tabla: user_recipe_favorites (Favoritos de recetas por perfil de usuario)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.user_recipe_favorites (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    recipe_id UUID NOT NULL REFERENCES public.recipes(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_user_recipe_favorites UNIQUE (user_id, recipe_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_recipe_favorites_user_id ON public.user_recipe_favorites(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_recipe_favorites_recipe_id ON public.user_recipe_favorites(recipe_id);
 
 -- -----------------------------------------------------------------------------
 -- 7. Tabla: recipe_ingredients (Ingredientes de las recetas)
@@ -237,6 +253,7 @@ ALTER TABLE public.food_portions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.meals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.meal_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recipes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_recipe_favorites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recipe_ingredients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recipe_steps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.seasonings ENABLE ROW LEVEL SECURITY;
@@ -354,10 +371,10 @@ CREATE POLICY "meal_items_delete_own" ON public.meal_items
         )
     );
 
--- Politicas para recipes, recipe_ingredients y recipe_steps
+-- Politicas para recipes, user_recipe_favorites, recipe_ingredients y recipe_steps
 CREATE POLICY "recipes_select_public_or_own" ON public.recipes
     FOR SELECT TO anon, authenticated
-    USING (user_id IS NULL OR (select auth.uid()) = user_id);
+    USING (is_global = true OR user_id IS NULL OR (select auth.uid()) = user_id);
 
 CREATE POLICY "recipes_insert_own" ON public.recipes
     FOR INSERT TO authenticated
@@ -369,6 +386,18 @@ CREATE POLICY "recipes_update_own" ON public.recipes
     WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "recipes_delete_own" ON public.recipes
+    FOR DELETE TO authenticated
+    USING ((select auth.uid()) = user_id);
+
+CREATE POLICY "favorites_select_own" ON public.user_recipe_favorites
+    FOR SELECT TO authenticated
+    USING ((select auth.uid()) = user_id);
+
+CREATE POLICY "favorites_insert_own" ON public.user_recipe_favorites
+    FOR INSERT TO authenticated
+    WITH CHECK ((select auth.uid()) = user_id);
+
+CREATE POLICY "favorites_delete_own" ON public.user_recipe_favorites
     FOR DELETE TO authenticated
     USING ((select auth.uid()) = user_id);
 
