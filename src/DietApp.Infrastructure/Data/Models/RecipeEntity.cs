@@ -31,10 +31,10 @@ public class RecipeEntity
     {
         return new Recipe(
             Id,
-            Title,
-            Description,
-            Servings,
-            FinalImagePath,
+            string.IsNullOrWhiteSpace(Title) ? "Receta sin título" : Title,
+            Description ?? string.Empty,
+            Servings <= 0 ? 1 : Servings,
+            FinalImagePath ?? string.Empty,
             ingredients,
             steps,
             IsGlobal);

@@ -38,10 +38,10 @@ public class SupabaseRecipeModel : BaseModel
         Guid.TryParse(Id, out var parsedId);
         return new Recipe(
             parsedId == Guid.Empty ? Guid.NewGuid() : parsedId,
-            Title,
-            Description,
-            Servings,
-            FinalImagePath,
+            string.IsNullOrWhiteSpace(Title) ? "Receta global" : Title,
+            Description ?? string.Empty,
+            Servings <= 0 ? 1 : Servings,
+            FinalImagePath ?? string.Empty,
             ingredients,
             steps,
             IsGlobal);

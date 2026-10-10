@@ -49,8 +49,8 @@ public class SupabaseRecipeIngredientModel : BaseModel
         return new RecipeIngredient(
             parsedId == Guid.Empty ? Guid.NewGuid() : parsedId,
             parsedFoodId,
-            FoodName,
-            Grams,
+            string.IsNullOrWhiteSpace(FoodName) ? "Ingrediente" : FoodName,
+            Grams <= 0 ? 1.0 : Grams,
             CalculatedCalories,
             minerals,
             CalculatedProtein);

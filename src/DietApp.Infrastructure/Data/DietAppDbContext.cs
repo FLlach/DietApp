@@ -77,15 +77,8 @@ public class DietAppDbContext
             await _connection.CreateTableAsync<UserProfileEntity>();
             await _connection.CreateTableAsync<UserRecipeFavoriteEntity>();
 
-            // Actualizar recetas existentes para asegurar soporte de IsGlobal
-            try
-            {
-                await _connection.ExecuteAsync("UPDATE Recipes SET IsGlobal = 1 WHERE Id IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')");
-            }
-            catch
-            {
-                // Columna creada automaticamente por CreateTableAsync
-            }
+            // Aplicar migraciones incrementales de esquema para bases de datos existentes
+            await ApplySchemaMigrationsAsync();
 
             // Validar si la tabla de perfiles de usuario esta vacia para inicializar el perfil predeterminado
             int profileCount = await _connection.Table<UserProfileEntity>().CountAsync();
@@ -300,4 +293,70 @@ public class DietAppDbContext
             _initializationLock.Release();
         }
     }
+
+    /// <summary>
+    /// Como funciona: Aplica migraciones DDL con ALTER TABLE para anadir columnas requeridas
+    /// por nuevas versiones del modelo sin destruir datos locales existentes.
+    /// Por que se tomo esta decision: SQLite-net CreateTableAsync omite la creacion de nuevas
+    /// columnas en tablas existentes, causando SQLiteException al consultar entidades con nuevas propiedades.
+    /// </summary>
+    private async Task ApplySchemaMigrationsAsync()
+    {
+        // 1. Recipes.IsGlobal
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE Recipes ADD COLUMN IsGlobal INTEGER NOT NULL DEFAULT 0");
+        }
+        catch { }
+
+        // 2. Foods.ProteinGrams
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE Foods ADD COLUMN ProteinGrams REAL NOT NULL DEFAULT 0");
+        }
+        catch { }
+
+        // 3. Foods.Barcode
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE Foods ADD COLUMN Barcode TEXT");
+        }
+        catch { }
+
+        // 4. MealItems.CalculatedCalories
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE MealItems ADD COLUMN CalculatedCalories REAL NOT NULL DEFAULT 0");
+        }
+        catch { }
+
+        // 5. MealItems.CalculatedProtein
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE MealItems ADD COLUMN CalculatedProtein REAL NOT NULL DEFAULT 0");
+        }
+        catch { }
+
+        // 6. RecipeIngredients.CalculatedCalories
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE RecipeIngredients ADD COLUMN CalculatedCalories REAL NOT NULL DEFAULT 0");
+        }
+        catch { }
+
+        // 7. RecipeIngredients.CalculatedProtein
+        try
+        {
+            await _connection.ExecuteAsync("ALTER TABLE RecipeIngredients ADD COLUMN CalculatedProtein REAL NOT NULL DEFAULT 0");
+        }
+        catch { }
+
+        // 8. Actualizar recetas semilla para marcar IsGlobal = 1
+        try
+        {
+            await _connection.ExecuteAsync("UPDATE Recipes SET IsGlobal = 1 WHERE Id IN ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')");
+        }
+        catch { }
+    }
 }
+

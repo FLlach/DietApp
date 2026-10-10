@@ -26,7 +26,10 @@ public class RecipeStepEntity
 
     public RecipeStep ToDomain()
     {
-        return new RecipeStep(StepNumber, Instruction, ImagePath);
+        return new RecipeStep(
+            StepNumber <= 0 ? 1 : StepNumber,
+            string.IsNullOrWhiteSpace(Instruction) ? "Paso de preparación" : Instruction,
+            ImagePath ?? string.Empty);
     }
 
     public static RecipeStepEntity FromDomain(Guid recipeId, RecipeStep step)

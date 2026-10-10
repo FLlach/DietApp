@@ -108,8 +108,15 @@ public class SupabaseRecipeRepository : IRecipeRepository
                         {
                             var domainRecipe = model.ToDomain(Enumerable.Empty<RecipeIngredient>(), Enumerable.Empty<RecipeStep>());
                             recipeDict[recipeId] = domainRecipe;
-                            // Cachear en SQLite local
-                            await _localRepository.SaveAsync(domainRecipe);
+                            try
+                            {
+                                // Cachear en SQLite local
+                                await _localRepository.SaveAsync(domainRecipe);
+                            }
+                            catch
+                            {
+                                // Si la persistencia local falla, conservar en memoria sin interrumpir la lista
+                            }
                         }
                     }
                 }

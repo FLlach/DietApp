@@ -40,8 +40,8 @@ public class RecipeIngredientEntity
         return new RecipeIngredient(
             Id,
             FoodItemId,
-            FoodName,
-            Grams,
+            string.IsNullOrWhiteSpace(FoodName) ? "Ingrediente" : FoodName,
+            Grams <= 0 ? 1.0 : Grams,
             CalculatedCalories,
             minerals,
             CalculatedProtein);
