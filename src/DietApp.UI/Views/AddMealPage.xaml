@@ -582,9 +582,9 @@
                                 </Border>
                             </Grid>
 
-                            <!-- Diagnostico de los 7 Minerales Criticos -->
+                            <!-- Diagnostico Minerales Criticos -->
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="Los 7 Minerales Críticos"
+                                <Label Text="Minerales"
                                        FontFamily="Inter"
                                        FontSize="13"
                                        FontAttributes="Bold"
@@ -667,9 +667,9 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- 2.6 Notas Clinicas u Observaciones -->
+                    <!-- 2.6 Notas u Observaciones -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Notas clínicas u observaciones"
+                        <Label Text="Notas u observaciones"
                                FontFamily="Inter"
                                FontSize="13"
                                FontAttributes="Bold"

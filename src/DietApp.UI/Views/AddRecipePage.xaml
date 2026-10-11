@@ -44,18 +44,11 @@
                         SemanticProperties.Description="Volver atrás o cancelar" />
 
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                    <Label Text="Compositor de Receta"
+                    <Label Text="Creador de Recetas"
                            FontFamily="PlusJakartaSans"
                            FontSize="18"
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource StitchOnSurface}, Dark={StaticResource StitchDarkOnSurface}}" />
-                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                        <BoxView WidthRequest="6" HeightRequest="6" CornerRadius="3" Color="{StaticResource StitchPrimaryContainer}" VerticalOptions="Center" />
-                        <Label Text="Modo Dosificación Clínica"
-                               FontFamily="Inter"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource StitchOnSurfaceVariant}, Dark={StaticResource StitchDarkOnSurfaceVariant}}" />
-                    </HorizontalStackLayout>
                 </VerticalStackLayout>
 
                 <Button Grid.Column="2"
@@ -280,7 +273,7 @@
 
                         <!-- Nombre de la preparación -->
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="Nombre de la preparación culinaria"
+                            <Label Text="Nombre de la preparación"
                                    FontFamily="Inter"
                                    FontSize="12"
                                    FontAttributes="Bold"
@@ -300,7 +293,7 @@
 
                         <!-- Descripción o notas clínicas -->
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="Descripción o notas clínicas"
+                            <Label Text="Descripción o notas"
                                    FontFamily="Inter"
                                    FontSize="12"
                                    FontAttributes="Bold"

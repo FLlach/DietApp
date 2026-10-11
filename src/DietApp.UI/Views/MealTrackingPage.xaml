@@ -319,11 +319,11 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Cuadricula: Trazabilidad de los 7 Minerales Criticos -->
+                        <!-- Cuadricula: Trazabilidad -->
                         <VerticalStackLayout Spacing="10" Margin="0, 6, 0, 0">
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0"
-                                       Text="Trazabilidad de 7 Minerales Críticos"
+                                       Text="Trazabilidad"
                                        FontFamily="Inter"
                                        FontSize="12"
                                        FontAttributes="Bold"
